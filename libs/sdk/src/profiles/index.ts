@@ -157,18 +157,24 @@ class AWF_Profile {
       // account: pushAccount,
     });
 
+    const notificationsEnabled = await this.enableBrowserNotifications();
     this._notificationsStream = await this._pushClient.initStream([CONSTANTS.STREAM.NOTIF]);
-    this._notificationsStream.on(CONSTANTS.STREAM.NOTIF, (data: any) => {
-      const notification = new Notification(data?.message?.notification.body, {
-        body: data?.message?.notification.body,
-        icon: data?.channel?.icon,
-        data: data?.message?.payload,
-      });
-      // can assign event listeners to the notification
-      notification.onclick = (event: any) => {
-        event.preventDefault();
-        window.open(data?.message?.payload?.cta || data?.channel?.url, '_blank');
-      };
+    this._notificationsStream.on(CONSTANTS.STREAM.NOTIF, async (data: any) => {
+      if (notificationsEnabled) {
+        const notification = new Notification(data?.message?.notification.body, {
+          body: data?.message?.notification.body,
+          icon: data?.channel?.icon,
+          data: data?.message?.payload,
+        });
+        // can assign event listeners to the notification
+        notification.onclick = (event: any) => {
+          event.preventDefault();
+          window.open(data?.message?.payload?.cta || data?.channel?.url, '_blank'); // Expecting all actions to be defined as CTA link
+        };
+      } else {
+        console.warn('Notifications are not granted.');
+        // here handle inapp notifications without sending browser notifications
+      }
     });
 
     await this._notificationsStream.connect();
