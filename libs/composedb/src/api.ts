@@ -1,4 +1,4 @@
-import type { DocumentNode } from 'graphql/index';
+import type { DocumentNode } from 'graphql';
 import { ApolloClient, gql } from '@apollo/client/core';
 import { getMainDefinition } from '@apollo/client/utilities';
 import type { FetchResult } from '@apollo/client/link/core/types';
