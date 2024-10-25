@@ -455,6 +455,10 @@ export const AkashaAppFragmentDoc = /*#__PURE__*/ gql`
     width
     src
   }
+  links {
+    href
+    label
+  }
   contributors {
     id
     isViewer

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
-import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import AppCoverImage from '@akashaorg/design-system-core/lib/components/AppCoverImage';
 import List, { ListProps } from '@akashaorg/design-system-core/lib/components/List';
 import EditImageModal from '../../EditImageModal';
 import {
@@ -91,6 +91,10 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const showEditAndDeleteMenuOptions =
+    (appImageType === 'logo-image' && !!logoImageUrl?.src) ||
+    (appImageType === 'cover-image' && !!coverImageUrl?.src);
+
   const dropDownActions: ListProps['items'] = [
     {
       label: 'Upload',
@@ -100,23 +104,27 @@ export const Header: React.FC<HeaderProps> = ({
         closeActionsDropDown();
       },
     },
-    {
-      label: 'Edit',
-      icon: <PencilIcon />,
-      onClick: () => {
-        setShowEditImage(true);
-        closeActionsDropDown();
-      },
-    },
-    {
-      label: 'Delete',
-      icon: <TrashIcon />,
-      color: { light: 'errorLight', dark: 'errorDark' },
-      onClick: () => {
-        setShowDeleteImage(true);
-        closeActionsDropDown();
-      },
-    },
+    ...(showEditAndDeleteMenuOptions
+      ? [
+          {
+            label: 'Edit',
+            icon: <PencilIcon />,
+            onClick: () => {
+              setShowEditImage(true);
+              closeActionsDropDown();
+            },
+          },
+          {
+            label: 'Delete',
+            icon: <TrashIcon />,
+            color: { light: 'errorLight', dark: 'errorDark' } as const,
+            onClick: () => {
+              setShowDeleteImage(true);
+              closeActionsDropDown();
+            },
+          },
+        ]
+      : []),
   ];
 
   const imageModalProps: Partial<CropperProps> =
@@ -174,16 +182,21 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <Stack direction="column" spacing="gap-y-2">
       <Stack customStyle="relative mb-8">
-        <Card
-          radius={20}
+        <Stack
+          fullWidth
           background={{ light: 'grey7', dark: 'grey5' }}
-          customStyle={`flex p-4 h-28 w-full bg-no-repeat bg-center bg-cover bg-[url(${coverImageUrl?.src || coverImage?.src})]`}
+          customStyle={`h-28 rounded-2xl`}
         >
+          <AppCoverImage
+            src={coverImageUrl?.src}
+            appType={extensionType}
+            customStyle={'h-28 rounded-2xl'}
+          />
           <Stack
             ref={editCoverRef}
             direction="column"
             spacing="gap-y-1"
-            customStyle="relative mt-auto ml-auto"
+            customStyle="absolute bottom-4 right-4"
           >
             <Button
               icon={<PencilSquareIcon />}
@@ -200,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
               <List items={dropDownActions} customStyle="absolute right-0 top-7 w-auto z-10" />
             )}
           </Stack>
-        </Card>
+        </Stack>
         <Stack
           align="center"
           justify="center"
@@ -209,7 +222,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <AppAvatar
             appType={extensionType}
-            avatar={logoImageUrl || logoImage}
+            avatar={logoImageUrl}
             customStyle={`border-2 ${getColorClasses(
               {
                 light: 'white',
