@@ -144,6 +144,18 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
           },
           isSavingImage,
           publicImagePath: '/images',
+          logoGuidelines: {
+            titleLabel: t('Logo guidelines'),
+            guidelines: [
+              t('Full square'),
+              t('Non-transparent background'),
+              t('Minimum dimensions: 112 x 112 px'),
+              t('Formats: PNG, JPEG, or WebP'),
+              t('sRGB color space'),
+              t('Max size: 1.5 MB'),
+            ],
+            imageDescription: 'Recommended logo positioning',
+          },
           onImageSave: (type, image) => saveImage({ type, image, onError: onSaveImageError }),
           onImageDelete: () => {},
         }}
