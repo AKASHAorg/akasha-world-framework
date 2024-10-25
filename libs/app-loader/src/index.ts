@@ -315,6 +315,11 @@ export default class AppLoader {
     if (!loginData?.id) {
       return;
     }
+
+    // initialise browser notifications
+    const sdk = getSDK();
+    await sdk.api.profile.initNotificationsStream();
+
     this.user = { id: loginData.id };
     this.userExtensions = await getUserInstalledExtensions();
     if (!this.userExtensions?.length) {
