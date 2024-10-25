@@ -29,7 +29,6 @@ export const DeleteImageModal: React.FC<DeleteImageModalProps> = ({
         { variant: 'secondary', label: cancelLabel, onClick: onClose },
         { variant: 'primary', label: deleteLabel, onClick: onDelete },
       ]}
-      actionsAlign="center"
       onClose={onClose}
       customStyle="min-w-[20rem] sm:min-w-[38rem]"
     >

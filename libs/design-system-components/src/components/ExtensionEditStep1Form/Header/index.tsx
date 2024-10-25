@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import AppCoverImage from '@akashaorg/design-system-core/lib/components/AppCoverImage';
-import List, { ListProps } from '@akashaorg/design-system-core/lib/components/List';
-import EditImageModal from '../../EditImageModal';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
+import List, { ListProps } from '@akashaorg/design-system-core/lib/components/List';
+import ImageModal, { ImageModalProps } from '../../ImageModal';
 import Img from '@akashaorg/design-system-core/lib/components/Image';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import {
@@ -14,7 +14,6 @@ import {
   TrashIcon,
   InformationCircleIcon,
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import { CropperProps } from 'react-easy-crop';
 import { ExtensionImageType, type Image } from '@akashaorg/typings/lib/ui';
 import Modal, { ModalProps } from '@akashaorg/design-system-core/lib/components/Modal';
 import { getColorClasses } from '@akashaorg/design-system-core/lib/utils/getColorClasses';
@@ -33,6 +32,7 @@ export type HeaderProps = {
   deleteTitle: { logoImage: ModalProps['title']; coverImage: ModalProps['title'] };
   confirmationLabel: { logoImage: string; coverImage: string };
   dragToRepositionLabel: string;
+  cropErrorLabel: string;
   isSavingImage: boolean;
   publicImagePath: string;
   logoGuidelines: {
@@ -40,6 +40,7 @@ export type HeaderProps = {
     titleLabel: string;
     imageDescription: string;
   };
+  logoPreviewTitle: string;
   onLogoImageChange: (logoImage?: File) => void;
   onCoverImageChange: (coverImage?: File) => void;
   onImageSave: (type: ExtensionImageType, image?: File) => void;
@@ -57,9 +58,11 @@ export const Header: React.FC<HeaderProps> = ({
   deleteTitle,
   confirmationLabel,
   dragToRepositionLabel,
+  cropErrorLabel,
   isSavingImage,
   publicImagePath,
   logoGuidelines,
+  logoPreviewTitle,
   onLogoImageChange,
   onCoverImageChange,
   onImageSave,
@@ -74,8 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [logoImageUrl, setLogoImageUrl] = useState(logoImage);
   const [coverImageUrl, setCoverImageUrl] = useState(coverImage);
   const [showLogoGuidelineModal, setShowLogoGuidelineModal] = useState(false);
-  const [uploadedLogoImageUrl, setUploadedLogoImageUrl] = useState(logoImage);
-  const [uploadedCoverImageUrl, setUploadedCoverImageUrl] = useState(coverImage);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     if (!isSavingImage) {
@@ -121,6 +123,13 @@ export const Header: React.FC<HeaderProps> = ({
             label: 'Edit',
             icon: <PencilIcon />,
             onClick: () => {
+              switch (appImageType) {
+                case 'logo-image':
+                  setImages([logoImageUrl]);
+                  break;
+                case 'cover-image':
+                  setImages([coverImageUrl]);
+              }
               setShowEditImage(true);
               closeActionsDropDown();
             },
@@ -138,9 +147,22 @@ export const Header: React.FC<HeaderProps> = ({
       : []),
   ];
 
-  const imageModalProps: Partial<CropperProps> =
+  const imageModalProps: Partial<ImageModalProps> =
     appImageType === 'logo-image'
-      ? { aspect: 250 / 250, cropShape: 'rect' }
+      ? {
+          previewTitle: logoPreviewTitle,
+          previews: [
+            { dimension: 110 },
+            { dimension: 60 },
+            { dimension: 40, circular: true },
+            { dimension: 32, circular: true },
+            { dimension: 16, circular: true },
+          ],
+          width: 312,
+          height: 224,
+          aspect: 1 / 1,
+          cropShape: 'rect',
+        }
       : { aspect: 560 / 169, objectFit: 'contain' };
 
   const onSave = (image: File) => {
@@ -179,11 +201,11 @@ export const Header: React.FC<HeaderProps> = ({
       switch (appImageType) {
         case 'logo-image':
           onLogoImageChange(image);
-          setUploadedLogoImageUrl({ src: URL.createObjectURL(image), width: 0, height: 0 });
+          setImages([{ src: URL.createObjectURL(image), width: 0, height: 0 }]);
           break;
         case 'cover-image':
           onCoverImageChange(image);
-          setUploadedCoverImageUrl({ src: URL.createObjectURL(image), width: 0, height: 0 });
+          setImages([{ src: URL.createObjectURL(image), width: 0, height: 0 }]);
       }
       setShowEditImage(true);
     }
@@ -275,7 +297,7 @@ export const Header: React.FC<HeaderProps> = ({
           />
         </Stack>
       </Stack>
-      <EditImageModal
+      <ImageModal
         show={showEditImage}
         title={appImageType === 'logo-image' ? imageTitle.logoImage : imageTitle.coverImage}
         cancelLabel={cancelLabel}
@@ -284,12 +306,10 @@ export const Header: React.FC<HeaderProps> = ({
           if (isSavingImage) return;
           setShowEditImage(false);
         }}
-        images={
-          appImageType === 'logo-image'
-            ? [uploadedLogoImageUrl?.src || logoImage?.src]
-            : [uploadedCoverImageUrl?.src || coverImage?.src]
-        }
+        images={images}
+        rightAlignActions={true}
         dragToRepositionLabel={dragToRepositionLabel}
+        errorLabel={cropErrorLabel}
         isSavingImage={isSavingImage}
         onSave={onSave}
         {...imageModalProps}
