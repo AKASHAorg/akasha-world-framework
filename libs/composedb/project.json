@@ -44,7 +44,13 @@
       "executor": "@akashaorg/package-utils-plugin:extract-dependencies",
       "options": {
         "outputPath":  "{workspaceRoot}/dist/npm/composedb",
-        "cwd": "libs/composedb"
+        "cwd": "libs/composedb",
+        "assets": [
+          {
+            "input": "lib/runtime-definition.json",
+            "output": "lib/runtime-definition.json"
+          }
+        ]
       }
     }
   },

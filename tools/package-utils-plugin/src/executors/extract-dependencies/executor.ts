@@ -33,5 +33,15 @@ export default async function buildExecutor(
     copyFileSync(readmeFile, `${options.outputPath}/${readmeName}`);
   }
 
+  if (options.assets) {
+    for (const asset of options.assets) {
+      const input = resolve(context.cwd, options.cwd || '', asset.input);
+      const output = resolve(options.outputPath, asset.output);
+      if (existsSync(input)) {
+        copyFileSync(input, output);
+      }
+    }
+  }
+
   return { success: true };
 }
