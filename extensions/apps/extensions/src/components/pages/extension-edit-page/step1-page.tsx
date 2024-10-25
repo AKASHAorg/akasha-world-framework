@@ -125,16 +125,18 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
           coverImage: transformSource(coverImage || formDefault?.coverImage),
           logoImage: transformSource(logoImage || formDefault?.logoImage),
           dragToRepositionLabel: t('Drag the image to reposition'),
+          cropErrorLabel: t('Unable to crop the image. Please try again!'),
           cancelLabel: t('Cancel'),
           deleteLabel: t('Delete'),
           saveLabel: t('Save'),
+          logoPreviewTitle: t('Logo preview'),
           imageTitle: {
-            logoImage: { label: t('Edit Logo Image') },
-            coverImage: { label: t('Edit Cover Image') },
+            logoImage: { label: t('Edit Logo') },
+            coverImage: { label: t('Edit Cover') },
           },
           deleteTitle: {
-            logoImage: { label: t('Delete Logo Image') },
-            coverImage: { label: t('Delete Cover Image') },
+            logoImage: { label: t('Delete Logo') },
+            coverImage: { label: t('Delete Cover') },
           },
           confirmationLabel: {
             logoImage: t(`Are you sure you want to delete the extension's logo image?`),

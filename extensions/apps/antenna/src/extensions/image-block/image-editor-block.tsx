@@ -34,7 +34,7 @@ import ImageBlockGallery from '@akashaorg/design-system-components/lib/component
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Image from '@akashaorg/design-system-core/lib/components/Image';
 import ImageBlockToolbar from '@akashaorg/design-system-components/lib/components/ImageBlockToolbar';
-import EditImageModal from '@akashaorg/design-system-components/lib/components/EditImageModal';
+import ImageModal from '@akashaorg/design-system-components/lib/components/ImageModal';
 import { type GalleryImage } from '@akashaorg/typings/lib/ui';
 import {
   XMarkIcon,
@@ -505,7 +505,7 @@ export const ImageEditorBlock = (
               showCaption={showCaption}
             />
           )}
-          <EditImageModal
+          <ImageModal
             show={showEditModal}
             title={{ label: t('Edit Image') }}
             cancelLabel={t('Cancel')}
@@ -513,6 +513,7 @@ export const ImageEditorBlock = (
             onClose={handleCloseModal}
             images={imageUrls}
             dragToRepositionLabel={t('Drag the image to reposition')}
+            errorLabel={t('Unable to crop the image. Please try again!')}
             isSavingImage={uploading}
             onSave={uploadEditedImage}
           />
