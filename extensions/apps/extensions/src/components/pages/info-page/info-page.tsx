@@ -284,7 +284,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                     <Card onClick={handleDeveloperClick} type="plain">
                       <Stack direction="row" align="center">
                         <ProfileAvatarButton
-                          profileId={appData.author?.akashaProfile?.id}
+                          profileId={appData.author?.akashaProfile?.did?.id}
                           label={appData.author?.akashaProfile?.name}
                           avatar={transformSource(appData.author?.akashaProfile?.avatar?.default)}
                           alternativeAvatars={appData.author?.akashaProfile?.avatar?.alternatives?.map(
