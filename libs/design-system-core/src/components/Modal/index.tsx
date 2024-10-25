@@ -53,7 +53,7 @@ const Modal: React.FC<ModalProps> = ({
   actions,
   title,
   showDivider = false,
-  rightAlignActions,
+  rightAlignActions = false,
   customStyle = '',
   children,
   onClose = () => {},
