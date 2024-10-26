@@ -63,6 +63,7 @@ export const General: React.FC<GeneralProps> = ({
             inputRef={ref}
             maxLength={MAX_BIO_LENGTH}
             type="multiline"
+            customStyle="py-0"
           />
         )}
         defaultValue={bioField.initialValue || ''}

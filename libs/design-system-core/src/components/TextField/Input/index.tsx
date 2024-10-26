@@ -24,17 +24,17 @@ export const Input: React.FC<InputProps> = forwardRef(
         direction="row"
         align="center"
         spacing="gap-x-2"
-        customStyle={`${containerStyle} ${radiusStyle}`}
+        customStyle={`${containerStyle} ${radiusStyle} pt-1 pb-2`}
         fullWidth={fullWidth}
       >
         {iconLeft && <Icon icon={iconLeft} color={iconColor} disabled={disabled} />}
         <input
           ref={ref}
+          aria-labelledby={id}
           type="text"
           className={tw(apply`${inputStyle}`)}
           disabled={disabled}
           readOnly={readOnly}
-          aria-labelledby={id}
           {...rest}
         />
         {iconRight && <Icon icon={iconRight} color={iconColor} disabled={disabled} />}

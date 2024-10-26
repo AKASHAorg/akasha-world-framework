@@ -4,7 +4,7 @@ import Stack from '../../Stack';
 import { getContainerClasses } from '../Input/getContainerClasses';
 import { getInputClasses } from '../Input/getInputClasses';
 import { MultlineProps } from '../types';
-import { tw } from '@twind/core';
+import { apply, tw } from '@twind/core';
 import { forwardRef } from 'react';
 import { getRadiusClasses } from '../../../utils/getRadiusClasses';
 
@@ -20,22 +20,22 @@ export const Multiline: React.FC<MultlineProps> = forwardRef(
     return (
       <Stack
         direction="row"
-        customStyle={`${containerStyle} ${radiusStyle} py-2`}
+        customStyle={`${containerStyle} ${radiusStyle} pt-1 pb-2`}
         spacing="gap-x-2"
       >
         <textarea
-          {...rest}
-          aria-labelledby={id}
-          className={tw(`resize-none w-full ${textAreaStyle} !p-0`)}
-          maxLength={rest.maxLength || MAX_LENGTH}
           ref={ref}
+          aria-labelledby={id}
+          className={tw(apply(`resize-none w-full ${textAreaStyle}`))}
+          maxLength={rest.maxLength ?? MAX_LENGTH}
           onChange={event => {
             setLetterCount(event.target.value.length);
             rest.onChange(event);
           }}
-        ></textarea>
+          {...rest}
+        />
         <EditorMeter
-          max={rest.maxLength || MAX_LENGTH}
+          max={rest.maxLength ?? MAX_LENGTH}
           value={letterCount}
           background="grey6"
           customStyle="ml-auto mt-auto shrink-0"
