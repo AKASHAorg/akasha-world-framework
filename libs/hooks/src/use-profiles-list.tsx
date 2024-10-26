@@ -14,20 +14,17 @@ import { selectProfileData } from './selectors/get-profile-by-did-query';
 const useProfilesList = (profileDIDs: string[]) => {
   const [profilesData, setProfilesData] = React.useState([]);
 
-  const [profileDataReq, { loading, error }] = useGetProfileByDidLazyQuery({
-    fetchPolicy: 'cache-and-network',
-  });
-
+  const [profileDataReq, { loading, error }] = useGetProfileByDidLazyQuery();
+  const fetchData = async () => {
+    const results = await Promise.all(
+      profileDIDs.map(did => profileDataReq({ variables: { id: did } })),
+    );
+    const profiles = results.map(res => selectProfileData(res.data));
+    setProfilesData(profiles);
+  };
   React.useEffect(() => {
-    const fetchData = async () => {
-      const results = await Promise.all(
-        profileDIDs.map(did => profileDataReq({ variables: { id: did } })),
-      );
-      const profiles = results.map(res => selectProfileData(res.data));
-      setProfilesData(profiles);
-    };
     fetchData();
-  }, [profileDIDs, profileDataReq]);
+  }, [profileDIDs]);
 
   return { profilesData, loading, error };
 };

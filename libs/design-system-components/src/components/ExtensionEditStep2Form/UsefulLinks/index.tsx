@@ -67,7 +67,7 @@ export const UsefulLinks: React.FC<UsefulLinksProps> = ({
                   remove(index);
                   onDeleteLink();
                 }}
-                value={{ ...value, _id: index }}
+                value={{ ...value, _id: index + 1 }}
                 onChange={onChange}
                 error={error as unknown}
                 inputRef={ref}
