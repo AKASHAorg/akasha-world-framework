@@ -2,7 +2,6 @@ import type IDBService from './db.js';
 import type IGqlClient from './gql.js';
 import type { ServiceCallResult } from './responses.js';
 import { EthProviders, EthProvidersSchema } from './web3.connector.js';
-import { EthAddress } from './common';
 
 export * from './events.js';
 export * from './responses.js';
@@ -40,4 +39,5 @@ const ServiceTypes = {
   Ceramic: Symbol.for('awf-Ceramic'),
   Config: Symbol.for('awf-Config'),
   ScrollState: Symbol.for('awf-scroll-state'),
+  PushProtocol: Symbol.for('awf-push-protocol'),
 };

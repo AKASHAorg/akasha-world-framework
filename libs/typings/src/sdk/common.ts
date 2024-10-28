@@ -8,6 +8,7 @@ import {
   PROFILE_EVENTS,
   TAG_EVENTS,
   WEB3_EVENTS,
+  PUSH_PROTOCOL_EVENTS,
 } from './events';
 import { z } from 'zod';
 
@@ -44,6 +45,7 @@ export type GlobalEventBusData<D = unknown> = {
     | PROFILE_EVENTS
     | TAG_EVENTS
     | WEB3_EVENTS
+    | PUSH_PROTOCOL_EVENTS
     | GQL_EVENTS;
   args?: unknown;
 };

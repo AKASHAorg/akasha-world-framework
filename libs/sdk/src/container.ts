@@ -15,6 +15,7 @@ import AWF_Misc from './common/misc';
 import AWF_Lit from './common/lit';
 import AWF_Ceramic from './common/ceramic';
 import AWF_Config from './common/config';
+import PushProtocol from './common/push-protocol';
 
 const diContainer = new Container({
   defaultScope: 'Singleton',
@@ -34,6 +35,7 @@ diContainer.bind<AWF_IpfsConnector>(TYPES.IPFS).to(AWF_IpfsConnector);
 diContainer.bind<AppSettings>(TYPES.AppSettings).to(AppSettings);
 diContainer.bind<AWF_Lit>(TYPES.Lit).to(AWF_Lit);
 diContainer.bind<AWF_Ceramic>(TYPES.Ceramic).to(AWF_Ceramic);
+diContainer.bind<PushProtocol>(TYPES.PushProtocol).to(PushProtocol);
 //@Todo: implement init watcher to prevent ambiguous service
 // export const importLazy = async () => {
 //   const r = await import('./gql/index.new');
