@@ -20,9 +20,12 @@ const MIN_NAME_CHARACTERS = 3;
 
 const MAX_NAME_CHARACTERS = 50;
 
-type SocialLinkForm = Pick<SocialLinksProps, 'linkLabel' | 'addNewLinkButtonLabel' | 'description'>;
+type SocialLinkFormProps = Pick<
+  SocialLinksProps,
+  'linkLabel' | 'addNewLinkButtonLabel' | 'description'
+>;
 
-type GeneralForm = Pick<GeneralProps, 'header' | 'name' | 'bio'>;
+type GeneralFormProps = Pick<GeneralProps, 'header' | 'name' | 'bio'>;
 
 export type EditProfileProps = {
   defaultValues?: PublishProfileData;
@@ -35,8 +38,8 @@ export type EditProfileProps = {
   customStyle?: string;
   nsfwFieldLabel?: string;
   nsfw?: InputType;
-} & GeneralForm &
-  SocialLinkForm;
+} & GeneralFormProps &
+  SocialLinkFormProps;
 
 const EditProfile: React.FC<EditProfileProps> = ({
   defaultValues = {
@@ -52,7 +55,12 @@ const EditProfile: React.FC<EditProfileProps> = ({
   customStyle = '',
   nsfw,
   nsfwFieldLabel,
-  ...rest
+  header,
+  name,
+  bio,
+  description,
+  linkLabel,
+  addNewLinkButtonLabel,
 }) => {
   const { control, setValue, getValues, formState } = useForm<EditProfileFormValues>({
     defaultValues: {
@@ -90,9 +98,11 @@ const EditProfile: React.FC<EditProfileProps> = ({
 
   return (
     <form data-testid="edit-profile" onSubmit={onSave} className={tw(apply`h-full ${customStyle}`)}>
-      <Stack direction="column" spacing="gap-y-4">
+      <Stack direction="column" spacing="gap-y-6">
         <General
-          {...rest}
+          header={header}
+          name={name}
+          bio={bio}
           control={control}
           onAvatarChange={avatar => {
             setValue('avatar', avatar, { shouldDirty: true });
@@ -101,7 +111,12 @@ const EditProfile: React.FC<EditProfileProps> = ({
             setValue('coverImage', coverImage, { shouldDirty: true });
           }}
         />
-        <SocialLinks {...rest} control={control} />
+        <SocialLinks
+          linkLabel={linkLabel}
+          addNewLinkButtonLabel={addNewLinkButtonLabel}
+          description={description}
+          control={control}
+        />
         <NSFW
           nsfw={nsfw}
           nsfwFieldLabel={nsfwFieldLabel}
