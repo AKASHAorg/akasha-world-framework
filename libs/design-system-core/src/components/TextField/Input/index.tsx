@@ -24,8 +24,9 @@ export const Input: React.FC<InputProps> = forwardRef(
         direction="row"
         align="center"
         spacing="gap-x-2"
-        customStyle={`${containerStyle} ${radiusStyle} pt-1 pb-2`}
+        padding="pt-1 pb-2"
         fullWidth={fullWidth}
+        customStyle={`${containerStyle} ${radiusStyle}`}
       >
         {iconLeft && <Icon icon={iconLeft} color={iconColor} disabled={disabled} />}
         <input

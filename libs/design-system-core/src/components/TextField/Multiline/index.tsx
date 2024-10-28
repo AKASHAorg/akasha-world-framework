@@ -20,8 +20,9 @@ export const Multiline: React.FC<MultlineProps> = forwardRef(
     return (
       <Stack
         direction="row"
-        customStyle={`${containerStyle} ${radiusStyle} pt-1 pb-2`}
         spacing="gap-x-2"
+        padding="pt-1 pb-2"
+        customStyle={`${containerStyle} ${radiusStyle}`}
       >
         <textarea
           ref={ref}
