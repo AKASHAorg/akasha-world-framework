@@ -107,7 +107,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
 
   const handleReleasesClick = () => {
     navigate({
-      to: '/info/$appId/versions',
+      to: '/info/$appId/releases',
       params: {
         appId,
       },
@@ -131,15 +131,6 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
         appId,
       },
     }).catch(err => logger.error('cannot navigate to /info/$appId/collaborators : %o', err));
-  };
-
-  const handleLatestUpdateClick = () => {
-    navigate({
-      to: '/info/$appId/audit-log',
-      params: {
-        appId,
-      },
-    }).catch(err => logger.error('cannot navigate to /info/$appId/audit-log : %o', err));
   };
 
   const handleLicenseClick = () => {
@@ -281,10 +272,10 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                 )}
                 <Section title={t('Developer')} dividerPosition={DividerPosition.Top}>
                   {appData.author?.akashaProfile && (
-                    <Card onClick={handleDeveloperClick} type="plain">
+                    <Card onClick={handleDeveloperClick} type="plain" customStyle={'@container'}>
                       <Stack direction="row" align="center">
                         <ProfileAvatarButton
-                          profileId={appData.author?.akashaProfile?.id}
+                          profileId={appData.author?.id}
                           label={appData.author?.akashaProfile?.name}
                           avatar={transformSource(appData.author?.akashaProfile?.avatar?.default)}
                           alternativeAvatars={appData.author?.akashaProfile?.avatar?.alternatives?.map(
@@ -344,8 +335,8 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                       <Button
                         variant="text"
                         size="md"
-                        label={formatRelativeTime(latestRelease?.node?.createdAt)}
-                        onClick={handleLatestUpdateClick}
+                        label={formatDate(latestRelease?.node?.createdAt, 'DD MMM YYYY')}
+                        onClick={handleReleasesClick}
                       />
                     </Stack>
                     <Divider />
