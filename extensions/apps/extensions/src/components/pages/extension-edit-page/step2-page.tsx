@@ -1,22 +1,11 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ExtensionEditStep2Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep2Form';
-import {
-  getMediaUrl,
-  saveMediaFile,
-  transformSource,
-  useAkashaStore,
-  useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
-import {
-  GalleryImage,
-  NotificationEvents,
-  NotificationTypes,
-  Extension,
-} from '@akashaorg/typings/lib/ui';
+import { useAkashaStore, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { NotificationEvents, NotificationTypes, Extension } from '@akashaorg/typings/lib/ui';
 import { DRAFT_EXTENSIONS } from '../../../constants';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
@@ -76,75 +65,22 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
 
   const [, setForm] = useAtom<FormData>(useContext(AtomContext));
 
-  const [uploading, setUploading] = useState(false);
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(
-    formDefault?.gallery?.map(img => {
-      const imgWithGateway = transformSource(img);
-      return {
-        ...img,
-        src: img?.src,
-        displaySrc: imgWithGateway?.src,
-        size: {
-          height: img?.height,
-          width: img?.width,
-        },
-      };
-    }),
+  const galleryImages = useMemo(
+    () =>
+      formDefault?.gallery?.map(img => {
+        const imgWithGateway = transformSource(img);
+        return {
+          ...img,
+          src: img?.src,
+          displaySrc: imgWithGateway?.src,
+          size: {
+            height: img?.height,
+            width: img?.width,
+          },
+        };
+      }),
+    [formDefault?.gallery],
   );
-
-  const onUpload = async (image: File | string, isUrl?: boolean) => {
-    if (!image) return null;
-    setUploading(true);
-
-    const imageName = typeof image === 'string' ? image : image.name || 'extension-gallery-image';
-
-    try {
-      const mediaFile = await saveMediaFile({
-        name: imageName,
-        isUrl: isUrl || false,
-        content: image,
-      });
-      setUploading(false);
-      if (!mediaFile) return null;
-
-      const mediaUri = `ipfs://${mediaFile.CID}`;
-
-      const mediaUrl = getMediaUrl(mediaUri);
-
-      const imageObj = {
-        size: { height: mediaFile.size.height, width: mediaFile.size.width },
-        displaySrc: mediaUrl.originLink || mediaUrl.fallbackLink,
-        src: mediaUri,
-        name: imageName,
-        originalSrc: typeof image === 'string' ? image : URL.createObjectURL(image),
-      };
-
-      return imageObj;
-    } catch (error) {
-      setUploading(false);
-      showErrorNotification(t("The image wasn't uploaded correctly. Please try again!"));
-      return null;
-    }
-  };
-
-  const uploadNewImage = async (image: File | string, isUrl?: boolean) => {
-    const uploadedImage = await onUpload(image, isUrl);
-    setGalleryImages(prev => [
-      ...prev,
-      {
-        name: uploadedImage?.name,
-        src: uploadedImage?.src,
-        displaySrc: uploadedImage?.displaySrc,
-        originalSrc: uploadedImage?.originalSrc,
-        size: uploadedImage?.size,
-      },
-    ]);
-  };
-
-  const handleDeleteImage = (element: GalleryImage) => {
-    const newImages = galleryImages.filter(image => image.src !== element.src);
-    setGalleryImages(newImages);
-  };
 
   return (
     <Stack spacing="gap-y-4">
@@ -158,9 +94,9 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
         nsfwDescriptionLabel={t('Once you mark it as NSFW, you can’t change it back')}
         descriptionFieldLabel={t('Description')}
         descriptionPlaceholderLabel={t('What does this extension do?')}
-        galleryFieldLabel={t('Gallery')}
+        galleryFieldLabel={t('Extension Gallery')}
         galleryDescriptionLabel={t(
-          'Having a gallery to show off the extension will increase installs',
+          'The first three images, based on your order, will be featured on the main extension card.',
         )}
         usefulLinksFieldLabel={t('Useful Links')}
         usefulLinksDescriptionLabel={t(
@@ -169,11 +105,13 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
         linkTitleLabel={t('Link')}
         linkPlaceholderLabel={t('Link title')}
         addLabel={t('Add')}
-        uploading={uploading}
-        handleImageUpload={uploadNewImage}
-        handleImageDelete={handleDeleteImage}
+        uploadAndEditLabel={t('Upload & Edit')}
+        imagesUploadedLabel={t('images uploaded')}
         images={galleryImages}
         defaultValues={formDefault}
+        handleMediaClick={() => {
+          //todo
+        }}
         cancelButton={{
           label: t('Back'),
           disabled: false,
