@@ -29,7 +29,7 @@ const config = {
                 useTypeImports: true,
               },
             },
-            './src/gql/api.ts': {
+            '../composedb/src/__generated__/graphql-api.ts': {
               preset: 'import-types-preset',
               presetConfig: {
                 typesPath: '@akashaorg/typings/lib/sdk/graphql-operation-types-new',

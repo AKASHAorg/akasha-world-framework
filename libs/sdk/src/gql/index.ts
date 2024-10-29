@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { GQL_EVENTS, TYPES } from '@akashaorg/typings/lib/sdk';
-import { getSdk, Sdk } from './api';
+
 import Logging from '../logging';
 import pino from 'pino';
 import CeramicService from '../common/ceramic';
@@ -10,17 +10,16 @@ import { validate } from '../common/validator';
 import { z } from 'zod';
 import type { FetchResult } from '@apollo/client/link/core/types';
 
-import { ApolloClient, gql, ApolloLink, Observable, split } from '@apollo/client/core';
-import { HttpLink } from '@apollo/client/link/http';
+import { ApolloClient, gql } from '@apollo/client/core';
 import { InMemoryCache } from '@apollo/client/cache';
 
-import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries';
-import { sha256 } from 'crypto-hash';
 import { getMainDefinition, relayStylePagination } from '@apollo/client/utilities';
 
-import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
+import { loadDevMessages, loadErrorMessages } from '@apollo/client/dev';
 import { VIEWER_ID_HEADER } from '@composedb/constants';
 import AWF_Config from '../common/config';
+import createComposeDbApolloLink from '@akashaorg/composedb-models/lib/apollo-link';
+import { getSdk, Sdk } from '@akashaorg/composedb-models/lib/__generated__/graphql-api';
 
 const enum ContextSources {
   DEFAULT = 'gql#DEFAULT',
@@ -47,12 +46,12 @@ if (__DEV__) {
 class Gql {
   readonly _client: Sdk;
   readonly _ceramic: CeramicService;
+  readonly apolloClient: ApolloClient<any>;
   // #_clientWithCache: Sdk;
   private _log: pino.Logger;
   private _globalChannel: EventBus;
   private _viewerID: string;
   private readonly _apolloCache: InMemoryCache;
-  readonly apolloClient: ApolloClient<any>;
   private readonly _contextSources: { default: symbol; composeDB: symbol };
   private _config: AWF_Config;
 
@@ -72,71 +71,15 @@ class Gql {
       composeDB: Symbol.for(ContextSources.COMPOSEDB),
     });
 
-    /*
-     * composeDBLink
-     *
-     * Creates an ApolloLink that sends GraphQL operations to ComposeDB.
-     *
-     * This uses the Ceramic service to get the ComposeDB client instance,
-     * and calls the execute() method on it, passing the operation's
-     * query and variables.
-     *
-     * The result or error is passed back to the Observable observer.
-     *
-     * Parameters:
-     *
-     * - operation: The GraphQL operation to send to ComposeDB
-     *
-     * Returns:
-     *
-     * - An Observable for the GraphQL operation result
-     */
-    const composeDBlink = new ApolloLink(operation => {
-      return new Observable(observer => {
-        this._ceramic
-          .getComposeClient()
-          .execute(operation.query, operation.variables)
-          .then(
-            result => {
-              observer.next(result);
-              observer.complete();
-            },
-            error => {
-              observer.error(error);
-            },
-          );
-      });
-    });
-
-    /*
-     * directionalLink
-     *
-     * Creates a split ApolloLink that routes GraphQL operations to different links
-     * based on the context source.
-     *
-     * Operations from the 'composeDB' context source will be sent to the composeDBLink.
-     *
-     * All other operations will be sent to a link that combines:
-     *
-     * - A persisted query link
-     * - A standard HTTP link to the GraphQL server
-     *
-     * Parameters:
-     *
-     * - operation: The GraphQL operation
-     *
-     * Returns:
-     *
-     * - The link to use for the operation based on its context source
-     */
-    const directionalLink = split(
-      operation => {
-        return operation.getContext().source === this.contextSources.composeDB;
+    const directionalLink = createComposeDbApolloLink(
+      {
+        getComposeDbClient: () => this._ceramic.getComposeClient(),
+        runOnComposeDbFilter: op => {
+          return op.getContext().source === this.contextSources.composeDB;
+        },
+        graphqlURI: this._config.getOption('graphql_uri') || 'http://localhost:4112/',
       },
-      composeDBlink,
-      createPersistedQueryLink({ sha256, useGETForHashedQueries: true }).concat(
-        new HttpLink({ uri: this._config.getOption('graphql_uri') || 'http://localhost:4112/' }),
-      ),
+      true,
     );
 
     this._apolloCache = new InMemoryCache({
@@ -190,6 +133,32 @@ class Gql {
     });
 
     this._client = getSdk(this.requester);
+  }
+
+  get queryClient() {
+    return this.apolloClient;
+  }
+
+  get contextSources() {
+    return this._contextSources;
+  }
+
+  get labelTypes() {
+    return LabelTypes;
+  }
+
+  get indexingDID() {
+    return this._config.getOption('indexing_did');
+  }
+
+  get mutationNotificationConfig() {
+    return Object.freeze({
+      optionName: 'EmitNotification',
+    });
+  }
+
+  get client() {
+    return this._client;
   }
 
   /*
@@ -287,22 +256,6 @@ class Gql {
     throw result.errors;
   };
 
-  get queryClient() {
-    return this.apolloClient;
-  }
-
-  get contextSources() {
-    return this._contextSources;
-  }
-
-  get labelTypes() {
-    return LabelTypes;
-  }
-
-  get indexingDID() {
-    return this._config.getOption('indexing_did');
-  }
-
   async resetCache() {
     return this._apolloCache.reset();
   }
@@ -310,12 +263,6 @@ class Gql {
   async setContextViewerID(id: string) {
     this._viewerID = id;
     await this.resetCache();
-  }
-
-  get mutationNotificationConfig() {
-    return Object.freeze({
-      optionName: 'EmitNotification',
-    });
   }
 
   @validate(z.string().min(20))
@@ -337,10 +284,6 @@ class Gql {
    * @deprecated Use client method instead
    */
   getAPI() {
-    return this._client;
-  }
-
-  get client() {
     return this._client;
   }
 }

@@ -2,7 +2,8 @@ import { createPackageJson, createLockFile, getLockFileName } from '@nx/js';
 import { writeFileSync, copyFileSync, existsSync } from 'fs';
 import { detectPackageManager, ExecutorContext, writeJsonFile } from '@nx/devkit';
 import { ExtractDependenciesExecutorOptions } from './schema';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { mkdirSync } from 'node:fs';
 
 export default async function buildExecutor(
   options: ExtractDependenciesExecutorOptions,
@@ -31,6 +32,19 @@ export default async function buildExecutor(
   // Copy README.md if it exists
   if (existsSync(readmeFile)) {
     copyFileSync(readmeFile, `${options.outputPath}/${readmeName}`);
+  }
+
+  if (options.assets) {
+    for (const asset of options.assets) {
+      const input = resolve(context.cwd, options.cwd || '', asset.input);
+      const output = resolve(options.outputPath, asset.output);
+      if (!existsSync(dirname(output))) {
+        mkdirSync(dirname(output), { recursive: true });
+      }
+      if (existsSync(input)) {
+        copyFileSync(input, output);
+      }
+    }
   }
 
   return { success: true };
