@@ -423,6 +423,11 @@ export const AkashaAppFragmentDoc = /*#__PURE__*/ gql`
         createdAt
         source
         version
+        meta {
+          property
+          provider
+          value
+        }
       }
       cursor
     }
@@ -450,12 +455,21 @@ export const AkashaAppFragmentDoc = /*#__PURE__*/ gql`
     width
     src
   }
+  links {
+    href
+    label
+  }
   contributors {
     id
     isViewer
     akashaProfile {
       ...UserProfileFragment
     }
+  }
+  meta {
+    property
+    provider
+    value
   }
 }
     `;

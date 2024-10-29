@@ -100,10 +100,9 @@ const ProfileAvatarButton = React.forwardRef(
   },
 );
 
-const VARIANTS_MAP: Record<
-  Variant,
-  { profileName: 'sm' | 'md' | 'lg'; avatar: 'sm' | 'md' | 'lg' }
-> = {
+type Size = 'sm' | 'md' | 'lg';
+
+const VARIANTS_MAP: Record<Variant, { profileName: Size; avatar: Size }> = {
   '1': {
     profileName: 'sm',
     avatar: 'sm',

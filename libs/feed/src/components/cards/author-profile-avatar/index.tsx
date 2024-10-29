@@ -56,6 +56,7 @@ const AuthorProfileAvatar: React.FC<AuthorProfileAvatarProps> = props => {
 
   return (
     <ProfileAvatarButton
+      variant="3"
       profileId={authorId}
       href={`/@akashaorg/app-profile/${authorId}`}
       label={profileData?.name}

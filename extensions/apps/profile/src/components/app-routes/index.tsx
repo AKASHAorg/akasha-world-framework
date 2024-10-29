@@ -25,10 +25,9 @@ import {
   GetFollowersListByDidDocument,
   GetFollowingListByDidDocument,
 } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { FOLLOWERS_PER_PAGE } from '../pages/followers/constants';
-import { FOLLOWING_PER_PAGE } from '../pages/following/constants';
 import { ICreateRouter, IRouterContext } from '@akashaorg/typings/lib/ui';
 import { NotFoundComponent } from './not-found-component';
+import { ENTRY_PER_PAGE } from '../pages/constants';
 
 const rootRoute = createRootRouteWithContext<IRouterContext>()({
   component: () => (
@@ -99,7 +98,7 @@ const followersRoute = createRoute({
       query: GetFollowersListByDidDocument,
       variables: {
         id: params.profileDID,
-        first: FOLLOWERS_PER_PAGE,
+        first: ENTRY_PER_PAGE,
       },
     });
   },
@@ -126,7 +125,7 @@ const followingRoute = createRoute({
       query: GetFollowingListByDidDocument,
       variables: {
         id: params.profileDID,
-        first: FOLLOWING_PER_PAGE,
+        first: ENTRY_PER_PAGE,
       },
     });
   },

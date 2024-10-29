@@ -210,7 +210,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
                   {extensionData?.applicationType && (
                     <Stack
                       customStyle="w-[18px] h-[18px] rounded-full shrink-0"
-                      background={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+                      background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
                       justify="center"
                       align="center"
                     >

@@ -17,21 +17,16 @@ const MenuItemLabel: React.FC<MenuItemLabelProps> = props => {
 
   return (
     <Stack direction="row" align="center">
-      <Stack
-        align="center"
-        justify="center"
-        customStyle="w-10 h-10 rounded-full bg-grey9 dark:bg-grey3"
-      >
-        {menuItem.logo.type === 'icon' && (
-          <AppIcon
-            size="md"
-            accentColor={true}
-            stackedIcon={menuItem.label === 'Notifications'}
-            placeholderIcon={menuItem.logo.value}
-            solid={menuItem.logo.solidIcon}
-          />
-        )}
-      </Stack>
+      {menuItem.logo.type === 'icon' && (
+        <AppIcon
+          size="md"
+          accentColor={true}
+          stackedIcon={menuItem.label === 'Notifications'}
+          placeholderIcon={menuItem.logo.value}
+          solid={menuItem.logo.solidIcon}
+          background={{ light: 'grey8', dark: 'grey5' }}
+        />
+      )}
 
       <Text
         variant="button-md"

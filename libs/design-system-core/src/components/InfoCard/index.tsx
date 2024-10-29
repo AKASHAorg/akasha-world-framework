@@ -13,6 +13,7 @@ export type InfoCardProps = {
   titleVariant?: TextProps['variant'];
   bodyVariant?: TextProps['variant'];
   customWidthStyle?: string;
+  customStyle?: string;
 };
 
 /**
@@ -27,6 +28,7 @@ export type InfoCardProps = {
  * @param titleVariant - (optional) customize the text variant of the title
  * @param bodyVariant - (optional) customize the text variant of the body
  * @param customWidthStyle - (optional) customize the width of the card
+ * @param customStyle - (optional) apply custom styling
  * @example
  * ```tsx
  *     <InfoCard
@@ -46,6 +48,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
   assetExtension = 'webp',
   publicImgPath = '/images',
   customWidthStyle,
+  customStyle = '',
 }) => {
   return (
     <Stack
@@ -53,7 +56,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
       align="center"
       justify="center"
       spacing="gap-y-3"
-      customStyle="sm:gap-y-4"
+      customStyle={`sm:gap-y-4 ${customStyle}`}
     >
       {assetName ? (
         <img

@@ -60,7 +60,7 @@ export const EngagementsEntry: React.FC<EngagementsEntryProps> = props => {
       direction="row"
       align="center"
       justify="between"
-      padding="pb-4"
+      padding="px-4"
       customStyle={customStyle}
       fullWidth
     >

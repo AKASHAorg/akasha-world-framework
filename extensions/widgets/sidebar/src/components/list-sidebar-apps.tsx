@@ -70,7 +70,7 @@ const ListSidebarApps: React.FC<ListSidebarAppsProps> = props => {
   };
 
   const borderStyle = hasBorderTop ? 'border(t-1 grey9 dark:grey3)' : '';
-  const activeMenuItemBg = 'bg(grey8 dark:grey5)';
+  const activeMenuItemBg = 'bg(grey9 dark:grey1)';
 
   return (
     <Stack direction="column" customStyle={`py-2 ${borderStyle}`}>

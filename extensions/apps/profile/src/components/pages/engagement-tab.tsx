@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useMemo } from 'react';
 import TabList from '@akashaorg/design-system-core/lib/components/TabList';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { useTranslation } from 'react-i18next';
-import { useMatchRoute, useNavigate } from '@tanstack/react-router';
+import { useMatchRoute, useNavigate, useRouterState } from '@tanstack/react-router';
 
 export type EngagementTabProps = {
   profileDID: string;
@@ -16,14 +16,16 @@ const EngagementTab: React.FC<PropsWithChildren<EngagementTabProps>> = props => 
 
   const matchRoute = useMatchRoute();
 
+  const state = useRouterState();
+
   const activeTab = useMemo(() => {
-    if (matchRoute({ to: '/$profileDID/followers', pending: true })) {
+    if (matchRoute({ to: '/$profileDID/followers', pending: !!state.pendingMatches })) {
       return 0;
     }
-    if (matchRoute({ to: '/$profileDID/following', pending: true })) {
+    if (matchRoute({ to: '/$profileDID/following', pending: !!state.pendingMatches })) {
       return 1;
     }
-  }, [matchRoute]);
+  }, [matchRoute, state]);
 
   const onTabChange = (selectedIndex: number) => {
     switch (selectedIndex) {
@@ -44,9 +46,7 @@ const EngagementTab: React.FC<PropsWithChildren<EngagementTabProps>> = props => 
         onChange={selectedIndex => onTabChange(selectedIndex)}
         customStyle="sticky bg(white dark:grey2) top-52 z-10"
       />
-      <Stack padding="px-4 pb-4" customStyle="mt-4">
-        {children}
-      </Stack>
+      <Stack customStyle="my-4">{children}</Stack>
     </>
   );
 };

@@ -12,7 +12,7 @@ import {
 } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import { useRootComponentProps, useAkashaStore, useNsfwToggling } from '@akashaorg/ui-awf-hooks';
 import { useTranslation } from 'react-i18next';
-import { FOLLOWING_PER_PAGE } from './constants';
+import { ENTRY_PER_PAGE, ITEM_SPACING } from '../constants';
 import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
 import { selectPageInfo } from '@akashaorg/ui-awf-hooks/lib/selectors/get-followers-list-by-did-query';
 
@@ -45,7 +45,7 @@ const FollowingPage: React.FC<FollowingPageProps> = props => {
       'cache-only' /* data is prefetched during route matching as a result we read from cache here */,
     variables: {
       id: profileDID,
-      first: FOLLOWING_PER_PAGE,
+      first: ENTRY_PER_PAGE,
     },
     skip: !isLoggedIn,
   });
@@ -58,7 +58,7 @@ const FollowingPage: React.FC<FollowingPageProps> = props => {
   )
     return (
       <EngagementTab profileDID={profileDID}>
-        <ProfileEngagementLoading />
+        <ProfileEngagementLoading itemSpacing={ITEM_SPACING} />
       </EngagementTab>
     );
 

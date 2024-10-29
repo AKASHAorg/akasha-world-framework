@@ -11,14 +11,12 @@ import { XMarkIcon } from '../Icon/hero-icons-outline';
 import Stack from '../Stack';
 import Text, { TextProps } from '../Text';
 
-export type ActionsAlign = 'center' | 'end';
-
 export type ModalProps = PropsWithChildren<{
   show: boolean;
   actions?: ButtonProps[];
   title?: { label: string } & TextProps;
   showDivider?: boolean;
-  actionsAlign?: ActionsAlign;
+  rightAlignActions?: boolean;
   customStyle?: string;
   onClose?: () => void;
 }>;
@@ -31,7 +29,7 @@ export type ModalProps = PropsWithChildren<{
  * for the user to take action
  * @param title - (optional) title of the modal coupled with customization props (please use Text component's props)
  * @param showDivider - boolean (optional) whether to show the divider
- * @param actionsAlign - (optional) alignment options for the action buttons
+ * @param rightAlignActions - boolean (optional) align action buttons to the right
  * @param customStyle - (optional) apply your custom styling (Make sure to use standard Tailwind classes)
  * @param onClose - (optional) handler that will be called when clicking the close icon
  * @example
@@ -55,7 +53,7 @@ const Modal: React.FC<ModalProps> = ({
   actions,
   title,
   showDivider = false,
-  actionsAlign,
+  rightAlignActions = false,
   customStyle = '',
   children,
   onClose = () => {},
@@ -117,8 +115,7 @@ const Modal: React.FC<ModalProps> = ({
                         <Stack
                           direction="row"
                           spacing="gap-x-4"
-                          justify={actionsAlign}
-                          customStyle="mt-auto"
+                          customStyle={`mt-auto ${rightAlignActions ? 'ml-auto' : ''}`}
                         >
                           {actions.map((action, index) => (
                             <Button key={index} size="md" {...action} />

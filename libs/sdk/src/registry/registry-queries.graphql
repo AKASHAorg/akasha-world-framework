@@ -14,6 +14,11 @@ fragment AkashaAppFragment on AkashaApp{
         createdAt
         source
         version
+        meta {
+          property
+          provider
+          value
+        }
       }
       cursor
     }
@@ -41,12 +46,21 @@ fragment AkashaAppFragment on AkashaApp{
     width
     src
   }
+  links {
+    href
+    label
+  }
   contributors {
     id
     isViewer
     akashaProfile {
       ...UserProfileFragment
     }
+  }
+  meta {
+    property
+    provider
+    value
   }
 }
 

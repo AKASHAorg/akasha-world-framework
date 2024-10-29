@@ -21,7 +21,15 @@ const LoginBoltButton = () => {
     });
   }, []);
 
-  return <Button iconOnly={true} icon={<BoltIcon />} onClick={onLoginClick} variant="primary" />;
+  return (
+    <Button
+      iconOnly={true}
+      icon={<BoltIcon />}
+      onClick={onLoginClick}
+      variant="primary"
+      customStyle="md:invisible" // show only on mobile screens
+    />
+  );
 };
 
 export const { bootstrap, mount, unmount } = singleSpaReact({

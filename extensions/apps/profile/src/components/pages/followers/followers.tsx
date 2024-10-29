@@ -4,7 +4,7 @@ import DynamicInfiniteScroll, {
 } from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
 import InfoCard from '@akashaorg/design-system-core/lib/components/InfoCard';
 import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
-import { ENTRY_HEIGHT, ITEM_SPACING } from './constants';
+import { ENTRY_HEIGHT, ITEM_SPACING } from '../constants';
 import { GetFollowersListByDidQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
 import { selectFollowers } from '@akashaorg/ui-awf-hooks/lib/selectors/get-followers-list-by-did-query';
 import { EngagementsEntry } from '../engagements-entry';
@@ -37,11 +37,12 @@ const Followers: React.FC<FollowersProps> = ({
         titleLabel={emptyEntryTitleLabel}
         bodyLabel={emptyEntryBodyLabel}
         assetName="longbeam-notfound"
+        customStyle="px-4"
       />
     );
   }
 
-  const borderBottomStyle = `border-b ${getColorClasses(
+  const borderBottomStyle = `pb-[${ITEM_SPACING / 16}rem] border-b ${getColorClasses(
     {
       light: 'grey8',
       dark: 'grey5',

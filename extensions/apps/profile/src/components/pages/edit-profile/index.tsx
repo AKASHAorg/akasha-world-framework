@@ -195,6 +195,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
             coverImage: background,
             avatar: avatar,
             dragToRepositionLabel: t('Drag the image to reposition'),
+            cropErrorLabel: t('Unable to crop the image. Please try again!'),
             profileId: profileDID,
             cancelLabel: t('Cancel'),
             deleteLabel: t('Delete'),
