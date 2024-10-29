@@ -5,6 +5,7 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { ExtensionElement } from '../my-extensions/extension-element';
@@ -127,7 +128,14 @@ export const ExtensionReleaseInfoPage: React.FC<ExtensionReleaseInfoPageProps> =
     <Card padding={16} background={{ light: 'white', dark: 'grey2' }}>
       <Stack spacing="gap-y-6">
         <Card padding={8} background={{ light: 'grey9', dark: 'grey3' }}>
-          <ExtensionElement extensionData={extensionData as Extension} />
+          {loadingReleaseByIdQuery && (
+            <Stack align="center" justify="center">
+              <Spinner />
+            </Stack>
+          )}
+          {!loadingReleaseByIdQuery && (
+            <ExtensionElement extensionData={extensionData as Extension} />
+          )}
         </Card>
         <Stack direction="row" justify="between">
           <Text variant="h6" weight="semibold">

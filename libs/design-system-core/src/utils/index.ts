@@ -3,7 +3,6 @@ export * from './did-utils';
 export * from './dummy-data';
 export * from './generate-avatar-classes';
 export * from './get-avatar-from-seed';
-export * from './get-cropped-image';
 export * from './getColorClasses';
 export * from './getElevationClasses';
 export * from './getHeightClasses';

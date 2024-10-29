@@ -12,6 +12,23 @@
     "cwd": {
       "type": "string",
       "description": "Set working directory for the executor"
+    },
+    "assets": {
+      "type": "array",
+      "description": "Assets to copy",
+      "items": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "Input path for the asset"
+          },
+          "output": {
+            "type": "string",
+            "description": "Output path for the asset"
+          }
+        }
+      }
     }
   },
   "required": ["outputPath"]

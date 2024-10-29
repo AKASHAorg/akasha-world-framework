@@ -12,7 +12,7 @@ import { isSeparator } from './isSeparator';
 type Selected = { value: string; index?: number };
 
 export type AutoCompleteProps = {
-  options: string[];
+  options?: string[];
   placeholder?: InputProps['placeholder'];
   disabled?: InputProps['disabled'];
   value?: string;
@@ -67,11 +67,13 @@ const AutoComplete: React.FC<AutoCompleteProps> = props => {
   });
 
   useEffect(() => {
-    setFilters(
-      options.filter(option =>
-        value ? option.toLowerCase().startsWith(value.toLowerCase()) : true,
-      ),
-    );
+    if (options.length > 0) {
+      setFilters(
+        options.filter(option =>
+          value ? option.toLowerCase().startsWith(value.toLowerCase()) : true,
+        ),
+      );
+    }
   }, [value, options]);
 
   const suggestions: ListItem[] = useMemo(

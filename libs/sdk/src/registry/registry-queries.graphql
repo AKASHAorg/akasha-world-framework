@@ -46,6 +46,10 @@ fragment AkashaAppFragment on AkashaApp{
     width
     src
   }
+  links {
+    href
+    label
+  }
   contributors {
     id
     isViewer
