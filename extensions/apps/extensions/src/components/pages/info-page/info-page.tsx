@@ -272,7 +272,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                 )}
                 <Section title={t('Developer')} dividerPosition={DividerPosition.Top}>
                   {appData.author?.akashaProfile && (
-                    <Card onClick={handleDeveloperClick} type="plain" customStyle={'@container'}>
+                    <Card onClick={handleDeveloperClick} type="plain">
                       <Stack direction="row" align="center">
                         <ProfileAvatarButton
                           profileId={appData.author?.id}
@@ -365,7 +365,12 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                     <Stack customStyle="flex-wrap">
                       {appData.links?.map((link, idx) => (
                         <CopyToClipboard key={`${link.href}_${idx}`} stringToBeCopied={link.href}>
-                          <Button variant="text" size="md" label={link.label} />
+                          <Text
+                            variant="subtitle2"
+                            color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+                          >
+                            {link.label}
+                          </Text>
                         </CopyToClipboard>
                       ))}
                     </Stack>
@@ -402,7 +407,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                           {formatDate(latestRelease?.node?.createdAt, 'MMM YYYY')}
                         </Text>
                       </Stack>
-                      <Text lineClamp={2} variant="body1">
+                      <Text lineClamp={2} variant="subtitle2">
                         {latestRelease?.node?.meta?.find(meta => meta.property === 'description')
                           ?.value || t('This release has no description added.')}
                       </Text>

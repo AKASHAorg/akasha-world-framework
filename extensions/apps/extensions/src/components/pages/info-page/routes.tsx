@@ -2,7 +2,6 @@ import { NotFoundComponent } from '../../app-routes/not-found-component';
 import { InfoPage } from './info-page';
 import {
   AppDescriptionPage,
-  AuditLogPage,
   CollaboratorsPage,
   DevInfoPage,
   LicensePage,
@@ -132,19 +131,6 @@ const releasesRoute = createRoute({
   },
 });
 
-const auditLogRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/audit-log',
-  component: () => {
-    const { appId } = auditLogRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'audit_log_reset'} errorComponent={RouteErrorComponent}>
-        <AuditLogPage appId={appId} />
-      </CatchBoundary>
-    );
-  },
-});
-
 const permissionInfoRoute = createRoute({
   getParentRoute: () => infoRootRoute,
   path: '/permissions',
@@ -235,7 +221,6 @@ export default infoRootRoute.addChildren([
   devInfoRoute,
   collaboratorsInfoRoute,
   releasesRoute,
-  auditLogRoute,
   permissionInfoRoute,
   appLicenseInfoRoute,
   appDescriptionRoute,
