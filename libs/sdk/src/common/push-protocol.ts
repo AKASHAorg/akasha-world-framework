@@ -26,7 +26,6 @@ class PushProtocol {
     @inject(TYPES.Config) config: AWF_Config,
     @inject(TYPES.Web3) web3: Web3Connector,
   ) {
-    console.log('Push Protocol intialized');
     this.#logFactory = logFactory;
     this.#log = this.#logFactory.create('Notification');
     this.#globalChannel = globalChannel;
@@ -65,7 +64,7 @@ class PushProtocol {
   }
 
   async listenToNotificationEvents() {
-    if (!this._pushClient) this.initialize();
+    this.initialize();
 
     const accepted = await this.enableBrowserNotifications();
     if (!accepted) return;
