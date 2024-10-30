@@ -80,7 +80,9 @@ export const EngagementsEntry: React.FC<EngagementsEntryProps> = props => {
           if (profileDID) onProfileClick(profileDID);
         }}
       />
-      <FollowProfileButton profileID={profileID} showLoginModal={showLoginModal} />
+      {!viewerIsOwner && (
+        <FollowProfileButton profileID={profileID} showLoginModal={showLoginModal} />
+      )}
     </Stack>
   );
 };

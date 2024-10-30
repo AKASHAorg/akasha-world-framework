@@ -22,7 +22,7 @@ const FollowProfileButton: React.FC<FollowProfileButtonProps> = props => {
     variables: {
       id: authenticatedDID,
       following: [profileID],
-      last: 1,
+      first: 1,
     },
     skip: !isLoggedIn || !profileID,
   });
