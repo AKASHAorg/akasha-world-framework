@@ -147,7 +147,7 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
                         direction="row"
                         justify="between"
                         align="center"
-                        customStyle="dark:hover:bg-secondaryDark light:hover:bg-secondaryLight"
+                        customStyle="dark:hover:bg-tertiaryDark light:hover:bg-tertiaryLight"
                       >
                         <ProfileAvatarButton
                           profileId={profile?.did?.id}
@@ -157,12 +157,9 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
                             transformSource(alternative),
                           )}
                         />
-                        {addedContributors?.find(
-                          contrib =>
-                            contrib?.did?.id === profile?.did?.id && (
-                              <Icon icon={<CheckIcon />} accentColor />
-                            ),
-                        )}
+                        {addedContributors?.some(
+                          contrib => contrib?.did?.id === profile?.did?.id,
+                        ) && <Icon icon={<CheckIcon />} accentColor />}
                       </Stack>
                     </Button>
                   ))}
