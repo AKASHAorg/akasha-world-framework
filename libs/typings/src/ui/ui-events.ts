@@ -62,6 +62,7 @@ export enum EventTypes {
   LayoutShowLoadingUser = 'layout:show-loading-user',
   SetInitialCookieType = 'set-initial-cookie-type',
   GoBackToPreviousRoute = 'routing:go-back-to-previous-route',
+  RefreshMyExtensions = 'refresh-my-extensions',
 }
 
 /**
