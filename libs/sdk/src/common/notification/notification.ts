@@ -14,6 +14,24 @@ import pino from 'pino';
 import { z } from 'zod';
 import * as notificationSchemas from './notification-schemas';
 
+interface PushOrgNotification {
+  cta: string;
+  title: string;
+  message: string;
+  icon: string;
+  url: string;
+  sid: string;
+  app: string;
+  image: string;
+  blockchain: string;
+  notification: {
+    body: string;
+    title: string;
+  };
+  secret: string;
+  isUnread: boolean;
+}
+
 @injectable()
 class NotificationService {
   private _log: pino.Logger;
@@ -24,6 +42,7 @@ class NotificationService {
   private _pushClient?: PushProtocol.PushAPI;
   private _notificationsStream?: PushStream;
   private _notificationChannelId: string;
+  public readonly latestSeenSidKey = 'latestSeenSidKey';
 
   constructor(
     @inject(SdkTypes.TYPES.Log) logFactory: Logging,
@@ -143,8 +162,13 @@ class NotificationService {
       settings: newSettings,
     });
   }
+
+  /**
+   * Gets notifications and markes them as read/unread according to highest SID stored in local storage
+   * @returns {Promise<PushOrgNotification[]>}
+   */
   @validate(z.number(), z.number())
-  async getNotifications(page: number = 1, limit: number = 100) {
+  async getNotifications(page: number = 1, limit: number = 10): Promise<PushOrgNotification[]> {
     const options: PushProtocol.FeedsOptions = {
       channels: [this._notificationChannelId],
       account: this._web3.state.address,
@@ -153,7 +177,25 @@ class NotificationService {
       raw: true,
     };
 
+    const localStorageKey = `${this._web3.state.address}-${this.latestSeenSidKey}`;
+    const latestStoredSid = parseInt(localStorage.getItem(localStorageKey) || '0');
+
+    // Fetch notifications and mark as unread if their SID is greater than the stored SID
     const inboxNotifications = await this.notificationsClient.notification.list('INBOX', options);
+    inboxNotifications.forEach(notification => {
+      notification.isUnread = latestStoredSid ? parseInt(notification.sid) > latestStoredSid : true;
+    });
+
+    // Find the largest SID among fetched notifications
+    const largestFetchedSid = Math.max(
+      ...inboxNotifications.map(n => parseInt(n.sid)),
+      latestStoredSid,
+    );
+
+    // Update local storage if there is a new largest SID
+    if (largestFetchedSid > latestStoredSid) {
+      localStorage.setItem(localStorageKey, String(largestFetchedSid));
+    }
 
     return inboxNotifications;
   }
