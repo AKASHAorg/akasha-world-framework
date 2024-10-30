@@ -1,15 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { capitalize } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
-import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import {
+  filterEvents,
+  hasOwn,
+  useAkashaStore,
+  useRootComponentProps,
+} from '@akashaorg/ui-awf-hooks';
 import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import {
+  EventTypes,
   Extension,
   ExtensionStatus,
   NotificationEvents,
   NotificationTypes,
+  UIEventData,
 } from '@akashaorg/typings/lib/ui';
 import { SortOrder, AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -163,19 +170,42 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     });
   }, [appsData, selectedType]);
 
+  const [draftExtensions, setDraftExtensions] = useState([]);
+
   // fetch the draft extensions that are saved only on local storage
-  const existingDraftExtensions: Extension[] = useMemo(() => {
+
+  const allMyExtensions = [...draftExtensions, ...appElements];
+
+  const getDraftExtensions = () => {
     try {
-      return JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) || [];
+      const existingDraftExtensions =
+        JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) ?? [];
+      setDraftExtensions(existingDraftExtensions);
     } catch (error) {
       showErrorNotification(error);
+      setDraftExtensions([]);
     }
-  }, [authenticatedDID, showErrorNotification]);
+  };
 
-  const allMyExtensions = useMemo(
-    () => [...existingDraftExtensions, ...appElements],
-    [existingDraftExtensions, appElements],
-  );
+  useEffect(() => {
+    getDraftExtensions();
+    // subscribe and listen to events
+    const eventsSub = uiEventsRef.current
+      .pipe(filterEvents([EventTypes.RefreshMyExtensions]))
+      .subscribe({
+        next: (eventInfo: UIEventData) => {
+          if (eventInfo.event === EventTypes.RefreshMyExtensions) {
+            getDraftExtensions();
+          }
+        },
+      });
+
+    return () => {
+      if (eventsSub) {
+        eventsSub.unsubscribe();
+      }
+    };
+  }, []);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
