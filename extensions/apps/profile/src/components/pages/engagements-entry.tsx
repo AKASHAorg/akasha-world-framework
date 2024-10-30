@@ -9,6 +9,7 @@ import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks'
 
 type EngagementsEntryProps = {
   profileID: string;
+  profileDID: string;
   profileInfo?: AkashaProfile;
   authenticatedDID: string;
   showNsfw: boolean;
@@ -19,6 +20,7 @@ type EngagementsEntryProps = {
 export const EngagementsEntry: React.FC<EngagementsEntryProps> = props => {
   const {
     profileID,
+    profileDID,
     profileInfo,
     authenticatedDID,
     showNsfw,
@@ -51,9 +53,14 @@ export const EngagementsEntry: React.FC<EngagementsEntryProps> = props => {
     });
   };
 
-  const profileDID = profileData?.did?.id;
+  /*
+   ** @todo
+   ** if DID info isn't available in the current profile model then filter out entry info
+   ** this could change in the future if getting this info becomes necessary
+   **/
+  const entryProfileDID = profileDID ?? profileData?.did?.id;
 
-  const viewerIsOwner = authenticatedDID === profileDID;
+  const viewerIsOwner = authenticatedDID === entryProfileDID;
 
   return (
     <Stack
@@ -65,7 +72,10 @@ export const EngagementsEntry: React.FC<EngagementsEntryProps> = props => {
       fullWidth
     >
       <ProfileAvatarButton
-        profileId={profileDID ?? profileID}
+        profileId={
+          //@todo provide only the profile DID, if entryProfileDID is null then the entry info will be filtered out instead of displaying profile stream id
+          entryProfileDID ?? profileID
+        }
         avatar={transformSource(profileData?.avatar?.default)}
         alternativeAvatars={profileData?.avatar?.alternatives?.map(alternative =>
           transformSource(alternative),
@@ -75,7 +85,7 @@ export const EngagementsEntry: React.FC<EngagementsEntryProps> = props => {
           nsfwAvatar: !(viewerIsOwner || showNsfw),
           nsfwLabel: 'NSFW',
         })}
-        href={profileDID ? `${profileAnchorLink}/${profileDID}` : ''}
+        href={entryProfileDID ? `${profileAnchorLink}/${entryProfileDID}` : ''}
         onClick={() => {
           if (profileDID) onProfileClick(profileDID);
         }}
