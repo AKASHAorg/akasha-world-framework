@@ -245,6 +245,7 @@ query GetFollowersListByDid($id: ID!, $after: String, $before: String, $first: I
                 akashaProfile {
                   ...UserProfileFragment
                 }
+                id
               }
             }
             cursor
