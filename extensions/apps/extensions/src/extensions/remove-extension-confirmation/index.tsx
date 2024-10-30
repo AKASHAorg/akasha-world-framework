@@ -1,13 +1,13 @@
 import singleSpaReact from 'single-spa-react';
 import ReactDOMClient from 'react-dom/client';
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   useRootComponentProps,
   withProviders,
   useModalData,
   useAkashaStore,
 } from '@akashaorg/ui-awf-hooks';
-import { Extension, IRootExtensionProps } from '@akashaorg/typings/lib/ui';
+import { EventTypes, Extension, IRootExtensionProps } from '@akashaorg/typings/lib/ui';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import { I18nextProvider, useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ const Component: React.FC<IRootExtensionProps> = () => {
   const [updateApp, updateAppQuery] = useUpdateAppMutation({
     context: { source: sdk.services.gql.contextSources.composeDB },
   });
-
+  const { uiEvents } = useRootComponentProps();
   const {
     data: { authenticatedDID },
   } = useAkashaStore();
@@ -32,26 +32,28 @@ const Component: React.FC<IRootExtensionProps> = () => {
     window.history.replaceState(null, null, location.pathname);
   }, []);
 
-  const draftExtensions: Extension[] = useMemo(() => {
+  const getDraftExtensions = (): Extension[] => {
     try {
       return JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) || [];
     } catch (error) {
       // @TODO: err handling
       console.error(error);
+      return [];
     }
-  }, [authenticatedDID]);
+  };
 
-  const draftReleases = useMemo(() => {
+  const getDraftReleases = () => {
     try {
       return JSON.parse(localStorage.getItem(`${DRAFT_RELEASES}-${authenticatedDID}`)) || [];
     } catch (error) {
       // @TODO: err handling
       console.error(error);
+      return [];
     }
-  }, [authenticatedDID]);
+  };
 
   const clearExtensionLocalRelease = () => {
-    const newLocalDraftReleases = draftReleases.filter(
+    const newLocalDraftReleases = getDraftReleases().filter(
       draftRelease => draftRelease.applicationID !== modalData['extensionId'],
     );
     localStorage.setItem(
@@ -61,7 +63,7 @@ const Component: React.FC<IRootExtensionProps> = () => {
   };
 
   const handleRemoveDraft = () => {
-    const newDraftExtensions = draftExtensions.filter(
+    const newDraftExtensions = getDraftExtensions().filter(
       draftExt => draftExt.id !== modalData['extensionId'],
     );
     localStorage.setItem(
@@ -69,10 +71,13 @@ const Component: React.FC<IRootExtensionProps> = () => {
       JSON.stringify(newDraftExtensions),
     );
     clearExtensionLocalRelease();
+    uiEvents.next({
+      event: EventTypes.RefreshMyExtensions,
+    });
     handleModalClose();
   };
   const handleRemove = () => {
-    if (draftExtensions.some(ext => ext.id === modalData['extensionId'])) {
+    if (getDraftExtensions().some(ext => ext.id === modalData['extensionId'])) {
       handleRemoveDraft();
     } else {
       updateApp({
