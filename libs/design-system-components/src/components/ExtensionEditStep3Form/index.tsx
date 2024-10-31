@@ -4,6 +4,7 @@ import { Controller, useWatch } from 'react-hook-form';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import TextField from '@akashaorg/design-system-core/lib/components/TextField';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import DropDown from '@akashaorg/design-system-core/lib/components/Dropdown';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
@@ -18,6 +19,8 @@ import { Licenses } from '../AppCreationForm';
 import { AkashaProfile, Image } from '@akashaorg/typings/lib/ui';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import { ApolloError } from '@apollo/client';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 
 const MAX_TAGS = 4;
 
@@ -41,6 +44,7 @@ export type ExtensionEditStep3FormProps = {
   licenseOtherPlaceholderLabel?: string;
   collaboratorsFieldLabel?: string;
   collaboratorsDescriptionLabel?: string;
+  moreLabel?: string;
   addLabel?: string;
   addAndEditLabel?: string;
   tagsLabel?: string;
@@ -49,8 +53,11 @@ export type ExtensionEditStep3FormProps = {
   tagsAddedLabel?: string;
   noteLabel?: string;
   noteDescriptionLabel?: string;
+  errorProfilesDataLabel?: string;
   defaultValues?: ExtensionEditStep3FormValues;
   contributorsProfiles?: AkashaProfile[];
+  errorProfilesData?: ApolloError;
+  loadingProfilesData?: boolean;
   cancelButton: ButtonType;
   nextButton: {
     label: string;
@@ -69,6 +76,8 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
       keywords: [],
     },
     contributorsProfiles,
+    loadingProfilesData,
+    errorProfilesData,
     cancelButton,
     nextButton,
     handleNavigateToContributorsPage,
@@ -77,6 +86,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     licenseOtherPlaceholderLabel,
     collaboratorsFieldLabel,
     collaboratorsDescriptionLabel,
+    moreLabel,
     addLabel,
     addAndEditLabel,
     tagsLabel,
@@ -85,6 +95,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     tagsAddedLabel,
     noteLabel,
     noteDescriptionLabel,
+    errorProfilesDataLabel,
   } = props;
 
   const {
@@ -220,8 +231,30 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
                 {collaboratorsDescriptionLabel}
               </Text>
             </Stack>
+            {loadingProfilesData && <Spinner />}
+            {errorProfilesData && (
+              <Stack>
+                <ErrorLoader
+                  type="script-error"
+                  title={errorProfilesDataLabel}
+                  details={errorProfilesData.message}
+                />
+              </Stack>
+            )}
             {contributorAvatars?.length > 0 && (
-              <StackedAvatar userData={contributorAvatars} maxAvatars={3} size="xs" />
+              <Stack direction="row" spacing="gap-2" align="center">
+                <StackedAvatar userData={contributorAvatars} maxAvatars={3} size="md" />
+                <Stack>
+                  <Text variant="body2" weight="bold">
+                    {contributorsProfiles[0]?.name}
+                  </Text>
+                  <Text
+                    variant="footnotes2"
+                    color={{ light: 'grey4', dark: 'grey6' }}
+                    weight="light"
+                  >{`+${contributorsProfiles?.length - 1} ${moreLabel}`}</Text>
+                </Stack>
+              </Stack>
             )}
           </Stack>
 

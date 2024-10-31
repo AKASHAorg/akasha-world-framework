@@ -1,21 +1,34 @@
-import React, { ChangeEvent, useContext, useMemo, useState } from 'react';
+import React, { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import { AkashaProfile } from '@akashaorg/typings/lib/ui';
+import {
+  AkashaProfile,
+  Extension,
+  NotificationEvents,
+  NotificationTypes,
+} from '@akashaorg/typings/lib/ui';
 import SearchBar from '@akashaorg/design-system-components/lib/components/SearchBar';
 import { useCloseActions } from '@akashaorg/design-system-core/lib/utils';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import { CheckIcon, ExclamationTriangleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
-import { transformSource, useAkashaStore, useMentions } from '@akashaorg/ui-awf-hooks';
+import {
+  transformSource,
+  useAkashaStore,
+  useMentions,
+  useProfilesList,
+  useRootComponentProps,
+} from '@akashaorg/ui-awf-hooks';
 import { useTranslation } from 'react-i18next';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import { useNavigate } from '@tanstack/react-router';
 import { AtomContext } from './main-page';
 import { useAtom } from 'jotai';
-import { MAX_CONTRIBUTORS } from '../../../constants';
+import { DRAFT_EXTENSIONS, MAX_CONTRIBUTORS } from '../../../constants';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 
 export type ExtensionEditContributorsPageProps = {
   extensionId: string;
@@ -26,6 +39,10 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
+
+  const { uiEvents } = useRootComponentProps();
+  const uiEventsRef = React.useRef(uiEvents);
+
   const {
     data: { authenticatedDID },
   } = useAkashaStore();
@@ -35,14 +52,55 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
     [extensionId],
   );
 
+  const showNotification = React.useCallback(
+    (type: NotificationTypes, title: string, description?: string) => {
+      uiEventsRef.current.next({
+        event: NotificationEvents.ShowNotification,
+        data: {
+          type,
+          title,
+          description,
+        },
+      });
+    },
+    [],
+  );
+
+  // fetch the draft extensions that are saved only on local storage
+  const draftExtensions: Extension[] = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) || [];
+    } catch (error) {
+      showNotification(NotificationTypes.Error, error);
+    }
+  }, [authenticatedDID, showNotification]);
+
+  const extensionData = draftExtensions.find(draftExtension => draftExtension.id === extensionId);
+
   const [showSuggestions, setShowSuggestions] = useState(false);
   const autoCompleteRef = useCloseActions(() => {
     setShowSuggestions(false);
   });
 
   const [searchValue, setSearchValue] = useState('');
-  const [addedContributors, setAddedContributors] = useState(formValue?.contributors || []);
+  const [addedContributors, setAddedContributors] = useState([]);
 
+  const defaultContributorsDIDs = useMemo(() => {
+    return formValue.lastCompletedStep > 2 ? formValue?.contributors : extensionData?.contributors;
+  }, [extensionData, formValue]);
+
+  // fetch the contributors profiles
+  const { profilesData, loading, error } = useProfilesList(defaultContributorsDIDs);
+
+  // hydrate the list of added contributors with profiles
+  useEffect(() => {
+    if (profilesData.length > 0) {
+      setAddedContributors(profilesData);
+    }
+  }, [profilesData]);
+
+  // contributors are a set of profiles for which the user is following and the profile is also
+  // following the user, same as for mentions, that's why the same hook can be used
   const { setMentionQuery, mentions: contributors } = useMentions(authenticatedDID);
   const handleGetContributors = (query: string) => {
     setMentionQuery(query);
@@ -82,7 +140,8 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
     setForm(prev => {
       return {
         ...prev,
-        contributors: addedContributors,
+        // save only the DIDs of the contributors
+        contributors: addedContributors.map(contribProfile => contribProfile?.did?.id),
       };
     });
     navigate({
@@ -91,17 +150,12 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
   };
 
   return (
-    <Card padding={0}>
+    <Card padding={0} customStyle="max-h-100vh min-h-100vh md:min-h-[566px]">
       <Stack padding={16} direction="row" spacing="gap-x-2" justify="center" align="center">
         <Text variant="h6">{t('Add Contributors')}</Text>
       </Stack>
       <Divider />
-      <Stack
-        padding={16}
-        direction="column"
-        spacing="gap-y-4"
-        customStyle="overflow-auto min-h-[422px]"
-      >
+      <Stack padding={16} direction="column" spacing="gap-y-4" customStyle="overflow-auto grow">
         <Stack spacing="gap-y-1" direction="column">
           <Text variant="body2" color={{ light: 'grey4', dark: 'grey6' }} weight="light">
             {t('Add anyone who contributed to the creation of this extension.')}
@@ -173,6 +227,20 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
             <Text variant="h6" weight="bold">
               {t('Extension Contributors')}
             </Text>
+            {loading && (
+              <Stack align="center" justify="center">
+                <Spinner />
+              </Stack>
+            )}
+            {error && (
+              <Stack>
+                <ErrorLoader
+                  type="script-error"
+                  title={t('There was an error loading the contributors')}
+                  details={error.message}
+                />
+              </Stack>
+            )}
             {addedContributors?.length > 0 && (
               <Stack direction="row">
                 <Text

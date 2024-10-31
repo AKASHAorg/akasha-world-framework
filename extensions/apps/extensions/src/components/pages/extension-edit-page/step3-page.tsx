@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
@@ -60,6 +60,16 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
     return formValue.lastCompletedStep > 2 ? formValue : extensionData;
   }, [extensionData, formValue]);
 
+  const defaultContributorsDIDs = useMemo(() => {
+    return formValue.lastCompletedStep > 2 ? formValue?.contributors : extensionData?.contributors;
+  }, [extensionData, formValue]);
+
+  const {
+    profilesData,
+    loading: loadingProfilesData,
+    error: errorProfilesData,
+  } = useProfilesList(defaultContributorsDIDs);
+
   const formDefault = useMemo(() => {
     return {
       license: defaultValues?.license,
@@ -67,8 +77,6 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
       keywords: defaultValues?.keywords,
     };
   }, [defaultValues]);
-
-  const { profilesData } = useProfilesList(defaultValues?.contributors);
 
   const handleUpdateExtension = step3Data => {
     const newDraftExtensions = draftExtensions.map(oldDraftExt =>
@@ -93,10 +101,26 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
 
   const [, setForm] = useAtom<FormData>(useContext(AtomContext));
 
+  useEffect(() => {
+    // since adding the contributors is not part of the form steps anymore
+    // we need to initialise the form value with the locally saved contributors
+    // only before the user hasn't changed the added contributors in the
+    // contributors page
+    if (extensionData?.contributors?.length > 0 && formValue?.contributors?.length === 0) {
+      setForm(prev => {
+        return { ...prev, contributors: extensionData?.contributors };
+      });
+    }
+  }, [extensionData?.contributors, formValue, setForm]);
+
   const handleNavigateToContributorsPage = data => {
     setForm(prev => {
       return {
         ...prev,
+        // since we are saving the form state also at this step we need to update
+        // this, so when the user gets back to the form the data that the user last entered
+        // is prefilled
+        lastCompletedStep: 3,
         data,
       };
     });
@@ -121,6 +145,7 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
           licenseOtherPlaceholderLabel={t('Please specify your license type')}
           collaboratorsFieldLabel={t('Contributors')}
           collaboratorsDescriptionLabel={t('Add people who helped you create the extension')}
+          moreLabel={t('more')}
           tagsLabel={t('Tags')}
           tagsDescriptionLabel={t('Adding tags increases your extensions discoverability.')}
           addTagsPlaceholderLabel={t('Type a tag and press space, comma or enter')}
@@ -131,6 +156,9 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
           )}
           defaultValues={formDefault}
           contributorsProfiles={profilesData}
+          errorProfilesData={errorProfilesData}
+          loadingProfilesData={loadingProfilesData}
+          errorProfilesDataLabel={t('There was an error loading the contributors')}
           transformSource={transformSource}
           handleNavigateToContributorsPage={handleNavigateToContributorsPage}
           cancelButton={{
