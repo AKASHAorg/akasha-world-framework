@@ -7575,13 +7575,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ipld/dag-cbor@npm:^9.0.0, @ipld/dag-cbor@npm:^9.0.1, @ipld/dag-cbor@npm:^9.0.5, @ipld/dag-cbor@npm:^9.0.6, @ipld/dag-cbor@npm:^9.0.7, @ipld/dag-cbor@npm:^9.1.0":
+"@ipld/dag-cbor@npm:^9.0.0, @ipld/dag-cbor@npm:^9.0.5, @ipld/dag-cbor@npm:^9.0.6, @ipld/dag-cbor@npm:^9.0.7, @ipld/dag-cbor@npm:^9.1.0":
   version: 9.2.0
   resolution: "@ipld/dag-cbor@npm:9.2.0"
   dependencies:
     cborg: "npm:^4.0.0"
     multiformats: "npm:^13.1.0"
   checksum: 10/5d33f382f7a1f537f0ec8e156b9300553e238c1898b86ef4145c6845b8ff7e10fc580e7488ceca3a05282104526a456cac020b1643137f701c4939d50a448cb6
+  languageName: node
+  linkType: hard
+
+"@ipld/dag-cbor@npm:^9.0.1":
+  version: 9.2.2
+  resolution: "@ipld/dag-cbor@npm:9.2.2"
+  dependencies:
+    cborg: "npm:^4.0.0"
+    multiformats: "npm:^13.1.0"
+  checksum: 10/71b464313f745e4c0b62fbfd2f257f526b87dba8e007246239b44d121ca82c453adf4f659d9036140dc0a485307727ce0a8749fbda0f648d950c9ccdf496bd97
   languageName: node
   linkType: hard
 
