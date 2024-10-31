@@ -47,11 +47,6 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
     data: { authenticatedDID },
   } = useAkashaStore();
 
-  const formValue = useMemo(
-    () => JSON.parse(sessionStorage.getItem(extensionId)) || {},
-    [extensionId],
-  );
-
   const showNotification = React.useCallback(
     (type: NotificationTypes, title: string, description?: string) => {
       uiEventsRef.current.next({
@@ -65,6 +60,14 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
     },
     [],
   );
+
+  const formValue = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(extensionId)) || {};
+    } catch (error) {
+      showNotification(NotificationTypes.Error, error);
+    }
+  }, [extensionId, showNotification]);
 
   // fetch the draft extensions that are saved only on local storage
   const draftExtensions: Extension[] = useMemo(() => {

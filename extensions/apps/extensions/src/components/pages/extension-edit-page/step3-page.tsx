@@ -51,10 +51,13 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
 
   const extensionData = draftExtensions.find(draftExtension => draftExtension.id === extensionId);
 
-  const formValue = useMemo(
-    () => JSON.parse(sessionStorage.getItem(extensionId)) || {},
-    [extensionId],
-  );
+  const formValue = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(extensionId)) || {};
+    } catch (error) {
+      showNotification(NotificationTypes.Error, error);
+    }
+  }, [extensionId, showNotification]);
 
   const defaultValues = useMemo(() => {
     return formValue.lastCompletedStep > 2 ? formValue : extensionData;
