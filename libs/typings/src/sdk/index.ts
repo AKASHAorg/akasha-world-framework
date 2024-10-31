@@ -7,6 +7,7 @@ export * from './events.js';
 export * from './responses.js';
 export * from './common.js';
 export * from './registry.js';
+export * from './notification.js';
 
 export {
   IDBService,
@@ -39,5 +40,5 @@ const ServiceTypes = {
   Ceramic: Symbol.for('awf-Ceramic'),
   Config: Symbol.for('awf-Config'),
   ScrollState: Symbol.for('awf-scroll-state'),
-  PushProtocol: Symbol.for('awf-push-protocol'),
+  Notification: Symbol.for('awf-Notification'),
 };

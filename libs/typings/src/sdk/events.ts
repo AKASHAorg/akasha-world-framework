@@ -24,8 +24,8 @@ export enum WEB3_EVENTS {
   WC_MODAL_CLOSED = '#web3#modalClosed',
 }
 
-export enum PUSH_PROTOCOL_EVENTS {
-  SUBSCRIPTION_NOT_ACCEPTED = '#pushProtocol#subscriptionNotAccepted',
+export enum NOTIFICATION_EVENTS {
+  SUBSCRIPTION_NOT_ACCEPTED = '#notification#subscriptionNotAccepted',
 }
 
 export enum PROFILE_EVENTS {

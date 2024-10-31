@@ -22,7 +22,7 @@ import type AppSettings from './settings/apps';
 import type AWF_Misc from './common/misc';
 import type AWF_Ceramic from './common/ceramic';
 import type AWF_Lit from './common/lit';
-import PushProtocol from './common/push-protocol';
+import type Notification from './common/notification';
 
 export { Logger } from 'pino';
 
@@ -45,7 +45,7 @@ export interface SDK_Services {
     ipfs: AWF_IpfsConnector;
     misc: AWF_Misc;
     lit: AWF_Lit;
-    pushProtocol: PushProtocol;
+    notification: Notification;
   };
 }
 
@@ -97,7 +97,7 @@ export function init(): AWF_SDK {
   const ipfs = container.get<AWF_IpfsConnector>(TYPES.IPFS);
   const appSettings = container.get<AppSettings>(TYPES.AppSettings);
   const misc = container.get<AWF_Misc>(TYPES.Misc);
-  const pushProtocol = container.get<PushProtocol>(TYPES.PushProtocol);
+  const notification = container.get<Notification>(TYPES.Notification);
   // const fetchService = async () => {
   //   // await importLazy();
   //   const gqlNew = container.get<Gql>(TYPES.Gql);
@@ -124,7 +124,7 @@ export function init(): AWF_SDK {
         ipfs,
         misc,
         lit,
-        pushProtocol,
+        notification,
       },
     },
     api: {
