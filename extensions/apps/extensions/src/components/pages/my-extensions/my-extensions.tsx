@@ -133,10 +133,11 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
   };
 
   const {
-    data: appsByPubReq,
+    data: appsByPubReqData,
     error,
     loading,
     fetchMore,
+    refetch,
   } = useGetAppsByPublisherDidQuery({
     variables: {
       id: authenticatedDID,
@@ -148,10 +149,10 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     skip: !authenticatedDID,
   });
   const appsList = useMemo(() => {
-    return appsByPubReq?.node && hasOwn(appsByPubReq.node, 'akashaAppList')
-      ? appsByPubReq.node.akashaAppList
+    return appsByPubReqData?.node && hasOwn(appsByPubReqData.node, 'akashaAppList')
+      ? appsByPubReqData.node.akashaAppList
       : null;
-  }, [appsByPubReq]);
+  }, [appsByPubReqData]);
 
   const appsData = useMemo(() => {
     return appsList?.edges?.map(edge => edge.node) || [];
@@ -168,7 +169,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       }
       return ext?.applicationType === selectedType.title?.toUpperCase();
     });
-  }, [appsData, selectedType]);
+  }, [selectedType]);
 
   const [draftExtensions, setDraftExtensions] = useState([]);
 
@@ -196,6 +197,9 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         next: (eventInfo: UIEventData) => {
           if (eventInfo.event === EventTypes.RefreshMyExtensions) {
             getDraftExtensions();
+            refetch({
+              id: authenticatedDID,
+            });
           }
         },
       });
