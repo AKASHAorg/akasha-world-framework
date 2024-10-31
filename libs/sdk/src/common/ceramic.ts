@@ -53,6 +53,17 @@ export default class CeramicService {
     });
   }
 
+  async getAccountID(): Promise<AccountId> {
+    const ethAddress = await this._web3.getCurrentEthAddress();
+    if (!ethAddress) {
+      throw new Error('No eth address connected!');
+    }
+    return new AccountId({
+      address: ethAddress,
+      chainId: this._web3.CAIP10.chainIdNameSpace,
+    });
+  }
+
   /*
 Creates an Ethereum account ID and DID session to authenticate with Ceramic.
 
@@ -79,17 +90,14 @@ Functionality:
     if (!ethAddress) {
       throw new Error('No eth address connected!');
     }
-    const accountId = new AccountId({
-      address: ethAddress,
-      chainId: this._web3.CAIP10.chainIdNameSpace,
-    });
+    const accountId = await this.getAccountID();
     const web3Provider = this._web3.walletProvider;
     if (!web3Provider) {
       throw new Error('No provider found for ceramic:connect!');
     }
 
     const authMethod = await EthereumWebAuth.getAuthMethod(web3Provider, accountId);
-    this._didSession = await DIDSession.authorize(authMethod, {
+    this._didSession = await DIDSession.get(accountId, authMethod, {
       resources: this._composeClient.resources,
       expiresInSecs: 60 * 60 * 24 * 7, // 1 week
     });
@@ -109,28 +117,13 @@ Functionality:
     return did;
   }
 
-  async restoreSession(serialisedSession: string): Promise<DIDSession> {
-    this._didSession = await DIDSession.fromSession(serialisedSession);
-    if (!this._didSession || (this._didSession.hasSession && this._didSession.isExpired)) {
-      return this.connect();
-    }
-    this._composeClient.setDID(this._didSession.did);
-    return this._didSession;
-  }
-
   getComposeClient() {
     return this._composeClient;
   }
 
-  hasSession(): boolean {
-    return !!this._didSession && this._didSession.hasSession;
-  }
-
-  serialize() {
-    if (this.hasSession()) {
-      return this._didSession?.serialize();
-    }
-    return null;
+  async hasSession(): Promise<boolean> {
+    const accountId = await this.getAccountID();
+    return DIDSession.hasSessionFor(accountId, this._composeClient.resources);
   }
 
   async geResourcesHash() {
@@ -153,6 +146,16 @@ Functionality:
   }
 
   async disconnect() {
+    try {
+      const accountId = await this.getAccountID();
+      const hasSession = await this.hasSession();
+      if (hasSession) {
+        await DIDSession.remove(accountId);
+      }
+    } catch (e) {
+      this._log.warn('Error disconnecting DIDSession', e);
+    }
+
     if (this._didSession) {
       this._didSession = undefined;
       this._composeClient = new ComposeClient({

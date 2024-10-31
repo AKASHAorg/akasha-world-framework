@@ -1,4 +1,4 @@
-import { authStatus, SwActionType } from './constants';
+import { authStatus } from './constants';
 import { inject, injectable } from 'inversify';
 import {
   AUTH_EVENTS,
@@ -21,7 +21,7 @@ import Settings from '../settings';
 
 import Gql from '../gql';
 import { createFormattedValue } from '../helpers/observable';
-import { executeOnSW } from './helpers';
+// import { executeOnSW } from './helpers';
 import pino from 'pino';
 import Lit from '../common/lit';
 import CeramicService from '../common/ceramic';
@@ -159,15 +159,8 @@ class AWF_Auth {
       try {
         const address = await this._connectAddress();
         const localUser = localStorage.getItem(this.currentUserKey);
-        const chainNameSpace = 'eip155';
-        const chainId = this._web3.networkId[this._web3.network];
-        const chainIdNameSpace = `${chainNameSpace}:${chainId}`;
-        const ceramicResources = await this._ceramic.geResourcesHash();
-        this.sessKey = `@identity:${chainIdNameSpace}:${address?.toLowerCase()}:${
-          this._web3.state.providerType
-        }:${ceramicResources.hash}`;
-        const sessValue = localStorage.getItem(this.sessKey);
-        if (localUser && sessValue) {
+
+        if (localUser) {
           const tmpSession = JSON.parse(localUser);
           if (address && tmpSession?.ethAddress === address?.toLowerCase()) {
             this._globalChannel.next({
@@ -183,23 +176,8 @@ class AWF_Auth {
           await this.checkIfSignedUp(address);
         }
         this._log.info(`using eth address ${address}`);
-        if (sessValue) {
-          const sessionKey = await executeOnSW<{ value?: string }>(
-            Object.assign(
-              {
-                type: SwActionType.DECRYPT,
-              },
-              JSON.parse(sessValue),
-            ),
-          );
-          if (sessionKey?.value) {
-            this.#_didSession = await this._ceramic.restoreSession(sessionKey.value);
-          }
-        }
 
-        if (!this._ceramic.hasSession()) {
-          this.#_didSession = await this._ceramic.connect();
-        }
+        this.#_didSession = await this._ceramic.connect();
         this.currentUser = {
           id: this.#_didSession?.id,
           ethAddress: address?.toLowerCase(),
@@ -208,7 +186,6 @@ class AWF_Auth {
       } catch (e) {
         this._lockSignIn = false;
         this.#_didSession = undefined;
-        localStorage.removeItem(this.sessKey);
         localStorage.removeItem(this.currentUserKey);
         this._log.error(e);
         await this._web3.disconnect();
@@ -217,15 +194,6 @@ class AWF_Auth {
     }
     if (!this.#_didSession) {
       throw new Error('DID session could not be initialised!');
-    }
-    if (typeof this.#_didSession.serialize === 'function') {
-      const swResponse = await executeOnSW({
-        type: SwActionType.ENCRYPT,
-        value: this.#_didSession.serialize(),
-      });
-      if (swResponse) {
-        localStorage.setItem(this.sessKey, JSON.stringify(swResponse));
-      }
     }
 
     localStorage.setItem(this.currentUserKey, JSON.stringify(this.currentUser));
@@ -344,21 +312,11 @@ class AWF_Auth {
   private async _signOut() {
     sessionStorage.clear();
     localStorage.removeItem(this.currentUserKey);
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key) {
-        continue;
-      }
-      // remove any dangling did session
-      if (key.startsWith('@identity')) {
-        localStorage.removeItem(key);
-      }
-    }
     this.currentUser = undefined;
+    await this._ceramic.disconnect();
     await this._gql.setContextViewerID('');
     await this._web3.disconnect();
     await this._lit.disconnect();
-    await this._ceramic.disconnect();
     await this._gql.resetCache();
     // notify appLoader on sign out
     this._globalChannel.next({
