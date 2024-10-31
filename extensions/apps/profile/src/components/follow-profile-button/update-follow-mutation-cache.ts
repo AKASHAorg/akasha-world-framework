@@ -1,7 +1,5 @@
-import {
-  CreateFollowMutation,
-  GetFollowDocumentsByDidQuery,
-} from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
+import { GetFollowDocumentsByDidQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
+import { AkashaProfile } from '@akashaorg/typings/lib/ui';
 import { GetFollowDocumentsByDidDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import { selectFollowDocuments } from '@akashaorg/ui-awf-hooks/lib/selectors/get-follow-documents-by-did-query';
 import { ApolloCache } from '@apollo/client';
@@ -10,14 +8,14 @@ interface IUpdateCache {
   cache: ApolloCache<unknown>;
   authenticatedDID: string;
   profileID: string;
-  data: CreateFollowMutation;
+  data: { id: string; isFollowing: boolean; profile?: AkashaProfile };
 }
 
-export async function updateCreateFollowMutationCache({
+export async function updateFollowMutationCache({
   cache,
   authenticatedDID,
   profileID,
-  data: { setAkashaFollow },
+  data: { id, isFollowing, profile },
 }: IUpdateCache) {
   const variables = {
     id: authenticatedDID,
@@ -28,7 +26,6 @@ export async function updateCreateFollowMutationCache({
     query: GetFollowDocumentsByDidDocument,
     variables,
   });
-  const { id, isFollowing, profile } = setAkashaFollow.document;
   const followDocuments = selectFollowDocuments(query);
   const newEdges = [
     {
@@ -51,6 +48,7 @@ export async function updateCreateFollowMutationCache({
         akashaFollowList: {
           ...followDocuments,
           edges: newEdges,
+          pageInfo: null,
         },
       },
     },

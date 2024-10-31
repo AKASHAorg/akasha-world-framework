@@ -21,7 +21,7 @@ import {
   useCreateFollowMutation,
   useUpdateFollowMutation,
 } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { updateCreateFollowMutationCache } from './update-create-follow-mutation-cache';
+import { updateFollowMutationCache } from './update-follow-mutation-cache';
 
 export type FollowButtonProps = Pick<DuplexButtonProps, 'activeVariant' | 'inactiveVariant'> & {
   profileID: string;
@@ -69,8 +69,20 @@ export const FollowButton = ({
      ** As a result, when the query associated with this mutation is executed, it won't find it in the cache and returns null.
      ** Hence, the data this component receives is stale which requires a cache update on mutation
      **/
-    update: async (cache, { data }) => {
-      await updateCreateFollowMutationCache({ cache, authenticatedDID, profileID, data });
+    update: async (
+      cache,
+      {
+        data: {
+          setAkashaFollow: { document },
+        },
+      },
+    ) => {
+      await updateFollowMutationCache({
+        cache,
+        authenticatedDID,
+        profileID,
+        data: { id: document.id, isFollowing: document.isFollowing, profile: document.profile },
+      });
     },
     onCompleted: async ({ setAkashaFollow }) => {
       const document = setAkashaFollow.document;
@@ -80,6 +92,21 @@ export const FollowButton = ({
 
   const [updateFollowMutation, { loading: updateFollowLoading }] = useUpdateFollowMutation({
     context: { source: sdk.services.gql.contextSources.composeDB },
+    update: async (
+      cache,
+      {
+        data: {
+          updateAkashaFollow: { document },
+        },
+      },
+    ) => {
+      await updateFollowMutationCache({
+        cache,
+        authenticatedDID,
+        profileID,
+        data: { id: document.id, isFollowing: document.isFollowing, profile: document.profile },
+      });
+    },
     onCompleted: async ({ updateAkashaFollow }) => {
       const document = updateAkashaFollow.document;
       if (iconOnly) sendSuccessNotification(document.profile?.name, document.isFollowing);
