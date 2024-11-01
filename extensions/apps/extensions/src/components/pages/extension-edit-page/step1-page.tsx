@@ -49,10 +49,13 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
     }
   }, [authenticatedDID, showErrorNotification]);
 
-  const formValue = useMemo(
-    () => JSON.parse(sessionStorage.getItem(extensionId)) || {},
-    [extensionId],
-  );
+  const formValue = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(extensionId)) || {};
+    } catch (error) {
+      showErrorNotification(error);
+    }
+  }, [extensionId, showErrorNotification]);
 
   const extensionData = draftExtensions.find(draftExtension => draftExtension.id === extensionId);
 

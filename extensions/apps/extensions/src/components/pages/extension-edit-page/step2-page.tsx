@@ -57,10 +57,13 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
 
   const extensionData = draftExtensions?.find(draftExtension => draftExtension.id === extensionId);
 
-  const formValue = useMemo(
-    () => JSON.parse(sessionStorage.getItem(extensionId)) || {},
-    [extensionId],
-  );
+  const formValue = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(extensionId)) || {};
+    } catch (error) {
+      showErrorNotification(error);
+    }
+  }, [extensionId, showErrorNotification]);
 
   const defaultValues = useMemo(() => {
     return formValue.lastCompletedStep > 1 ? formValue : extensionData;
