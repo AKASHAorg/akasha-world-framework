@@ -1288,6 +1288,7 @@ export const GetFollowersListByDidDocument = /*#__PURE__*/ gql`
                 akashaProfile {
                   ...UserProfileFragment
                 }
+                id
               }
             }
             cursor

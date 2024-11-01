@@ -52,38 +52,6 @@ export type StackedAvatarProps = {
         "followers": {},
         "followersCount": 0
       },
-      {
-        "name": "Charlie",
-        "id": "410490050000320006570034567114572002",
-        "did": {
-          "id": "did:pkh:eip155:1:0x003410490050000320006570034567114572002",
-          "isViewer": true
-        },
-        "avatar": {
-          "src": "https://placebeard.it/360x360",
-          "width": 360,
-          "height": 360
-        },
-        "createdAt": "2021-03-01T00:00:00.000Z",
-        "followers": {},
-        "followersCount": 0
-      },
-      {
-        "name": "Dave",
-        "id": "410490050000320006570034567114572003",
-        "did": {
-          "id": "did:pkh:eip155:1:0x003410490050000320006570034567114572003",
-          "isViewer": false
-        },
-        "avatar": {
-          "src": "https://placebeard.it/360x360",
-          "width": 360,
-          "height": 360
-        },
-        "createdAt": "2021-03-01T00:00:00.000Z",
-        "followers": {},
-        "followersCount": 0
-      }
     ]
  *   <StackedAvatar userData={userData} maxAvatar={4} />
  * ```
@@ -107,9 +75,9 @@ const StackedAvatar: React.FC<StackedAvatarProps> = props => {
           onClick={() => {
             /** */
           }}
-          profileId={data[level].did.id}
-          avatar={data[level].avatar}
-          alternativeAvatars={data[level].alternativeAvatars}
+          profileId={data[level]?.did?.id}
+          avatar={data[level]?.avatar}
+          alternativeAvatars={data[level]?.alternativeAvatars}
           size={size}
           border="xs"
         />

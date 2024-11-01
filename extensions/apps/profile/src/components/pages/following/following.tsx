@@ -66,6 +66,7 @@ const Following: React.FC<FollowingProps> = ({
         return (
           <EngagementsEntry
             profileID={following.profileID}
+            profileDID={profileInfo?.did?.id}
             profileInfo={profileInfo}
             authenticatedDID={authenticatedDID}
             showNsfw={showNsfw}
