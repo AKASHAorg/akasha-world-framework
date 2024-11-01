@@ -10,8 +10,8 @@ import pino from 'pino';
 import { z } from 'zod';
 import { validate } from './validator';
 import CeramicService from './ceramic';
-import { fromString } from 'uint8arrays/from-string';
-import { toString } from 'uint8arrays/to-string';
+// import { fromString } from 'uint8arrays/from-string';
+// import { toString } from 'uint8arrays/to-string';
 import { extract } from '@ucanto/core/delegation';
 import type { Cacao } from '@didtools/cacao';
 import { StoreMemory } from '@web3-storage/access/stores/store-memory';
@@ -71,15 +71,15 @@ class AWF_IpfsConnector {
    * @returns {Promise<void>}
    */
   private async _createClient() {
-    const serialisedSession = this._ceramic.serialize();
-    if (!serialisedSession) {
-      throw new Error('Must start a did-session first!');
-    }
-    const { sessionKeySeed } = JSON.parse(
-      toString(fromString(serialisedSession, 'base64url')),
-    ) as SessionObj;
-    const keySeed = fromString(sessionKeySeed, 'base64pad');
-    const principal = await Signer.derive(keySeed);
+    // const serialisedSession = await this._ceramic.serialize();
+    // if (!serialisedSession) {
+    //   throw new Error('Must start a did-session first!');
+    // }
+    // const { sessionKeySeed } = JSON.parse(
+    //   toString(fromString(serialisedSession, 'base64url')),
+    // ) as SessionObj;
+    // const keySeed = fromString(sessionKeySeed, 'base64pad');
+    const principal = await Signer.generate();
     this.#w3upClient = await create({ principal, store: new StoreMemory() });
   }
 
