@@ -7,7 +7,7 @@ import {
   useModalData,
   useAkashaStore,
 } from '@akashaorg/ui-awf-hooks';
-import { Extension, IRootExtensionProps } from '@akashaorg/typings/lib/ui';
+import { EventTypes, Extension, IRootExtensionProps } from '@akashaorg/typings/lib/ui';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import { I18nextProvider, useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ const Component: React.FC<IRootExtensionProps> = () => {
   const [updateApp, updateAppQuery] = useUpdateAppMutation({
     context: { source: sdk.services.gql.contextSources.composeDB },
   });
-
+  const { uiEvents } = useRootComponentProps();
   const {
     data: { authenticatedDID },
   } = useAkashaStore();
@@ -71,6 +71,9 @@ const Component: React.FC<IRootExtensionProps> = () => {
       JSON.stringify(newDraftExtensions),
     );
     clearExtensionLocalRelease();
+    uiEvents.next({
+      event: EventTypes.RefetchMyExtensions,
+    });
     handleModalClose();
   };
   const handleRemove = () => {
