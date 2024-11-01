@@ -58,7 +58,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
     return formValue.lastCompletedStep > 1 ? formValue : extensionData;
   }, [extensionData, formValue]);
 
-  const formDefault = useMemo(() => {
+  const formDefault: FormData = useMemo(() => {
     return {
       nsfw: defaultValues?.nsfw,
       description: defaultValues?.description,
@@ -69,22 +69,21 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
 
   const [, setForm] = useAtom<FormData>(useContext(AtomContext));
 
-  const galleryImages = useMemo(
-    () =>
-      formDefault?.gallery?.map(img => {
-        const imgWithGateway = transformSource(img);
-        return {
-          ...img,
-          src: img?.src,
-          displaySrc: imgWithGateway?.src,
-          size: {
-            height: img?.height,
-            width: img?.width,
-          },
-        };
-      }),
-    [formDefault?.gallery],
-  );
+  const galleryImages = useMemo(() => {
+    const gallery = formValue?.gallery ? formValue.gallery : formDefault?.gallery;
+    return gallery?.map(img => {
+      const imgWithGateway = transformSource(img);
+      return {
+        ...img,
+        src: img?.src,
+        displaySrc: imgWithGateway?.src,
+        size: {
+          height: img?.height,
+          width: img?.width,
+        },
+      };
+    });
+  }, [formDefault?.gallery, formValue?.gallery]);
 
   return (
     <>
@@ -119,7 +118,12 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           defaultValues={formDefault}
           maxGalleryImages={MAX_GALLERY_IMAGES}
           handleMediaClick={() => {
-            //todo
+            navigate({
+              to: '/edit-extension/$extensionId/gallery-manager',
+              params: {
+                extensionId,
+              },
+            });
           }}
           cancelButton={{
             label: t('Back'),
