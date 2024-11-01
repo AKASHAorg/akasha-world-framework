@@ -74,7 +74,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
           </Text>
         </Stack>
         {images.length ? (
-          <Stack customStyle="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+          <Stack customStyle="grid grid-cols-[repeat(auto-fill,_minmax(min(10rem,_100%),_1fr))] gap-4">
             {images.map(image => (
               <GalleryImage
                 key={image.id}
