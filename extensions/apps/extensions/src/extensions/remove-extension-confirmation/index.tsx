@@ -72,7 +72,7 @@ const Component: React.FC<IRootExtensionProps> = () => {
     );
     clearExtensionLocalRelease();
     uiEvents.next({
-      event: EventTypes.RefreshMyExtensions,
+      event: EventTypes.RefetchMyExtensions,
     });
     handleModalClose();
   };

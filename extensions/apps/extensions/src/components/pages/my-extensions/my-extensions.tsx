@@ -192,10 +192,10 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     getDraftExtensions();
     // subscribe and listen to events
     const eventsSub = uiEventsRef.current
-      .pipe(filterEvents([EventTypes.RefreshMyExtensions]))
+      .pipe(filterEvents([EventTypes.RefetchMyExtensions]))
       .subscribe({
         next: (eventInfo: UIEventData) => {
-          if (eventInfo.event === EventTypes.RefreshMyExtensions) {
+          if (eventInfo.event === EventTypes.RefetchMyExtensions) {
             getDraftExtensions();
             refetch({
               id: authenticatedDID,
