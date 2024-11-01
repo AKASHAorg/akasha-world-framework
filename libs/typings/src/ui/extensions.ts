@@ -4,7 +4,6 @@ import { IMenuItem } from './sidebar-menu-items';
 import { IRootComponentProps } from './root-component';
 import { ContentBlockConfig } from './editor-blocks';
 import { ExtensionPointInterface } from './extension-point';
-import { Profile } from './profile';
 import { AkashaAppApplicationType, AkashaAppInterface } from '../sdk/graphql-types-new';
 
 /**
