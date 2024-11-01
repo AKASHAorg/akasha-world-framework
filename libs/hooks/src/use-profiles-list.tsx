@@ -17,13 +17,17 @@ const useProfilesList = (profileDIDs: string[]) => {
   const [profileDataReq, { loading, error }] = useGetProfileByDidLazyQuery();
   const fetchData = async () => {
     const results = await Promise.all(
-      profileDIDs.map(did => profileDataReq({ variables: { id: did } })),
+      profileDIDs?.map(did =>
+        profileDataReq({ variables: { id: did }, fetchPolicy: 'cache-first' }),
+      ),
     );
     const profiles = results.map(res => selectProfileData(res.data));
     setProfilesData(profiles);
   };
   React.useEffect(() => {
-    fetchData();
+    if (profileDIDs?.length > 0) {
+      fetchData();
+    }
   }, [profileDIDs]);
 
   return { profilesData, loading, error };
