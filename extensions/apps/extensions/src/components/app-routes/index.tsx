@@ -27,6 +27,7 @@ import {
   ExtensionEditStep1Page,
   ExtensionEditStep2Page,
   ExtensionEditStep3Page,
+  ExtensionEditContributorsPage,
 } from '../pages/extension-edit-page';
 import { ExtensionPublishPage } from '../pages/extension-publish-page';
 import {
@@ -447,6 +448,22 @@ const extensionEditStep3Route = createRoute({
   },
 });
 
+const extensionEditContributorsRoute = createRoute({
+  getParentRoute: () => extensionEditMainRoute,
+  path: '/contributors',
+  component: () => {
+    const { extensionId } = extensionEditMainRoute.useParams();
+    return (
+      <CatchBoundary
+        getResetKey={() => 'edit_extension_contributors_reset'}
+        errorComponent={RouteErrorComponent}
+      >
+        <ExtensionEditContributorsPage extensionId={extensionId} />
+      </CatchBoundary>
+    );
+  },
+});
+
 const extensionPublishRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/publish-extension/$extensionId`,
@@ -583,6 +600,7 @@ const routeTree = rootRoute.addChildren([
     extensionEditStep1Route,
     extensionEditStep2Route,
     extensionEditStep3Route,
+    extensionEditContributorsRoute,
   ]),
   extensionPublishRoute,
   extensionReleaseManagerRoute,

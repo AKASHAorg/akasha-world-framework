@@ -1,10 +1,7 @@
 import React, { createContext, useMemo } from 'react';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
-import Stack from '@akashaorg/design-system-core/lib/components/Stack';
-import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 import { Outlet } from '@tanstack/react-router';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
-import { useAtomValue } from 'jotai';
 import appRoutes, { EDIT_EXTENSION } from '../../../routes';
 import { useTranslation } from 'react-i18next';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
@@ -67,8 +64,6 @@ export const ExtensionEditMainPage: React.FC<ExtensionEditMainPageProps> = ({ ex
     [extensionId],
   );
 
-  const formValue = useAtomValue(formData);
-
   const handleConnectButtonClick = () => {
     navigateTo?.({
       appName: '@akashaorg/app-auth-ewa',
@@ -94,9 +89,6 @@ export const ExtensionEditMainPage: React.FC<ExtensionEditMainPageProps> = ({ ex
 
   return (
     <Card padding={0}>
-      <Stack padding={16} justify="center" align="center">
-        <Stepper length={3} currentStep={formValue.lastCompletedStep + 1} />
-      </Stack>
       <AtomContext.Provider value={formData}>
         <Outlet />
       </AtomContext.Provider>

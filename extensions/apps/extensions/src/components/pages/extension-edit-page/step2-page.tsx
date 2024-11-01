@@ -9,6 +9,7 @@ import { NotificationEvents, NotificationTypes, Extension } from '@akashaorg/typ
 import { DRAFT_EXTENSIONS } from '../../../constants';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
+import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 
 type ExtensionEditStep2PageProps = {
   extensionId: string;
@@ -45,10 +46,13 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
 
   const extensionData = draftExtensions?.find(draftExtension => draftExtension.id === extensionId);
 
-  const formValue = useMemo(
-    () => JSON.parse(sessionStorage.getItem(extensionId)) || {},
-    [extensionId],
-  );
+  const formValue = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(extensionId)) || {};
+    } catch (error) {
+      showErrorNotification(error);
+    }
+  }, [extensionId, showErrorNotification]);
 
   const defaultValues = useMemo(() => {
     return formValue.lastCompletedStep > 1 ? formValue : extensionData;
@@ -83,73 +87,78 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
   );
 
   return (
-    <Stack spacing="gap-y-4">
-      <Stack padding={16}>
-        <Text variant="h5" weight="semibold" align="center">
-          {t('Present your Extension')}
-        </Text>
+    <>
+      <Stack padding={16} justify="center" align="center">
+        <Stepper length={3} currentStep={formValue.lastCompletedStep + 1} />
       </Stack>
-      <ExtensionEditStep2Form
-        nsfwFieldLabel={t('Extension NSFW?')}
-        nsfwDescriptionLabel={t('Once you mark it as NSFW, you can’t change it back')}
-        descriptionFieldLabel={t('Description')}
-        descriptionPlaceholderLabel={t('What does this extension do?')}
-        galleryFieldLabel={t('Extension Gallery')}
-        galleryDescriptionLabel={t(
-          'The first three images, based on your order, will be featured on the main extension card.',
-        )}
-        usefulLinksFieldLabel={t('Useful Links')}
-        usefulLinksDescriptionLabel={t(
-          'Include any relevant links, such as documentation or contact information, that you believe will be helpful to others.',
-        )}
-        linkTitleLabel={t('Link')}
-        linkPlaceholderLabel={t('Link title')}
-        addLabel={t('Add')}
-        uploadAndEditLabel={t('Upload & Edit')}
-        imagesUploadedLabel={t('images uploaded')}
-        images={galleryImages}
-        defaultValues={formDefault}
-        handleMediaClick={() => {
-          //todo
-        }}
-        cancelButton={{
-          label: t('Back'),
-          disabled: false,
-          handleClick: () => {
-            navigate({
-              to: '/edit-extension/$extensionId/step1',
-            });
-          },
-        }}
-        nextButton={{
-          label: t('Next'),
-          handleClick: data => {
-            const step2Data = {
-              ...data,
-              gallery: galleryImages?.map(galleryImage => {
-                return {
-                  width: galleryImage.size?.width,
-                  height: galleryImage.size?.height,
-                  src: galleryImage.src,
-                };
-              }),
-            };
-            setForm(prev => {
-              return {
-                ...prev,
-                ...step2Data,
-                lastCompletedStep:
-                  !formValue.lastCompletedStep || formValue.lastCompletedStep < 2
-                    ? 2
-                    : formValue.lastCompletedStep,
+      <Stack spacing="gap-y-4">
+        <Stack padding={16}>
+          <Text variant="h5" weight="semibold" align="center">
+            {t('Present your Extension')}
+          </Text>
+        </Stack>
+        <ExtensionEditStep2Form
+          nsfwFieldLabel={t('Extension NSFW?')}
+          nsfwDescriptionLabel={t('Once you mark it as NSFW, you can’t change it back')}
+          descriptionFieldLabel={t('Description')}
+          descriptionPlaceholderLabel={t('What does this extension do?')}
+          galleryFieldLabel={t('Extension Gallery')}
+          galleryDescriptionLabel={t(
+            'The first three images, based on your order, will be featured on the main extension card.',
+          )}
+          usefulLinksFieldLabel={t('Useful Links')}
+          usefulLinksDescriptionLabel={t(
+            'Include any relevant links, such as documentation or contact information, that you believe will be helpful to others.',
+          )}
+          linkTitleLabel={t('Link')}
+          linkPlaceholderLabel={t('Link title')}
+          addLabel={t('Add')}
+          uploadAndEditLabel={t('Upload & Edit')}
+          imagesUploadedLabel={t('images uploaded')}
+          images={galleryImages}
+          defaultValues={formDefault}
+          handleMediaClick={() => {
+            //todo
+          }}
+          cancelButton={{
+            label: t('Back'),
+            disabled: false,
+            handleClick: () => {
+              navigate({
+                to: '/edit-extension/$extensionId/step1',
+              });
+            },
+          }}
+          nextButton={{
+            label: t('Next'),
+            handleClick: data => {
+              const step2Data = {
+                ...data,
+                gallery: galleryImages?.map(galleryImage => {
+                  return {
+                    width: galleryImage.size?.width,
+                    height: galleryImage.size?.height,
+                    src: galleryImage.src,
+                  };
+                }),
               };
-            });
-            navigate({
-              to: '/edit-extension/$extensionId/step3',
-            });
-          },
-        }}
-      />
-    </Stack>
+              setForm(prev => {
+                return {
+                  ...prev,
+                  ...step2Data,
+                  lastCompletedStep:
+                    !formValue.lastCompletedStep || formValue.lastCompletedStep < 2
+                      ? 2
+                      : formValue.lastCompletedStep,
+                };
+              });
+              navigate({
+                to: '/edit-extension/$extensionId/step3',
+              });
+            },
+          }}
+        />
+      </Stack>
+    </>
   );
 };
