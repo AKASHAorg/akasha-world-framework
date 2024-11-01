@@ -119,12 +119,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           defaultValues={formDefault}
           maxGalleryImages={MAX_GALLERY_IMAGES}
           handleMediaClick={() => {
-            navigate({
-              to: '/edit-extension/$extensionId/gallery-manager',
-              params: {
-                extensionId,
-              },
-            });
+            //todo
           }}
           cancelButton={{
             label: t('Back'),
