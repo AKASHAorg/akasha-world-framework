@@ -1,22 +1,26 @@
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useMemo, useState } from 'react';
 import * as z from 'zod';
 import { Controller, useWatch } from 'react-hook-form';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import TextField from '@akashaorg/design-system-core/lib/components/TextField';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import DropDown from '@akashaorg/design-system-core/lib/components/Dropdown';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
+import AutoComplete from '@akashaorg/design-system-core/lib/components/AutoComplete';
+import Icon from '@akashaorg/design-system-core/lib/components/Icon';
+import StackedAvatar from '@akashaorg/design-system-core/lib/components/StackedAvatar';
 import { apply, tw } from '@twind/core';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ButtonType } from '../types/common.types';
 import { Licenses } from '../AppCreationForm';
 import { AkashaProfile, Image } from '@akashaorg/typings/lib/ui';
-import { Collaborators } from './Collaborators';
-import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
-import Text from '@akashaorg/design-system-core/lib/components/Text';
-import AutoComplete from '@akashaorg/design-system-core/lib/components/AutoComplete';
+import { PlusIcon } from '@heroicons/react/24/outline';
+import { ApolloError } from '@apollo/client';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 
 const MAX_TAGS = 4;
 
@@ -25,14 +29,12 @@ const MIN_TAG_CHARACTERS = 3;
 export enum FieldName {
   license = 'license',
   licenseOther = 'licenseOther',
-  contributors = 'contributors',
   keywords = 'keywords',
 }
 
 export type ExtensionEditStep3FormValues = {
   license?: string;
   licenseOther?: string;
-  contributors?: string[];
   contactInfo?: string[];
   keywords?: string[];
 };
@@ -42,24 +44,26 @@ export type ExtensionEditStep3FormProps = {
   licenseOtherPlaceholderLabel?: string;
   collaboratorsFieldLabel?: string;
   collaboratorsDescriptionLabel?: string;
-  collaboratorsSearchPlaceholderLabel?: string;
-  extensionContributorsLabel: string;
+  moreLabel?: string;
   addLabel?: string;
+  addAndEditLabel?: string;
   tagsLabel?: string;
   tagsDescriptionLabel?: string;
   addTagsPlaceholderLabel?: string;
   tagsAddedLabel?: string;
   noteLabel?: string;
   noteDescriptionLabel?: string;
+  errorProfilesDataLabel?: string;
   defaultValues?: ExtensionEditStep3FormValues;
-  handleGetFollowingProfiles?: (query: string) => void;
-  followingProfiles?: AkashaProfile[];
   contributorsProfiles?: AkashaProfile[];
+  errorProfilesData?: ApolloError;
+  loadingProfilesData?: boolean;
   cancelButton: ButtonType;
   nextButton: {
     label: string;
     handleClick: (data: ExtensionEditStep3FormValues) => void;
   };
+  handleNavigateToContributorsPage?: (data: ExtensionEditStep3FormValues) => void;
   transformSource: (src: Image) => Image;
 };
 
@@ -68,29 +72,30 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     defaultValues = {
       license: '',
       licenseOther: '',
-      contributors: [],
       contactInfo: [],
       keywords: [],
     },
-    handleGetFollowingProfiles,
-    followingProfiles,
     contributorsProfiles,
-    transformSource,
+    loadingProfilesData,
+    errorProfilesData,
     cancelButton,
     nextButton,
+    handleNavigateToContributorsPage,
+    transformSource,
     licenseFieldLabel,
     licenseOtherPlaceholderLabel,
     collaboratorsFieldLabel,
     collaboratorsDescriptionLabel,
-    collaboratorsSearchPlaceholderLabel,
-    extensionContributorsLabel,
+    moreLabel,
     addLabel,
+    addAndEditLabel,
     tagsLabel,
     addTagsPlaceholderLabel,
     tagsDescriptionLabel,
     tagsAddedLabel,
     noteLabel,
     noteDescriptionLabel,
+    errorProfilesDataLabel,
   } = props;
 
   const {
@@ -116,17 +121,22 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
 
   const licenseValue = useWatch({ control, name: FieldName.license });
 
-  const [addedContributors, setAddedContributors] = useState<AkashaProfile[]>(
-    contributorsProfiles || [],
-  );
-
-  useEffect(() => {
-    setAddedContributors(contributorsProfiles);
-  }, [contributorsProfiles]);
-
   const [keywords, setKeywords] = useState(new Set(defaultValues.keywords));
 
   const maxTagsSelected = keywords.size >= MAX_TAGS;
+
+  const contributorAvatars = useMemo(() => {
+    if (contributorsProfiles?.length) {
+      return contributorsProfiles
+        .filter(contrib => !!contrib)
+        .map(contrib => {
+          return {
+            ...contrib,
+            avatar: transformSource(contrib.avatar?.default),
+          };
+        });
+    }
+  }, [contributorsProfiles, transformSource]);
 
   //@TODO: here it should be a list of available indexed keywords for extensions
   const availableKeywords = [];
@@ -142,7 +152,21 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     if (isValid) {
       nextButton.handleClick({
         ...formValues,
-        contributors: addedContributors?.map(profile => profile?.did?.id),
+        keywords: [...keywords]?.filter(keyword => keyword),
+      });
+    }
+  };
+
+  const handleAddContributors = () => {
+    const formValues = getValues();
+
+    if (formValues.license === Licenses.OTHER) {
+      formValues.license = formValues.licenseOther;
+    }
+
+    if (isValid) {
+      handleNavigateToContributorsPage({
+        ...formValues,
         keywords: [...keywords]?.filter(keyword => keyword),
       });
     }
@@ -191,18 +215,49 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
             />
           )}
           <Divider />
-          <Collaborators
-            addedContributors={addedContributors}
-            setAddedContributors={setAddedContributors}
-            contributors={followingProfiles}
-            handleGetContributors={handleGetFollowingProfiles}
-            contributorsFieldLabel={collaboratorsFieldLabel}
-            contributorsDescriptionLabel={collaboratorsDescriptionLabel}
-            contributorsSearchPlaceholderLabel={collaboratorsSearchPlaceholderLabel}
-            extensionContributorsLabel={extensionContributorsLabel}
-            addButtonLabel={addLabel}
-            transformSource={transformSource}
-          />
+          <Stack direction="column" spacing="gap-y-4">
+            <Stack spacing="gap-y-1" direction="column">
+              <Stack direction="row" spacing="gap-x-2" justify="between" align="center">
+                <Text variant="h6">{collaboratorsFieldLabel}</Text>
+                <Button
+                  variant="text"
+                  icon={<PlusIcon />}
+                  iconDirection="left"
+                  label={contributorsProfiles.length > 0 ? addAndEditLabel : addLabel}
+                  onClick={handleAddContributors}
+                />
+              </Stack>
+              <Text variant="body2" color={{ light: 'grey4', dark: 'grey6' }} weight="light">
+                {collaboratorsDescriptionLabel}
+              </Text>
+            </Stack>
+            {loadingProfilesData && <Spinner />}
+            {errorProfilesData && (
+              <Stack>
+                <ErrorLoader
+                  type="script-error"
+                  title={errorProfilesDataLabel}
+                  details={errorProfilesData.message}
+                />
+              </Stack>
+            )}
+            {contributorAvatars?.length > 0 && (
+              <Stack direction="row" spacing="gap-2" align="center">
+                <StackedAvatar userData={contributorAvatars} maxAvatars={3} size="md" />
+                <Stack>
+                  <Text variant="body2" weight="bold">
+                    {contributorsProfiles[0]?.name}
+                  </Text>
+                  <Text
+                    variant="footnotes2"
+                    color={{ light: 'grey4', dark: 'grey6' }}
+                    weight="light"
+                  >{`+${contributorsProfiles?.length - 1} ${moreLabel}`}</Text>
+                </Stack>
+              </Stack>
+            )}
+          </Stack>
+
           <Divider />
 
           <Stack direction="column" spacing="gap-2">

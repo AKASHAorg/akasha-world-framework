@@ -1,6 +1,6 @@
 import singleSpaReact from 'single-spa-react';
 import ReactDOMClient from 'react-dom/client';
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   useRootComponentProps,
   withProviders,
@@ -32,26 +32,28 @@ const Component: React.FC<IRootExtensionProps> = () => {
     window.history.replaceState(null, null, location.pathname);
   }, []);
 
-  const draftExtensions: Extension[] = useMemo(() => {
+  const getDraftExtensions = (): Extension[] => {
     try {
       return JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) || [];
     } catch (error) {
       // @TODO: err handling
       console.error(error);
+      return [];
     }
-  }, [authenticatedDID]);
+  };
 
-  const draftReleases = useMemo(() => {
+  const getDraftReleases = () => {
     try {
       return JSON.parse(localStorage.getItem(`${DRAFT_RELEASES}-${authenticatedDID}`)) || [];
     } catch (error) {
       // @TODO: err handling
       console.error(error);
+      return [];
     }
-  }, [authenticatedDID]);
+  };
 
   const clearExtensionLocalRelease = () => {
-    const newLocalDraftReleases = draftReleases.filter(
+    const newLocalDraftReleases = getDraftReleases().filter(
       draftRelease => draftRelease.applicationID !== modalData['extensionId'],
     );
     localStorage.setItem(
@@ -61,7 +63,7 @@ const Component: React.FC<IRootExtensionProps> = () => {
   };
 
   const handleRemoveDraft = () => {
-    const newDraftExtensions = draftExtensions.filter(
+    const newDraftExtensions = getDraftExtensions().filter(
       draftExt => draftExt.id !== modalData['extensionId'],
     );
     localStorage.setItem(
@@ -72,7 +74,7 @@ const Component: React.FC<IRootExtensionProps> = () => {
     handleModalClose();
   };
   const handleRemove = () => {
-    if (draftExtensions.some(ext => ext.id === modalData['extensionId'])) {
+    if (getDraftExtensions().some(ext => ext.id === modalData['extensionId'])) {
       handleRemoveDraft();
     } else {
       updateApp({
