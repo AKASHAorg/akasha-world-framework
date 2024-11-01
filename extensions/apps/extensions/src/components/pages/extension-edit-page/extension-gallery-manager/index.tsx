@@ -157,8 +157,8 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     setGalleryImages([
       ...imagesMap.values().map(image => {
         if (image.src.startsWith('ipfs://')) {
-          const transformedSource = transformSource(image.src);
-          return { ...image, src: transformedSource };
+          const transformedSource = transformSource(image);
+          return { ...image, src: transformedSource.src };
         }
         return image;
       }),
@@ -255,7 +255,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
         ]}
       >
         <Text variant="body1">
-          {t('Are you sure you want to delete this image? This action cannot be undone. ')}
+          {t('Are you sure you want to delete this image? This action cannot be undone.')}
         </Text>
       </Modal>
     </Card>

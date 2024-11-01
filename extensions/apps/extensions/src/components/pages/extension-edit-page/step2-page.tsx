@@ -70,7 +70,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
   const [, setForm] = useAtom<FormData>(useContext(AtomContext));
 
   const galleryImages = useMemo(() => {
-    const gallery = formValue?.gallery ? formValue.gallery : formDefault?.gallery;
+    const gallery = Array.isArray(formValue?.gallery) ? formValue.gallery : formDefault?.gallery;
     return gallery?.map(img => {
       const imgWithGateway = transformSource(img);
       return {

@@ -53,7 +53,7 @@ export const ExtensionEditMainPage: React.FC<ExtensionEditMainPageProps> = ({ ex
           coverImage: { src: '' },
           nsfw: false,
           description: '',
-          gallery: [],
+          gallery: null,
           links: [],
           contributors: [],
           license: '',
