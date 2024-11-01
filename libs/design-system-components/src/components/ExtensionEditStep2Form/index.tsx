@@ -64,6 +64,7 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
     uploadAndEditLabel,
     imagesUploadedLabel,
     images,
+    maxGalleryImages,
     handleMediaClick,
   } = props;
 
@@ -142,6 +143,7 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
             uploadAndEditLabel={uploadAndEditLabel}
             imagesUploadedLabel={imagesUploadedLabel}
             images={images}
+            maxGalleryImages={maxGalleryImages}
             handleMediaClick={handleMediaClick}
           />
           <Divider />

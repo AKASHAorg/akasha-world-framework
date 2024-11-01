@@ -8,7 +8,6 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { type GalleryImage } from '@akashaorg/typings/lib/ui';
 
 const MAX_IMAGES_DISPLAY = 3;
-const MAX_IMAGES = 16;
 
 export type GalleryProps = {
   galleryFieldLabel: string;
@@ -17,6 +16,7 @@ export type GalleryProps = {
   uploadAndEditLabel: string;
   imagesUploadedLabel: string;
   images: GalleryImage[];
+  maxGalleryImages: number;
   handleMediaClick: () => void;
 };
 
@@ -28,6 +28,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
     uploadAndEditLabel,
     imagesUploadedLabel,
     images,
+    maxGalleryImages,
     handleMediaClick,
   } = props;
 
@@ -71,7 +72,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
                 alt={image.name}
                 src={image.originalSrc || image.displaySrc || image.src}
                 onClick={() => handleImageClick(image)}
-                customStyle="object-contain w-[10.625rem] h-[10.625rem] object-cover rounded-lg cursor-pointer"
+                customStyle="w-[10.625rem] h-[10.625rem] object-cover rounded-lg cursor-pointer"
               />
               {showOverlay && (
                 <ImageOverlay
@@ -93,7 +94,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
         </Stack>
       )}
       <Text variant="footnotes2" color={{ light: 'grey4', dark: 'grey6' }} weight="normal">
-        {images?.length ?? 0}/{MAX_IMAGES} {imagesUploadedLabel}
+        {images?.length ?? 0}/{maxGalleryImages} {imagesUploadedLabel}
       </Text>
     </Stack>
   );

@@ -6,7 +6,7 @@ import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ExtensionEditStep2Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep2Form';
 import { useAkashaStore, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { NotificationEvents, NotificationTypes, Extension } from '@akashaorg/typings/lib/ui';
-import { DRAFT_EXTENSIONS } from '../../../constants';
+import { DRAFT_EXTENSIONS, MAX_GALLERY_IMAGES } from '../../../constants';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
 import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
@@ -117,8 +117,14 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           imagesUploadedLabel={t('images uploaded')}
           images={galleryImages}
           defaultValues={formDefault}
+          maxGalleryImages={MAX_GALLERY_IMAGES}
           handleMediaClick={() => {
-            //todo
+            navigate({
+              to: '/edit-extension/$extensionId/gallery-manager',
+              params: {
+                extensionId,
+              },
+            });
           }}
           cancelButton={{
             label: t('Back'),

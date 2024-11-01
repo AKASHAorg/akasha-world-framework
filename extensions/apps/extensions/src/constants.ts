@@ -5,3 +5,4 @@ export const DRAFT_RELEASES = 'draft-releases';
 export const PROVIDER = 'Extensions App';
 export const PROPERTY = 'description';
 export const MAX_CONTRIBUTORS = 16;
+export const MAX_GALLERY_IMAGES = 16;
