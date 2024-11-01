@@ -6,6 +6,7 @@ import React from 'react';
 export const rootRoute = createRootRouteWithContext<
   IRouterContext & {
     decodeAppName: IRootComponentProps['decodeAppName'];
+    plugins: IRootComponentProps['plugins'];
   }
 >()({
   component: Outlet,

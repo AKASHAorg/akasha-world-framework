@@ -26,6 +26,7 @@ export type App = {
 export type AppListProps = {
   apps: App[];
   showAppTypeIndicator?: boolean;
+  overScan?: number;
 } & Pick<DynamicInfiniteScrollProps, 'hasNextPage' | 'loading' | 'onLoadMore'>;
 
 const ENTRY_HEIGHT = 92;
@@ -35,9 +36,11 @@ const ITEM_SPACING = 16;
 /**
  * Component that renders a list of apps
  * @param apps - array of extensions
+ * @param showAppTypeIndicator
  * @param loading -  boolean (optional) indicates if data is loading
  * @param hasNextPage - boolean (optional) used for pagination to indicate if next set of data is available
  * @param onLoadMore - handler for loading more data
+ * @param overScan
  */
 const AppList: React.FC<AppListProps> = ({
   apps,
@@ -45,6 +48,7 @@ const AppList: React.FC<AppListProps> = ({
   loading,
   hasNextPage,
   onLoadMore,
+  overScan = 1,
 }) => {
   const getIconByAppType = (applicationType: AkashaAppApplicationType) => {
     switch (applicationType) {
@@ -61,7 +65,7 @@ const AppList: React.FC<AppListProps> = ({
     <DynamicInfiniteScroll
       count={apps.length}
       estimatedHeight={ENTRY_HEIGHT}
-      overScan={1}
+      overScan={overScan}
       itemSpacing={ITEM_SPACING}
       hasNextPage={hasNextPage}
       loading={loading}
