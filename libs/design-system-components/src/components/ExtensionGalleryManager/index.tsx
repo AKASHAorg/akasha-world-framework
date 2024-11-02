@@ -29,7 +29,8 @@ type ExtensionGalleryManagerProps = {
   cancelButton: ActionButton;
   saveButton: ActionButton;
   maxGalleryImages: number;
-  onDelete: (imageId: string) => void;
+  onImageClick?: (image: Image) => void;
+  onDelete: (image: Image) => void;
   onUploadImagesClick: (fileList: FileList) => void;
 } & Pick<GalleryImageProps, 'uploadingLabel' | 'uploadingErrorLabel'>;
 
@@ -49,6 +50,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
     uploadingLabel,
     uploadingErrorLabel,
     maxGalleryImages,
+    onImageClick,
     onDelete,
     onUploadImagesClick,
   } = props;
@@ -87,7 +89,8 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
                   uploading: uploading ? image.src.startsWith('blob:') : false,
                   imageIdsWithError,
                 })}
-                onDelete={() => onDelete(image.id)}
+                onImageClick={() => onImageClick(image)}
+                onDelete={() => onDelete(image)}
               />
             ))}
           </Stack>

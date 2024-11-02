@@ -62,7 +62,7 @@ export const useGalleryImages = ({ extensionId }: IUseGalleryImages) => {
         const imgWithGateway = transformSource(img);
         return {
           id: crypto.randomUUID(),
-          name: t('gallery image'),
+          name: t('extension gallery image'),
           src: imgWithGateway.src || img?.src,
           height: img.height,
           width: img.width,
@@ -78,5 +78,5 @@ export const useGalleryImages = ({ extensionId }: IUseGalleryImages) => {
     showErrorNotification,
   ]);
 
-  return { images, setGalleryImages };
+  return { galleryImages: images, setGalleryImages };
 };

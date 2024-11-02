@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useRef, useState } from 'react';
 import ExtensionGalleryManager, {
   type Image,
 } from '@akashaorg/design-system-components/lib/components/ExtensionGalleryManager';
+import ImageOverlay from '@akashaorg/design-system-components/lib/components/ImageOverlay';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
@@ -31,9 +32,10 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
   const { t } = useTranslation('app-extensions');
   const { uiEvents } = useRootComponentProps();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedImageId, setSelectedImageId] = useState<string>(null);
+  const [selectedImage, setSelectedImage] = useState<Image>(null);
   const [uploading, setUploading] = useState(false);
   const [imageIdsWithError, setImageIdsWithError] = useState<Set<string>>(new Set());
+  const [showOverlay, setShowOverlay] = useState(false);
 
   const navigate = useNavigate();
   const uiEventsRef = useRef(uiEvents);
@@ -41,7 +43,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     data: { isAuthenticating },
   } = useAkashaStore();
 
-  const { images, setGalleryImages } = useGalleryImages({ extensionId });
+  const { galleryImages, setGalleryImages } = useGalleryImages({ extensionId });
   const [, setForm] = useAtom<FormData>(useContext(AtomContext));
 
   const showErrorNotification = useCallback((title: string) => {
@@ -69,31 +71,31 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
       </Card>
     );
 
-  const onDelete = (imageId: string) => {
+  const onDelete = (image: Image) => {
     setShowDeleteModal(true);
-    setSelectedImageId(imageId);
+    setSelectedImage(image);
   };
 
   const onDeleteConfirmed = (imageId: string) => {
-    setGalleryImages(images.filter(image => image.id !== imageId));
+    setGalleryImages(galleryImages.filter(image => image.id !== imageId));
     onDeleteModalClose();
   };
 
   const onDeleteModalClose = () => {
     setShowDeleteModal(false);
-    setSelectedImageId(null);
+    setSelectedImage(null);
   };
 
   const onUploadImagesClick = (fileList: FileList) => {
-    const numImagesCanBeUploaded = MAX_GALLERY_IMAGES - images.length;
+    const numImagesCanBeUploaded = MAX_GALLERY_IMAGES - galleryImages.length;
 
-    if (images.length + fileList.length > MAX_GALLERY_IMAGES) {
+    if (galleryImages.length + fileList.length > MAX_GALLERY_IMAGES) {
       showErrorNotification(t('Maximum image limit reached. Please delete some to add new ones.'));
     }
 
     if (numImagesCanBeUploaded > 0) {
       setGalleryImages([
-        ...images,
+        ...galleryImages,
         ...Array.from(fileList)
           .slice(0, numImagesCanBeUploaded)
           .map(image => ({
@@ -113,14 +115,14 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     const imagesMap = new Map<string, Image>();
 
     //translate images array into images map
-    images.forEach(image => {
+    galleryImages.forEach(image => {
       imagesMap.set(image.id, image);
     });
 
     setUploading(true);
 
     await Promise.allSettled(
-      images.map(async image => {
+      galleryImages.map(async image => {
         //upload blob images to w3.storage
         if (image.src?.startsWith('blob:')) {
           try {
@@ -198,44 +200,71 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     });
   };
 
+  const onCloseOverlay = () => {
+    setShowOverlay(false);
+  };
+
+  const onImageClick = (image: Image) => {
+    setSelectedImage(image);
+    setShowOverlay(true);
+  };
+
   return (
     <Card padding={0}>
-      {images && (
-        <ExtensionGalleryManager
-          galleryManagerTitle={t('Extension Gallery')}
-          galleryManagerDescription={t(
-            'Tap on the images to set their order. Numbers will appear as you tap.',
+      {galleryImages && (
+        <>
+          <ExtensionGalleryManager
+            galleryManagerTitle={t('Extension Gallery')}
+            galleryManagerDescription={t(
+              'Tap on the images to set their order. Numbers will appear as you tap.',
+            )}
+            uploadImagesLabel={t('Upload images')}
+            emptyGalleryLabel={t('Your gallery is empty.')}
+            imagesLabel={t('images')}
+            startUploadingLabel={t('Start uploading')}
+            uploadingLabel={t('Uploading image')}
+            uploadingErrorLabel={t('Image failed to upload')}
+            uploading={uploading}
+            images={galleryImages}
+            imageIdsWithError={[...imageIdsWithError]}
+            maxGalleryImages={MAX_GALLERY_IMAGES}
+            cancelButton={{
+              label: t('Cancel'),
+              disabled: !!uploading,
+              handleClick: () => {
+                navigate({
+                  to: '/edit-extension/$extensionId/step2',
+                  params: {
+                    extensionId,
+                  },
+                });
+              },
+            }}
+            saveButton={{
+              label: t('Save'),
+              disabled: false,
+              handleClick: onSave,
+            }}
+            onImageClick={onImageClick}
+            onDelete={onDelete}
+            onUploadImagesClick={onUploadImagesClick}
+          />
+          {showOverlay && (
+            <ImageOverlay
+              images={galleryImages.map(image => ({
+                name: image.name,
+                src: image.src,
+                size: { width: image.width, height: image.height },
+              }))}
+              clickedImg={{
+                name: selectedImage.name,
+                src: selectedImage.src,
+                size: { width: selectedImage.width, height: selectedImage.height },
+              }}
+              closeModal={onCloseOverlay}
+            />
           )}
-          uploadImagesLabel={t('Upload images')}
-          emptyGalleryLabel={t('Your gallery is empty.')}
-          imagesLabel={t('images')}
-          startUploadingLabel={t('Start uploading')}
-          uploadingLabel={t('Uploading image')}
-          uploadingErrorLabel={t('Image failed to upload')}
-          uploading={uploading}
-          images={images}
-          imageIdsWithError={[...imageIdsWithError]}
-          maxGalleryImages={MAX_GALLERY_IMAGES}
-          cancelButton={{
-            label: t('Cancel'),
-            disabled: !!uploading,
-            handleClick: () => {
-              navigate({
-                to: '/edit-extension/$extensionId/step2',
-                params: {
-                  extensionId,
-                },
-              });
-            },
-          }}
-          saveButton={{
-            label: t('Save'),
-            disabled: false,
-            handleClick: onSave,
-          }}
-          onDelete={onDelete}
-          onUploadImagesClick={onUploadImagesClick}
-        />
+        </>
       )}
       <Modal
         title={{ label: t('Delete Image') }}
@@ -250,7 +279,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
           {
             variant: 'primary',
             label: t('Delete'),
-            onClick: () => onDeleteConfirmed(selectedImageId),
+            onClick: () => onDeleteConfirmed(selectedImage.id),
           },
         ]}
       >
