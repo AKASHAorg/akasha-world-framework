@@ -56,7 +56,10 @@ export const useGalleryImages = ({ extensionId }: IUseGalleryImages) => {
       return;
     }
 
-    const gallery = formValues?.gallery?.length ? formValues?.gallery : extensionData?.gallery;
+    const gallery = Array.isArray(formValues?.gallery)
+      ? formValues?.gallery
+      : extensionData?.gallery;
+
     setImages(
       gallery?.map(img => {
         let imgWithGateway = null;

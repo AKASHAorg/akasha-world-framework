@@ -46,7 +46,7 @@ export const GalleryImage: React.FC<GalleryImageProps> = props => {
           customStyle={state === GalleryImageState.LOADING ? 'cursor-not-allowed' : ''}
           plain
         >
-          <AppIcon placeholderIcon={<TrashIcon />} size="xs" hover />
+          <AppIcon placeholderIcon={<TrashIcon />} background={'black/50'} size="xs" hover />
         </Button>
       </Stack>
       {state && (
@@ -62,7 +62,7 @@ export const GalleryImage: React.FC<GalleryImageProps> = props => {
           )}
           {state === GalleryImageState.LOADING && <Spinner />}
           {state === GalleryImageState.ERROR && (
-            <Text variant="button-sm" align="center" color="error">
+            <Text variant="button-sm" align="center">
               {uploadingErrorLabel}
             </Text>
           )}
