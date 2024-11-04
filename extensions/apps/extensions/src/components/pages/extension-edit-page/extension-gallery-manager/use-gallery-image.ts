@@ -59,7 +59,12 @@ export const useGalleryImages = ({ extensionId }: IUseGalleryImages) => {
     const gallery = formValues?.gallery?.length ? formValues?.gallery : extensionData?.gallery;
     setImages(
       gallery?.map(img => {
-        const imgWithGateway = transformSource(img);
+        let imgWithGateway = null;
+        try {
+          imgWithGateway = transformSource(img);
+        } catch (error) {
+          showErrorNotification((error satisfies Error).message ?? error);
+        }
         return {
           id: crypto.randomUUID(),
           name: t('extension gallery image'),

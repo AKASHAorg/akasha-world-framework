@@ -72,7 +72,12 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
   const galleryImages = useMemo(() => {
     const gallery = Array.isArray(formValue?.gallery) ? formValue.gallery : formDefault?.gallery;
     return gallery?.map(img => {
-      const imgWithGateway = transformSource(img);
+      let imgWithGateway = null;
+      try {
+        imgWithGateway = transformSource(img);
+      } catch (error) {
+        showErrorNotification((error satisfies Error).message ?? error);
+      }
       return {
         ...img,
         src: img?.src,
@@ -83,7 +88,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
         },
       };
     });
-  }, [formDefault?.gallery, formValue?.gallery]);
+  }, [formDefault?.gallery, formValue.gallery, showErrorNotification]);
 
   return (
     <>
