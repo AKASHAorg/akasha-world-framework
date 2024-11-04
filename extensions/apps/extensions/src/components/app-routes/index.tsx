@@ -1,19 +1,9 @@
-import React, { Suspense } from 'react';
-import {
-  Outlet,
-  createRootRouteWithContext,
-  createRoute,
-  createRouter,
-  redirect,
-  CatchBoundary,
-  defer,
-  Await,
-} from '@tanstack/react-router';
-import { ICreateRouter, IRootComponentProps, IRouterContext } from '@akashaorg/typings/lib/ui';
+import React from 'react';
+import { createRoute, createRouter, redirect, CatchBoundary } from '@tanstack/react-router';
+import { ICreateRouter, IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import {
   ExplorePage,
   ExtensionsHubPage,
-  InfoPage,
   InstalledExtensionsPage,
   MyExtensionsPage,
   DeveloperModePage,
@@ -38,47 +28,13 @@ import {
   ExtensionReleaseInfoPage,
 } from '../pages/extension-release-manager';
 import { PostPublishPage } from '../pages/post-publish-page';
-import {
-  DevInfoPage,
-  CollaboratorsPage,
-  VersionInfoPage,
-  VersionHistoryPage,
-  AuditLogPage,
-  PermissionsPage,
-  LicensePage,
-  AppDescriptionPage,
-} from '../pages/info-page/sub-pages';
+
 import { DEV_MODE_KEY } from '../../constants';
 import { ExtensionInstallTerms } from '../pages/install-extension/install-terms-conditions';
 import { NotFoundComponent } from './not-found-component';
-import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import { getExtensionById } from './data-loaders';
-import {
-  selectExtensionCollaborators,
-  selectExtensionDescription,
-  selectExtensionDisplayName,
-  selectExtensionLicense,
-  selectExtensionLogo,
-  selectExtensionName,
-  selectExtensionType,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
-
-const RouteErrorComponent = () => (
-  <ErrorLoader
-    type="script-error"
-    title="Oops, this page returned an error :("
-    details="There is an error somewhere in this page and we need to display this card to avoid other issues."
-  />
-);
-
-const rootRoute = createRootRouteWithContext<
-  IRouterContext & {
-    decodeAppName: IRootComponentProps['decodeAppName'];
-  }
->()({
-  component: Outlet,
-  notFoundComponent: () => <NotFoundComponent />,
-});
+import { RouteErrorComponent } from './error-component';
+import { rootRoute } from '../root-route';
+import infoRoutes from '../pages/info-page/routes';
 
 const defaultRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -170,201 +126,6 @@ const extensionInstallRoute = createRoute({
   component: () => {
     const { appId } = extensionInstallRootRoute.useParams();
     return <InstallExtensionPage appId={appId} />;
-  },
-});
-const infoRootRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/info/$appId',
-  component: () => <Outlet />,
-});
-
-const infoIndexRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/',
-  notFoundComponent: () => <NotFoundComponent />,
-  component: () => {
-    const { appId } = infoRootRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'app_info_root_reset'} errorComponent={RouteErrorComponent}>
-        <InfoPage appId={appId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const devInfoRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/developer/$devDid',
-  component: () => {
-    const { devDid } = devInfoRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'dev_info_root_reset'} errorComponent={RouteErrorComponent}>
-        <DevInfoPage devDid={devDid} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const collaboratorsInfoRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/collaborators',
-  loader: ({ context, params }) => {
-    const { appId } = params;
-    if (!appId) {
-      throw new Error('appId is required');
-    }
-    return {
-      extensionById: defer(getExtensionById(context.decodeAppName(appId))),
-    };
-  },
-  component: () => {
-    const { appId } = infoRootRoute.useParams();
-    const { extensionById } = collaboratorsInfoRoute.useLoaderData();
-    return (
-      <CatchBoundary getResetKey={() => 'collaborators_reset'} errorComponent={RouteErrorComponent}>
-        <Suspense>
-          <Await promise={extensionById}>
-            {data => (
-              <CollaboratorsPage
-                extensionLogo={selectExtensionLogo(data)}
-                extensionName={selectExtensionName(data)}
-                extensionDisplayName={selectExtensionDisplayName(data)}
-                collaborators={selectExtensionCollaborators(data)}
-                extensionType={selectExtensionType(data)}
-                appId={appId}
-              />
-            )}
-          </Await>
-        </Suspense>
-      </CatchBoundary>
-    );
-  },
-});
-
-const versionInfoRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/versions',
-  component: () => {
-    const { appId } = infoRootRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'app_info_root_reset'} errorComponent={RouteErrorComponent}>
-        <VersionInfoPage appId={appId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const versionHistoryRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/version-history',
-  component: () => {
-    const { appId } = versionHistoryRoute.useParams();
-    return (
-      <CatchBoundary
-        getResetKey={() => 'version_history_reset'}
-        errorComponent={RouteErrorComponent}
-      >
-        <VersionHistoryPage appId={appId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const auditLogRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/audit-log',
-  component: () => {
-    const { appId } = auditLogRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'audit_log_reset'} errorComponent={RouteErrorComponent}>
-        <AuditLogPage appId={appId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const permissionInfoRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/permissions',
-  component: () => {
-    const { appId } = permissionInfoRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'permissions_reset'} errorComponent={RouteErrorComponent}>
-        <PermissionsPage appId={appId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const appLicenseInfoRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/license',
-  loader: ({ context, params }) => {
-    const { appId } = params;
-    if (!appId) {
-      throw new Error('appId is required');
-    }
-    return {
-      extensionById: defer(getExtensionById(context.decodeAppName(appId))),
-    };
-  },
-  component: () => {
-    const { appId } = appLicenseInfoRoute.useParams();
-    const { extensionById } = appLicenseInfoRoute.useLoaderData();
-    return (
-      <CatchBoundary getResetKey={() => 'license_reset'} errorComponent={RouteErrorComponent}>
-        <Suspense>
-          <Await promise={extensionById}>
-            {data => (
-              <LicensePage
-                appId={appId}
-                extensionLogo={selectExtensionLogo(data)}
-                extensionDisplayName={selectExtensionDisplayName(data)}
-                extensionName={selectExtensionName(data)}
-                license={selectExtensionLicense(data)}
-                extensionType={selectExtensionType(data)}
-              />
-            )}
-          </Await>
-        </Suspense>
-      </CatchBoundary>
-    );
-  },
-});
-
-const appDescriptionRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/description',
-  loader: ({ context, params }) => {
-    const { appId } = params;
-    if (!appId) {
-      throw new Error('appId is required');
-    }
-    return {
-      extensionById: defer(getExtensionById(context.decodeAppName(appId))),
-    };
-  },
-  component: () => {
-    const { appId } = infoRootRoute.useParams();
-    const { extensionById } = appDescriptionRoute.useLoaderData();
-    return (
-      <Suspense>
-        <Await promise={extensionById}>
-          {data => {
-            return (
-              <AppDescriptionPage
-                appId={appId}
-                extensionLogo={selectExtensionLogo(data)}
-                extensionName={selectExtensionName(data)}
-                extensionDisplayName={selectExtensionDisplayName(data)}
-                description={selectExtensionDescription(data)}
-                extensionType={selectExtensionType(data)}
-              />
-            );
-          }}
-        </Await>
-      </Suspense>
-    );
   },
 });
 
@@ -593,17 +354,7 @@ const routeTree = rootRoute.addChildren([
   installedExtensionsRoute,
   myExtensionsRoute,
   developerModeRoute,
-  infoRootRoute.addChildren([
-    infoIndexRoute,
-    devInfoRoute,
-    collaboratorsInfoRoute,
-    versionInfoRoute,
-    versionHistoryRoute,
-    auditLogRoute,
-    permissionInfoRoute,
-    appLicenseInfoRoute,
-    appDescriptionRoute,
-  ]),
+  infoRoutes,
   extensionInstallRootRoute.addChildren([
     extensionInstallIndexRoute,
     extensionInstallTermsRoute,
