@@ -5,7 +5,6 @@ import {
   CollaboratorsPage,
   DevInfoPage,
   LicensePage,
-  PermissionsPage,
   ReleasesPage,
 } from './sub-pages';
 import { getExtensionById } from '../../app-routes/data-loaders';
@@ -24,6 +23,8 @@ import { Await, CatchBoundary, createRoute, defer, Outlet } from '@tanstack/reac
 import React, { Suspense } from 'react';
 import { RouteErrorComponent } from '../../app-routes/error-component';
 import { rootRoute } from '../../root-route';
+import { IProfilePlugin } from '@akashaorg/typings/lib/ui';
+import { AkashaProfile } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
 const infoRootRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -48,11 +49,42 @@ const infoIndexRoute = createRoute({
 const devInfoRoute = createRoute({
   getParentRoute: () => infoRootRoute,
   path: '/developer/$devDid',
+  loader: ({ context, params }) => {
+    const { devDid } = params;
+
+    if (!devDid) {
+      throw new Error('devDid is required');
+    }
+
+    const profilePlugin = context.plugins['@akashaorg/app-profile'] as {
+      profile: IProfilePlugin<AkashaProfile>;
+    };
+
+    if (!profilePlugin) {
+      throw new Error('@akashaorg/app-profile is required to display this page');
+    }
+
+    return {
+      devProfileReq: defer(profilePlugin.profile?.getProfileInfo({ profileDID: devDid })),
+    };
+  },
   component: () => {
     const { devDid } = devInfoRoute.useParams();
+    const { devProfileReq } = devInfoRoute.useLoaderData();
     return (
       <CatchBoundary getResetKey={() => 'dev_info_root_reset'} errorComponent={RouteErrorComponent}>
-        <DevInfoPage devDid={devDid} />
+        <Suspense>
+          <Await promise={devProfileReq}>
+            {resp => (
+              <DevInfoPage
+                name={resp.data.name}
+                avatar={resp.data.avatar}
+                devDid={devDid}
+                error={resp.error}
+              />
+            )}
+          </Await>
+        </Suspense>
       </CatchBoundary>
     );
   },
@@ -126,19 +158,6 @@ const releasesRoute = createRoute({
             )}
           </Await>
         </Suspense>
-      </CatchBoundary>
-    );
-  },
-});
-
-const permissionInfoRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/permissions',
-  component: () => {
-    const { appId } = permissionInfoRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'permissions_reset'} errorComponent={RouteErrorComponent}>
-        <PermissionsPage appId={appId} />
       </CatchBoundary>
     );
   },
@@ -221,7 +240,6 @@ export default infoRootRoute.addChildren([
   devInfoRoute,
   collaboratorsInfoRoute,
   releasesRoute,
-  permissionInfoRoute,
   appLicenseInfoRoute,
   appDescriptionRoute,
 ]);

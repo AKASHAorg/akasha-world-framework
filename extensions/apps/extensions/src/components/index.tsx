@@ -6,7 +6,7 @@ import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import { withProviders } from '@akashaorg/ui-awf-hooks';
 
-import App from './App';
+import App from './app';
 
 const reactLifecycles = singleSpaReact({
   React,

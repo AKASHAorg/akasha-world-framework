@@ -364,13 +364,18 @@ export const router = ({
   baseRouteName,
   apolloClient,
   decodeAppName,
-}: ICreateRouter & { decodeAppName: IRootComponentProps['decodeAppName'] }) =>
+  plugins,
+}: ICreateRouter & {
+  decodeAppName: IRootComponentProps['decodeAppName'];
+  plugins: IRootComponentProps['plugins'];
+}) =>
   createRouter({
     routeTree,
     basepath: baseRouteName,
     context: {
       apolloClient,
       decodeAppName,
+      plugins,
     },
     defaultErrorComponent: ({ error }) => <NotFoundComponent error={error} />,
   });
