@@ -107,7 +107,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
 
   const handleReleasesClick = () => {
     navigate({
-      to: '/info/$appId/versions',
+      to: '/info/$appId/releases',
       params: {
         appId,
       },
@@ -131,15 +131,6 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
         appId,
       },
     }).catch(err => logger.error('cannot navigate to /info/$appId/collaborators : %o', err));
-  };
-
-  const handleLatestUpdateClick = () => {
-    navigate({
-      to: '/info/$appId/audit-log',
-      params: {
-        appId,
-      },
-    }).catch(err => logger.error('cannot navigate to /info/$appId/audit-log : %o', err));
   };
 
   const handleLicenseClick = () => {
@@ -284,7 +275,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                     <Card onClick={handleDeveloperClick} type="plain">
                       <Stack direction="row" align="center">
                         <ProfileAvatarButton
-                          profileId={appData.author?.akashaProfile?.did?.id}
+                          profileId={appData.author?.id}
                           label={appData.author?.akashaProfile?.name}
                           avatar={transformSource(appData.author?.akashaProfile?.avatar?.default)}
                           alternativeAvatars={appData.author?.akashaProfile?.avatar?.alternatives?.map(
@@ -344,8 +335,8 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                       <Button
                         variant="text"
                         size="md"
-                        label={formatRelativeTime(latestRelease?.node?.createdAt)}
-                        onClick={handleLatestUpdateClick}
+                        label={formatDate(latestRelease?.node?.createdAt, 'DD MMM YYYY')}
+                        onClick={handleReleasesClick}
                       />
                     </Stack>
                     <Divider />
@@ -374,7 +365,12 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                     <Stack customStyle="flex-wrap">
                       {appData.links?.map((link, idx) => (
                         <CopyToClipboard key={`${link.href}_${idx}`} stringToBeCopied={link.href}>
-                          <Button variant="text" size="md" label={link.label} />
+                          <Text
+                            variant="subtitle2"
+                            color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+                          >
+                            {link.label}
+                          </Text>
                         </CopyToClipboard>
                       ))}
                     </Stack>
@@ -411,7 +407,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                           {formatDate(latestRelease?.node?.createdAt, 'MMM YYYY')}
                         </Text>
                       </Stack>
-                      <Text lineClamp={2} variant="body1">
+                      <Text lineClamp={2} variant="subtitle2">
                         {latestRelease?.node?.meta?.find(meta => meta.property === 'description')
                           ?.value || t('This release has no description added.')}
                       </Text>
