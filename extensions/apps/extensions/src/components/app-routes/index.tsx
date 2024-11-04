@@ -28,6 +28,7 @@ import {
   ExtensionEditStep2Page,
   ExtensionEditStep3Page,
   ExtensionEditContributorsPage,
+  ExtensionGalleryManagerPage,
 } from '../pages/extension-edit-page';
 import { ExtensionPublishPage } from '../pages/extension-publish-page';
 import {
@@ -47,7 +48,6 @@ import {
   LicensePage,
   AppDescriptionPage,
 } from '../pages/info-page/sub-pages';
-
 import { DEV_MODE_KEY } from '../../constants';
 import { ExtensionInstallTerms } from '../pages/install-extension/install-terms-conditions';
 import { NotFoundComponent } from './not-found-component';
@@ -432,6 +432,21 @@ const extensionEditStep2Route = createRoute({
     );
   },
 });
+const galleryManagerRoute = createRoute({
+  getParentRoute: () => extensionEditMainRoute,
+  path: '/gallery-manager',
+  component: () => {
+    const { extensionId } = extensionEditMainRoute.useParams();
+    return (
+      <CatchBoundary
+        getResetKey={() => 'edit_extension_gallery_manager_reset'}
+        errorComponent={RouteErrorComponent}
+      >
+        <ExtensionGalleryManagerPage extensionId={extensionId} />
+      </CatchBoundary>
+    );
+  },
+});
 const extensionEditStep3Route = createRoute({
   getParentRoute: () => extensionEditMainRoute,
   path: '/step3',
@@ -601,6 +616,7 @@ const routeTree = rootRoute.addChildren([
     extensionEditStep2Route,
     extensionEditStep3Route,
     extensionEditContributorsRoute,
+    galleryManagerRoute,
   ]),
   extensionPublishRoute,
   extensionReleaseManagerRoute,

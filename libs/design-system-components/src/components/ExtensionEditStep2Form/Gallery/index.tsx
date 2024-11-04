@@ -72,7 +72,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
                 alt={image.name}
                 src={image.originalSrc || image.displaySrc || image.src}
                 onClick={() => handleImageClick(image)}
-                customStyle="w-[10.625rem] h-[10.625rem] object-cover rounded-lg cursor-pointer"
+                customStyle="w-[6.125rem] h-[6.125rem] sm:w-[10.625rem] sm:h-[10.625rem] shrink-0 object-cover rounded-lg cursor-pointer"
               />
               {showOverlay && (
                 <ImageOverlay
