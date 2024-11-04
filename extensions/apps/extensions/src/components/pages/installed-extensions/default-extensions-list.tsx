@@ -18,9 +18,9 @@ import { useNavigate } from '@tanstack/react-router';
 export const DefaultExtensionsList = () => {
   const { t } = useTranslation('app-extensions');
   const navigate = useNavigate();
-  const { worldConfig, encodeAppName } = useRootComponentProps();
+  const { encodeAppName, getDefaultExtensionNames } = useRootComponentProps();
   const sdk = getSDK();
-  const defaultApps = [worldConfig.homepageApp, ...(worldConfig.defaultApps || [])];
+  const defaultApps = getDefaultExtensionNames();
 
   const { data, error, loading } = useGetAppsByPublisherDidQuery({
     variables: {

@@ -1,5 +1,6 @@
 import { GetAppsByPublisherDidQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
 import { AkashaAppEdge } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import { isNodeObject } from './selector-utils';
 
 const isEdgeList = (
   resp: GetAppsByPublisherDidQuery,
@@ -71,5 +72,11 @@ export const selectAppVersion = (appInfo: GetAppsByPublisherDidQuery) => {
 export const selectLatestAppVersionId = (data: GetAppsByPublisherDidQuery) => {
   if (isEdgeList(data)) {
     return data.node.akashaAppList.edges[0]?.node.releases.edges.at(0).node.id;
+  }
+};
+
+export const selectPageInfo = (data: GetAppsByPublisherDidQuery) => {
+  if (isNodeObject(data)) {
+    return data.node.akashaAppList.pageInfo;
   }
 };
