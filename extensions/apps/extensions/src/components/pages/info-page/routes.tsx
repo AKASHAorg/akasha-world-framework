@@ -5,7 +5,6 @@ import {
   CollaboratorsPage,
   DevInfoPage,
   LicensePage,
-  PermissionsPage,
   ReleasesPage,
 } from './sub-pages';
 import { getExtensionById } from '../../app-routes/data-loaders';
@@ -164,19 +163,6 @@ const releasesRoute = createRoute({
   },
 });
 
-const permissionInfoRoute = createRoute({
-  getParentRoute: () => infoRootRoute,
-  path: '/permissions',
-  component: () => {
-    const { appId } = permissionInfoRoute.useParams();
-    return (
-      <CatchBoundary getResetKey={() => 'permissions_reset'} errorComponent={RouteErrorComponent}>
-        <PermissionsPage appId={appId} />
-      </CatchBoundary>
-    );
-  },
-});
-
 const appLicenseInfoRoute = createRoute({
   getParentRoute: () => infoRootRoute,
   path: '/license',
@@ -254,7 +240,6 @@ export default infoRootRoute.addChildren([
   devInfoRoute,
   collaboratorsInfoRoute,
   releasesRoute,
-  permissionInfoRoute,
   appLicenseInfoRoute,
   appDescriptionRoute,
 ]);

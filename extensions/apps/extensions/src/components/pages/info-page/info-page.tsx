@@ -10,11 +10,7 @@ import {
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { useTranslation } from 'react-i18next';
 import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import {
-  formatDate,
-  formatRelativeTime,
-  truncateDid,
-} from '@akashaorg/design-system-core/lib/utils';
+import { formatDate, truncateDid } from '@akashaorg/design-system-core/lib/utils';
 import { useGetAppsQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import {
