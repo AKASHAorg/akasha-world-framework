@@ -267,7 +267,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
           },
           {
             variant: 'primary',
-            label: 'I understand',
+            label: t('I understand'),
             onClick: () => {
               if (nsfwFormValues?.nsfw) {
                 onProfileSave(nsfwFormValues);

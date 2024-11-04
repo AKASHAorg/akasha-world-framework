@@ -1,23 +1,12 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ExtensionEditStep2Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep2Form';
-import {
-  getMediaUrl,
-  saveMediaFile,
-  transformSource,
-  useAkashaStore,
-  useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
-import {
-  GalleryImage,
-  NotificationEvents,
-  NotificationTypes,
-  Extension,
-} from '@akashaorg/typings/lib/ui';
-import { DRAFT_EXTENSIONS } from '../../../constants';
+import { useAkashaStore, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { NotificationEvents, NotificationTypes, Extension } from '@akashaorg/typings/lib/ui';
+import { DRAFT_EXTENSIONS, MAX_GALLERY_IMAGES } from '../../../constants';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
 import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
@@ -69,7 +58,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
     return formValue.lastCompletedStep > 1 ? formValue : extensionData;
   }, [extensionData, formValue]);
 
-  const formDefault = useMemo(() => {
+  const formDefault: FormData = useMemo(() => {
     return {
       nsfw: defaultValues?.nsfw,
       description: defaultValues?.description,
@@ -80,10 +69,15 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
 
   const [, setForm] = useAtom<FormData>(useContext(AtomContext));
 
-  const [uploading, setUploading] = useState(false);
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(
-    formDefault?.gallery?.map(img => {
-      const imgWithGateway = transformSource(img);
+  const galleryImages = useMemo(() => {
+    const gallery = Array.isArray(formValue?.gallery) ? formValue.gallery : formDefault?.gallery;
+    return gallery?.map(img => {
+      let imgWithGateway = null;
+      try {
+        imgWithGateway = transformSource(img);
+      } catch (error) {
+        showErrorNotification((error satisfies Error).message ?? error);
+      }
       return {
         ...img,
         src: img?.src,
@@ -93,62 +87,8 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           width: img?.width,
         },
       };
-    }),
-  );
-
-  const onUpload = async (image: File | string, isUrl?: boolean) => {
-    if (!image) return null;
-    setUploading(true);
-
-    const imageName = typeof image === 'string' ? image : image.name || 'extension-gallery-image';
-
-    try {
-      const mediaFile = await saveMediaFile({
-        name: imageName,
-        isUrl: isUrl || false,
-        content: image,
-      });
-      setUploading(false);
-      if (!mediaFile) return null;
-
-      const mediaUri = `ipfs://${mediaFile.CID}`;
-
-      const mediaUrl = getMediaUrl(mediaUri);
-
-      const imageObj = {
-        size: { height: mediaFile.size.height, width: mediaFile.size.width },
-        displaySrc: mediaUrl.originLink || mediaUrl.fallbackLink,
-        src: mediaUri,
-        name: imageName,
-        originalSrc: typeof image === 'string' ? image : URL.createObjectURL(image),
-      };
-
-      return imageObj;
-    } catch (error) {
-      setUploading(false);
-      showErrorNotification(t("The image wasn't uploaded correctly. Please try again!"));
-      return null;
-    }
-  };
-
-  const uploadNewImage = async (image: File | string, isUrl?: boolean) => {
-    const uploadedImage = await onUpload(image, isUrl);
-    setGalleryImages(prev => [
-      ...prev,
-      {
-        name: uploadedImage?.name,
-        src: uploadedImage?.src,
-        displaySrc: uploadedImage?.displaySrc,
-        originalSrc: uploadedImage?.originalSrc,
-        size: uploadedImage?.size,
-      },
-    ]);
-  };
-
-  const handleDeleteImage = (element: GalleryImage) => {
-    const newImages = galleryImages.filter(image => image.src !== element.src);
-    setGalleryImages(newImages);
-  };
+    });
+  }, [formDefault?.gallery, formValue.gallery, showErrorNotification]);
 
   return (
     <>
@@ -166,9 +106,9 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           nsfwDescriptionLabel={t('Once you mark it as NSFW, you can’t change it back')}
           descriptionFieldLabel={t('Description')}
           descriptionPlaceholderLabel={t('What does this extension do?')}
-          galleryFieldLabel={t('Gallery')}
+          galleryFieldLabel={t('Extension Gallery')}
           galleryDescriptionLabel={t(
-            'Having a gallery to show off the extension will increase installs',
+            'The first three images, based on your order, will be featured on the main extension card.',
           )}
           usefulLinksFieldLabel={t('Useful Links')}
           usefulLinksDescriptionLabel={t(
@@ -177,11 +117,19 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           linkTitleLabel={t('Link')}
           linkPlaceholderLabel={t('Link title')}
           addLabel={t('Add')}
-          uploading={uploading}
-          handleImageUpload={uploadNewImage}
-          handleImageDelete={handleDeleteImage}
+          uploadAndEditLabel={t('Upload')}
+          imagesUploadedLabel={t('images uploaded')}
           images={galleryImages}
           defaultValues={formDefault}
+          maxGalleryImages={MAX_GALLERY_IMAGES}
+          handleMediaClick={() => {
+            navigate({
+              to: '/edit-extension/$extensionId/gallery-manager',
+              params: {
+                extensionId,
+              },
+            });
+          }}
           cancelButton={{
             label: t('Back'),
             disabled: false,

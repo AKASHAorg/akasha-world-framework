@@ -46,13 +46,13 @@ const ImageOverlay: React.FC<IImageOverlay> = props => {
   };
 
   const handlePrevImg = React.useCallback(() => {
-    const currImgIndex = images.indexOf(currentImg);
+    const currImgIndex = images.findIndex(image => image.src === currentImg.src);
     const prevIndex = currImgIndex > 0 ? images[currImgIndex - 1] : images[images.length - 1];
     setCurrentImg(prevIndex);
   }, [currentImg, images]);
 
   const handleNextImg = React.useCallback(() => {
-    const currImgIndex = images.indexOf(currentImg);
+    const currImgIndex = images.findIndex(image => image.src === currentImg.src);
     const nextIndex = currImgIndex < images.length - 1 ? images[currImgIndex + 1] : images[0];
     setCurrentImg(nextIndex);
   }, [currentImg, images]);

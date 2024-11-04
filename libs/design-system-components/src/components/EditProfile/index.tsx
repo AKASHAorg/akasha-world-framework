@@ -91,7 +91,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
     if (isValid && isFormDirty) {
       saveButton.handleClick({
         ...formValues,
-        links: formValues.links?.map(link => link.href)?.filter(link => link) || [],
+        links: formValues.links?.map(link => link.href?.trim())?.filter(link => link) || [],
       });
     }
   };
