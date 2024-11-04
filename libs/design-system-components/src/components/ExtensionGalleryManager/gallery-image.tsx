@@ -46,7 +46,13 @@ export const GalleryImage: React.FC<GalleryImageProps> = props => {
           customStyle={state === GalleryImageState.LOADING ? 'cursor-not-allowed' : ''}
           plain
         >
-          <AppIcon placeholderIcon={<TrashIcon />} background={'black/50'} size="xs" hover />
+          <AppIcon
+            placeholderIcon={<TrashIcon />}
+            background={'black/50'}
+            iconColor="white"
+            size="xs"
+            hover
+          />
         </Button>
       </Stack>
       {state && (
