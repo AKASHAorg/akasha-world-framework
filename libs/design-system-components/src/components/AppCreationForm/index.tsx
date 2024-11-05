@@ -245,12 +245,14 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
         <Stack direction="row" spacing="gap-x-2" customStyle="ml-auto mt-auto px-4">
           <Button
             variant="text"
+            size="md"
             label={cancelButton.label}
             onClick={cancelButton.handleClick}
             disabled={cancelButton.disabled}
           />
           <Button
             variant="primary"
+            size="md"
             label={createButton.label}
             loading={createButton.loading}
             disabled={!isFormDirty || !isValid || loading}

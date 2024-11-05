@@ -51,6 +51,7 @@ export const GalleryImage: React.FC<GalleryImageProps> = props => {
             background={'black/50'}
             iconColor="white"
             size="xs"
+            iconSize="sm"
             hover
           />
         </Button>
