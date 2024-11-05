@@ -138,7 +138,7 @@ class Web3Connector {
           }
         });
 
-        await this.#w3modal.open({ view: 'Connect' });
+        await this.#w3modal.open();
       });
     }
     return { connected: this.#w3modal.getIsConnected() };
