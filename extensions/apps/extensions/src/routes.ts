@@ -7,6 +7,7 @@ export const INFO = 'App Info';
 export const CREATE_EXTENSION = 'Create Extension';
 export const EDIT_EXTENSION = 'Edit Extension';
 export const SUBMIT_EXTENSION = 'Submit Extension';
+export const GALLERY_MANAGER = 'Gallery Manager';
 
 export default {
   default: '/explore',
@@ -19,4 +20,5 @@ export default {
   [CREATE_EXTENSION]: '/create-extension',
   [EDIT_EXTENSION]: '/edit-extension',
   [SUBMIT_EXTENSION]: '/submit-extension',
+  [GALLERY_MANAGER]: '/gallery-manager',
 };
