@@ -36,7 +36,7 @@ class NotificationService {
     this._globalChannel = globalChannel;
     this._config = config;
     this._web3 = web3;
-    this._notificationChannelId = '0x5685e3C57D5BCf3B4c347e14B565B52FcD37F897';
+    this._notificationChannelId = this._config.getOption('push_protocol_channel_id');
   }
   /**
    * Initialize the push client.
