@@ -114,7 +114,7 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
           <ProfileAvatarButton
             profileId={devDid}
             label={name}
-            avatar={transformSource(avatar.default)}
+            avatar={transformSource(avatar?.default)}
             alternativeAvatars={avatar?.alternatives?.map(alt => transformSource(alt))}
             onClick={handleProfileClick}
           />

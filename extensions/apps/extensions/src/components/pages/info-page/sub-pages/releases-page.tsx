@@ -56,17 +56,16 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
 
   const handleLoadMoreReleases = () => {
     if (releasesReq.data?.akashaAppReleaseIndex?.edges.length < releasesCount) {
-      return;
+      releasesReq.fetchMore({
+        variables: {
+          after: releasesReq.data?.akashaAppReleaseIndex?.pageInfo.endCursor,
+        },
+      });
     }
-    releasesReq.fetchMore({
-      variables: {
-        after: releasesReq.data?.akashaAppReleaseIndex?.pageInfo.endCursor,
-      },
-    });
   };
 
   const releases = useMemo(() => {
-    return releasesReq.data?.akashaAppReleaseIndex.edges;
+    return releasesReq.data?.akashaAppReleaseIndex.edges || [];
   }, [releasesReq]);
 
   useEffect(() => {
@@ -99,7 +98,7 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
           )}
           {releases && (
             <DynamicInfiniteScroll
-              count={releasesCount}
+              count={releases.length}
               overScan={5}
               estimatedHeight={80}
               itemSpacing={16}
@@ -109,6 +108,7 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
             >
               {item => {
                 const release = releases[item.itemIndex];
+                if (!release) return null;
                 const isExpanded = expandedRelease === release.node?.id;
                 const description = release.node?.meta?.find(
                   m => m.property === 'description',
