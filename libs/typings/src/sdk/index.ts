@@ -7,7 +7,6 @@ export * from './events.js';
 export * from './responses.js';
 export * from './common.js';
 export * from './registry.js';
-export * from './notification.js';
 
 export {
   IDBService,

@@ -22,7 +22,7 @@ import type AppSettings from './settings/apps';
 import type AWF_Misc from './common/misc';
 import type AWF_Ceramic from './common/ceramic';
 import type AWF_Lit from './common/lit';
-import type Notification from './common/notification';
+import type Notification from './common/notification/notification';
 
 export { Logger } from 'pino';
 

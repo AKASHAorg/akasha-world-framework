@@ -3,14 +3,16 @@ import type { PushStream } from '@pushprotocol/restapi/src/lib/pushstream/PushSt
 
 import * as SdkTypes from '@akashaorg/typings/lib/sdk';
 
-import Logging from '../logging';
-import EventBus from './event-bus';
-import AWF_Config from './config';
-import Web3Connector from './web3.connector';
-import { validate } from './validator';
+import Logging from '../../logging';
+import EventBus from '../event-bus';
+import AWF_Config from '../config';
+import Web3Connector from '../web3.connector';
+import { validate } from '../validator';
 
 import { inject, injectable } from 'inversify';
 import pino from 'pino';
+import { z } from 'zod';
+import * as notificationSchemas from './notification-schemas';
 
 @injectable()
 class NotificationService {
@@ -34,15 +36,15 @@ class NotificationService {
     this._globalChannel = globalChannel;
     this._config = config;
     this._web3 = web3;
-    this._notificationChannelId = this._config.getOption('push_protocol_channel_id');
+    this._notificationChannelId = '0x5685e3C57D5BCf3B4c347e14B565B52FcD37F897';
   }
   /**
    * Initialize the push client.
    * @param options - Initialization options with readonly set to true initialize the client in read-only mode without prompting for signature.
    * @throws Will throw an error if initialization fails or if the user declines the signing request.
    */
-  @validate(SdkTypes.InitializeOptionsSchema)
-  async initialize(options: SdkTypes.InitializePushProtocolOptions = { readonly: true }) {
+  @validate(notificationSchemas.InitializeOptionsSchema)
+  async initialize(options: notificationSchemas.InitializeOptions = { readonly: true }) {
     if (!this._web3.state.connected) throw new Error('Must connect first to a web3 provider!');
     const { readonly } = options;
 
@@ -99,16 +101,40 @@ class NotificationService {
     }
   }
 
-  async getSettingsOfChannel(): Promise<SdkTypes.ChannelInfo> {
-    const response = await this.notificationsClient.channel.info(this._notificationChannelId, {
-      raw: false,
-    });
-    return SdkTypes.ChannelInfoResponseSchema.parse(response);
+  async getSettingsOfChannel(): Promise<notificationSchemas.ChannelSettings[]> {
+    const response = await this.notificationsClient.channel.info(this._notificationChannelId);
+    const parseResponse = notificationSchemas.ChannelInfoResponseSchema.safeParse(response);
+    if (!parseResponse.success) throw new Error('User Settings unable to parse');
+
+    return parseResponse.data;
   }
 
+  async getSettingsOfUser(): Promise<notificationSchemas.UserSettingType[]> {
+    const subscriptions: PushProtocol.ApiSubscriptionType[] =
+      await this.notificationsClient.notification.subscriptions({
+        channel: this._notificationChannelId,
+      });
+    const channelSubscriptionInfo = subscriptions.find(
+      subscription => subscription.channel === this._notificationChannelId,
+    );
+    if (!channelSubscriptionInfo) throw new Error('Settings not found');
+
+    const result = notificationSchemas.ChannelUserSettingsSchema.safeParse(channelSubscriptionInfo);
+    if (!result.success) throw new Error('User Settings unable to parse');
+
+    return result.data.userSettings;
+  }
+
+  @validate(
+    z.array(
+      z.object({
+        enable: z.boolean(),
+      }),
+    ),
+  )
   async setSettings(newSettings: PushProtocol.UserSetting[]): Promise<void> {
     const settingsFromChannel = await this.getSettingsOfChannel();
-    if (newSettings.length !== settingsFromChannel.channelSettings.length)
+    if (newSettings.length !== settingsFromChannel.length)
       // If the settings are sent without order or there are some opt-in missing PushProtocol sets all the opt-in to false
       throw new Error(
         'Settings must contain all the opt-ins available. Please be aware that the order of the opt-in sent matter',
@@ -117,16 +143,18 @@ class NotificationService {
       settings: newSettings,
     });
   }
-
-  async getNotifications(page: number = 1, limit: number = 50) {
+  @validate(z.number(), z.number())
+  async getNotifications(page: number = 1, limit: number = 100) {
     const options: PushProtocol.FeedsOptions = {
       channels: [this._notificationChannelId],
       account: this._web3.state.address,
       page,
       limit,
+      raw: true,
     };
 
     const inboxNotifications = await this.notificationsClient.notification.list('INBOX', options);
+
     return inboxNotifications;
   }
 

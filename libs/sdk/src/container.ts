@@ -15,7 +15,7 @@ import AWF_Misc from './common/misc';
 import AWF_Lit from './common/lit';
 import AWF_Ceramic from './common/ceramic';
 import AWF_Config from './common/config';
-import Notification from './common/notification';
+import Notification from './common/notification/notification';
 
 const diContainer = new Container({
   defaultScope: 'Singleton',
