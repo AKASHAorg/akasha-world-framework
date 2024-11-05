@@ -68,5 +68,5 @@ export enum EXTENSION_EVENTS {
 }
 
 export enum GQL_EVENTS {
-  MUTATION = 'gql#mutation#event'
+  MUTATION = 'gql#mutation#event',
 }
