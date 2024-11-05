@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 import getSDK from '@akashaorg/core-sdk';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
@@ -7,7 +8,6 @@ import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Menu from '@akashaorg/design-system-core/lib/components/Menu';
-
 import {
   EyeIcon,
   PaperAirplaneIcon,
@@ -20,12 +20,8 @@ import { EllipsisHorizontalIcon } from '@akashaorg/design-system-core/lib/compon
 import { hasOwn, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { useGetAppsStreamQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import { ExtensionStatus, Extension } from '@akashaorg/typings/lib/ui';
-import { useNavigate } from '@tanstack/react-router';
-import {
-  getExtensionStatus,
-  getIconByAppType,
-  getStatusIndicatorStyle,
-} from '../../../utils/extension-utils';
+import IconFromAppType from '@akashaorg/design-system-components/lib/utils/iconByAppType';
+import { getExtensionStatus, getStatusIndicatorStyle } from '../../../utils/extension-utils';
 
 type ExtensionElement = {
   extensionData: Extension;
@@ -218,7 +214,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
                         color={{ light: 'white', dark: 'white' }}
                         size={'xs'}
                         solid
-                        icon={getIconByAppType(extensionData?.applicationType)}
+                        icon={<IconFromAppType type={extensionData?.applicationType} />}
                       />
                     </Stack>
                   )}
