@@ -33,13 +33,10 @@ export type ExtensionEditStep2FormProps = {
   nsfwDescriptionLabel?: string;
   descriptionFieldLabel?: string;
   descriptionPlaceholderLabel?: string;
-  galleryFieldLabel?: string;
-  galleryDescriptionLabel?: string;
   usefulLinksFieldLabel?: string;
   usefulLinksDescriptionLabel?: string;
   linkTitleLabel?: string;
   linkPlaceholderLabel?: string;
-  addLabel?: string;
   defaultValues?: ExtensionEditStep2FormValues;
   cancelButton: ButtonType;
   nextButton: {
@@ -64,10 +61,11 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
     linkTitleLabel,
     linkPlaceholderLabel,
     addLabel,
-    handleImageDelete,
-    handleImageUpload,
-    uploading,
+    uploadAndEditLabel,
+    imagesUploadedLabel,
     images,
+    maxGalleryImages,
+    handleMediaClick,
   } = props;
 
   const {
@@ -142,10 +140,11 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
             galleryFieldLabel={galleryFieldLabel}
             galleryDescriptionLabel={galleryDescriptionLabel}
             addLabel={addLabel}
+            uploadAndEditLabel={uploadAndEditLabel}
+            imagesUploadedLabel={imagesUploadedLabel}
             images={images}
-            handleImageUpload={handleImageUpload}
-            handleImageDelete={handleImageDelete}
-            uploading={uploading}
+            maxGalleryImages={maxGalleryImages}
+            handleMediaClick={handleMediaClick}
           />
           <Divider />
 

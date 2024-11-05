@@ -8,12 +8,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  IMenuItem,
-  MenuItemAreaType,
-  NotificationEvents,
-  NotificationTypes,
-} from '@akashaorg/typings/lib/ui';
+import { MenuItemAreaType, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import {
   useRootComponentProps,
   useSaveSettings,
