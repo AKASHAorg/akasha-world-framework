@@ -59,14 +59,14 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
         provider,
         checkRegistered,
       });
-      if (!result?.data) {
+      if (!result?.data?.id) {
         store.set(this.#userAtom, prev => ({
           ...prev,
           isAuthenticating: false,
         }));
         return;
       }
-      this.#handleLoggedInState(result.data?.id);
+      await this.#handleLoggedInState(result.data?.id);
     } catch (error) {
       store.set(this.#userAtom, prev => ({
         ...prev,
@@ -122,7 +122,7 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
         }));
         return;
       }
-      this.#handleLoggedInState(result?.id);
+      await this.#handleLoggedInState(result?.id);
     } catch (error) {
       store.set(this.#userAtom, prev => ({
         ...prev,
