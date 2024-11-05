@@ -194,7 +194,7 @@ class NotificationService {
 
     // Update local storage if there is a new largest SID
     if (largestFetchedSid > latestStoredSid) {
-      localStorage.setItem(localStorageKey, String(largestFetchedSid));
+      localStorage.setItem(localStorageKey, largestFetchedSid.toString());
     }
 
     return inboxNotifications;
