@@ -177,6 +177,10 @@ class NotificationService {
       raw: true,
     };
 
+    if (!this._web3.state.address) {
+      return [];
+    }
+
     const localStorageKey = `${this._web3.state.address}-${this.latestSeenSidKey}`;
     const latestStoredSid = parseInt(localStorage.getItem(localStorageKey) || '0');
 
