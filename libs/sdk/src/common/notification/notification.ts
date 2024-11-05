@@ -177,7 +177,7 @@ class NotificationService {
       raw: true,
     };
 
-    if (!this._web3.state.address) {
+    if (!this._web3.state.address?.length) {
       return [];
     }
 
