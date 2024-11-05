@@ -101,9 +101,15 @@ You can add more details to your extension, such as a description, gallery & mor
         </Text>
 
         <Stack direction="row" spacing="gap-4">
-          <Button variant="secondary" label={t('Add Details')} onClick={handleNavigateToEdit} />
+          <Button
+            variant="secondary"
+            size="md"
+            label={t('Add Details')}
+            onClick={handleNavigateToEdit}
+          />
           <Button
             variant="primary"
+            size="md"
             label={t('Manage Releases')}
             onClick={handleNavigateToReleaseManager}
           />
