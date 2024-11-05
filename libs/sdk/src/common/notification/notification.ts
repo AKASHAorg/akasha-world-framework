@@ -186,9 +186,13 @@ class NotificationService {
 
     // Fetch notifications and mark as unread if their SID is greater than the stored SID
     const inboxNotifications = await this.notificationsClient.notification.list('INBOX', options);
-    inboxNotifications.forEach(notification => {
-      notification.isUnread = latestStoredSid ? parseInt(notification.sid) > latestStoredSid : true;
-    });
+    for (const notification of inboxNotifications) {
+      const isUnread = latestStoredSid ? parseInt(notification.sid) > latestStoredSid : true;
+      Object.defineProperty(notification, 'isUnread', {
+        value: isUnread,
+        writable: true,
+      });
+    }
 
     // Find the largest SID among fetched notifications
     const largestFetchedSid = Math.max(
