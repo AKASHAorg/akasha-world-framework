@@ -1,10 +1,5 @@
-import React, { MouseEventHandler, useMemo } from 'react';
+import React, { MouseEventHandler } from 'react';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
-import {
-  Plugin,
-  App,
-  Widget,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { ListItem } from '@akashaorg/design-system-core/lib/components/List';
 import Menu from '@akashaorg/design-system-core/lib/components/Menu';
@@ -19,6 +14,7 @@ import Tooltip from '@akashaorg/design-system-core/lib/components/Tooltip';
 import { InformationCircleIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
+import IconFromAppType from '../../utils/iconByAppType';
 
 export type AppInfoHeaderProps = {
   displayName: string;
@@ -64,17 +60,6 @@ export const AppInfoHeader: React.FC<AppInfoHeaderProps> = props => {
     openExtensionLabel = 'Open',
     defaultExtensionTooltipContent = `This extension is preinstalled in this world and cannot be uninstalled`,
   } = props;
-
-  const pillIconByAppType = useMemo(() => {
-    switch (extensionType) {
-      case AkashaAppApplicationType.App:
-        return <App />;
-      case AkashaAppApplicationType.Widget:
-        return <Widget />;
-      default:
-        return <Plugin />;
-    }
-  }, [extensionType]);
 
   return (
     <Stack direction="row" align="start" justify="between" padding="pb-3">
@@ -126,7 +111,7 @@ export const AppInfoHeader: React.FC<AppInfoHeaderProps> = props => {
               <AppInfoPill background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}>
                 <Icon
                   size="sm"
-                  icon={pillIconByAppType}
+                  icon={<IconFromAppType type={extensionType} />}
                   color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
                   solid={true}
                 />

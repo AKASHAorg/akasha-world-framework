@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { tw } from '@twind/core';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import Accordion from '@akashaorg/design-system-core/lib/components/Accordion';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
@@ -9,11 +8,6 @@ import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Label from '@akashaorg/design-system-core/lib/components/Label';
 import Link from '@akashaorg/design-system-core/lib/components/Link';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
-import {
-  Plugin,
-  App,
-  Widget,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
@@ -24,6 +18,7 @@ import { Extension, Image } from '@akashaorg/typings/lib/ui';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
 import { getImageFromSeed } from '@akashaorg/design-system-core/lib/utils';
 import { XCircleIcon } from '@heroicons/react/24/outline';
+import IconFromAppType from '../../utils/iconByAppType';
 
 export type ExtensionReviewAndPublishProps = {
   extensionData: Extension;
@@ -116,19 +111,6 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
     );
   };
 
-  const getApplicationIconByType = (type: AkashaAppApplicationType) => {
-    switch (type) {
-      case AkashaAppApplicationType.App:
-        return <App />;
-      case AkashaAppApplicationType.Plugin:
-        return <Plugin />;
-      case AkashaAppApplicationType.Widget:
-        return <Widget />;
-      default:
-        return <App />;
-    }
-  };
-
   const galleryImagesWithSource = useMemo(
     () => extensionData?.gallery?.map(img => transformSource(img)) || [],
     [extensionData?.gallery, transformSource],
@@ -162,7 +144,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
           >
             <Icon
               size="sm"
-              icon={getApplicationIconByType(extensionData?.applicationType)}
+              icon={<IconFromAppType type={extensionData?.applicationType} />}
               color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
               solid={true}
             />

@@ -9,11 +9,7 @@ import {
   AkashaAppApplicationType,
   AppImageSource,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import {
-  Plugin,
-  App,
-  Widget,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+import IconFromAppType from '../../utils/iconByAppType';
 
 export type App = {
   displayName?: string;
@@ -36,11 +32,11 @@ const ITEM_SPACING = 16;
 /**
  * Component that renders a list of apps
  * @param apps - array of extensions
- * @param showAppTypeIndicator
+ * @param showAppTypeIndicator - boolean (optional) to show app type
  * @param loading -  boolean (optional) indicates if data is loading
  * @param hasNextPage - boolean (optional) used for pagination to indicate if next set of data is available
  * @param onLoadMore - handler for loading more data
- * @param overScan
+ * @param overScan - overscan value
  */
 const AppList: React.FC<AppListProps> = ({
   apps,
@@ -50,17 +46,6 @@ const AppList: React.FC<AppListProps> = ({
   onLoadMore,
   overScan = 1,
 }) => {
-  const getIconByAppType = (applicationType: AkashaAppApplicationType) => {
-    switch (applicationType) {
-      case AkashaAppApplicationType.App:
-        return <App />;
-      case AkashaAppApplicationType.Plugin:
-        return <Plugin />;
-      case AkashaAppApplicationType.Widget:
-        return <Widget />;
-    }
-  };
-
   return (
     <DynamicInfiniteScroll
       count={apps.length}
@@ -92,7 +77,7 @@ const AppList: React.FC<AppListProps> = ({
                           color={{ light: 'secondaryLight', dark: 'white' }}
                           size={'xs'}
                           solid
-                          icon={getIconByAppType(app.applicationType)}
+                          icon={<IconFromAppType type={app.applicationType} />}
                         />
                       </Stack>
                     )}
