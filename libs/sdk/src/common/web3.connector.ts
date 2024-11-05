@@ -95,6 +95,7 @@ class Web3Connector {
     });
 
     this.#w3modal = createWeb3Modal({
+      defaultChain: chains[0],
       ethersConfig,
       projectId,
       chains,
@@ -136,6 +137,7 @@ class Web3Connector {
             resolve({ connected: true, unsubscribe });
           }
         });
+
         await this.#w3modal.open({ view: 'Connect' });
       });
     }
