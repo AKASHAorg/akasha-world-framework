@@ -90,11 +90,25 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
             appType={extensionType}
           />
           {hasErrors && (
-            <ErrorLoader
-              type="list-not-available"
-              title={t('Loading error')}
-              details={t('There was an error loading the releases')}
-            />
+            <>
+              <Divider />
+              <ErrorLoader
+                noWrapperCard={true}
+                type="list-not-available"
+                title={t('Loading error')}
+                details={t('There was an error loading the releases')}
+              />
+            </>
+          )}
+          {releasesReq.networkStatus === NetworkStatus.ready && !releases.length && (
+            <>
+              <Divider />
+              <ErrorLoader
+                noWrapperCard={true}
+                type="empty-list"
+                title={t('There are no releases for this extension yet')}
+              />
+            </>
           )}
           {releases && (
             <DynamicInfiniteScroll
