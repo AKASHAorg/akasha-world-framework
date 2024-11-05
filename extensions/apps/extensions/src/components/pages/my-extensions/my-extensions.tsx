@@ -1,15 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { capitalize } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
-import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import {
+  filterEvents,
+  hasOwn,
+  useAkashaStore,
+  useRootComponentProps,
+} from '@akashaorg/ui-awf-hooks';
 import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import {
+  EventTypes,
   Extension,
   ExtensionStatus,
   NotificationEvents,
   NotificationTypes,
+  UIEventData,
 } from '@akashaorg/typings/lib/ui';
 import { SortOrder, AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -126,10 +133,11 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
   };
 
   const {
-    data: appsByPubReq,
+    data: appsByPubReqData,
     error,
     loading,
     fetchMore,
+    refetch,
   } = useGetAppsByPublisherDidQuery({
     variables: {
       id: authenticatedDID,
@@ -141,10 +149,10 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     skip: !authenticatedDID,
   });
   const appsList = useMemo(() => {
-    return appsByPubReq?.node && hasOwn(appsByPubReq.node, 'akashaAppList')
-      ? appsByPubReq.node.akashaAppList
+    return appsByPubReqData?.node && hasOwn(appsByPubReqData.node, 'akashaAppList')
+      ? appsByPubReqData.node.akashaAppList
       : null;
-  }, [appsByPubReq]);
+  }, [appsByPubReqData]);
 
   const appsData = useMemo(() => {
     return appsList?.edges?.map(edge => edge.node) || [];
@@ -161,21 +169,47 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       }
       return ext?.applicationType === selectedType.title?.toUpperCase();
     });
-  }, [appsData, selectedType]);
+  }, [selectedType]);
+
+  const [draftExtensions, setDraftExtensions] = useState([]);
 
   // fetch the draft extensions that are saved only on local storage
-  const existingDraftExtensions: Extension[] = useMemo(() => {
+
+  const allMyExtensions = [...draftExtensions, ...appElements];
+
+  const getDraftExtensions = () => {
     try {
-      return JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) || [];
+      const existingDraftExtensions =
+        JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) ?? [];
+      setDraftExtensions(existingDraftExtensions);
     } catch (error) {
       showErrorNotification(error);
+      setDraftExtensions([]);
     }
-  }, [authenticatedDID, showErrorNotification]);
+  };
 
-  const allMyExtensions = useMemo(
-    () => [...existingDraftExtensions, ...appElements],
-    [existingDraftExtensions, appElements],
-  );
+  useEffect(() => {
+    getDraftExtensions();
+    // subscribe and listen to events
+    const eventsSub = uiEventsRef.current
+      .pipe(filterEvents([EventTypes.RefetchMyExtensions]))
+      .subscribe({
+        next: (eventInfo: UIEventData) => {
+          if (eventInfo.event === EventTypes.RefetchMyExtensions) {
+            getDraftExtensions();
+            refetch({
+              id: authenticatedDID,
+            });
+          }
+        },
+      });
+
+    return () => {
+      if (eventsSub) {
+        eventsSub.unsubscribe();
+      }
+    };
+  }, []);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({

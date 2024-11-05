@@ -40,7 +40,9 @@ export const UsefulLinks: React.FC<UsefulLinksProps> = ({
     <Stack direction="column" spacing="gap-y-4" customStyle={customStyle}>
       <Stack spacing="gap-y-1" direction="column">
         <Stack direction="row" spacing="gap-x-2" justify="between" align="center">
-          <Text variant="h6">{usefulLinksTitleLabel}</Text>
+          <Text variant="h6" as="label">
+            {usefulLinksTitleLabel}
+          </Text>
           <Button
             variant="text"
             icon={<PlusIcon />}

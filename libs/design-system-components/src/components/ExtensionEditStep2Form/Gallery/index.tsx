@@ -1,22 +1,23 @@
-import React, { RefObject, useRef } from 'react';
-
+import React, { Fragment, useState } from 'react';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Image from '@akashaorg/design-system-core/lib/components/Image';
-import Icon from '@akashaorg/design-system-core/lib/components/Icon';
-import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
-import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import ImageOverlay from '../../ImageOverlay';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { type GalleryImage } from '@akashaorg/typings/lib/ui';
 
+const MAX_IMAGES_DISPLAY = 3;
+
 export type GalleryProps = {
-  galleryFieldLabel?: string;
-  galleryDescriptionLabel?: string;
-  addLabel?: string;
+  galleryFieldLabel: string;
+  galleryDescriptionLabel: string;
+  addLabel: string;
+  uploadAndEditLabel: string;
+  imagesUploadedLabel: string;
   images: GalleryImage[];
-  handleImageUpload?: (image: File) => void;
-  handleImageDelete?: (image: GalleryImage) => void;
-  uploading?: boolean;
+  maxGalleryImages: number;
+  handleMediaClick: () => void;
 };
 
 export const Gallery: React.FC<GalleryProps> = props => {
@@ -24,33 +25,38 @@ export const Gallery: React.FC<GalleryProps> = props => {
     galleryFieldLabel,
     galleryDescriptionLabel,
     addLabel,
+    uploadAndEditLabel,
+    imagesUploadedLabel,
     images,
-    uploading,
-    handleImageUpload,
-    handleImageDelete,
+    maxGalleryImages,
+    handleMediaClick,
   } = props;
 
-  const uploadInputRef: RefObject<HTMLInputElement> = useRef(null);
-  const imageUploadDisabled = React.useMemo(() => {
-    return images?.length > 15 || uploading;
-  }, [images, uploading]);
+  const galleryHasImages = images?.length > 0;
+  const slicedImagesArr = galleryHasImages ? images.slice(0, MAX_IMAGES_DISPLAY) : [];
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<GalleryImage>(null);
 
-  const handleMediaClick = () => {
-    if (uploadInputRef.current && !imageUploadDisabled) {
-      uploadInputRef.current.click();
-    }
+  const handleCloseOverlay = () => {
+    setShowOverlay(false);
+  };
+
+  const handleImageClick = (image: GalleryImage) => {
+    setShowOverlay(true);
+    setSelectedImage(image);
   };
 
   return (
-    <Stack>
-      <Stack spacing="gap-y-1" direction="column">
+    <Stack spacing="gap-y-4" direction="column">
+      <Stack spacing="gap-y-2" direction="column">
         <Stack direction="row" spacing="gap-x-2" justify="between" align="center">
-          <Text variant="h6">{galleryFieldLabel}</Text>
+          <Text variant="h6" as="label">
+            {galleryFieldLabel}
+          </Text>
           <Button
             variant="text"
-            icon={<PlusIcon />}
-            iconDirection="left"
-            label={addLabel}
+            {...(!galleryHasImages && { icon: <PlusIcon />, iconDirection: 'left' })}
+            label={galleryHasImages ? uploadAndEditLabel : addLabel}
             onClick={handleMediaClick}
           />
         </Stack>
@@ -58,36 +64,38 @@ export const Gallery: React.FC<GalleryProps> = props => {
           {galleryDescriptionLabel}
         </Text>
       </Stack>
-      {images?.map((imageObj, index) => (
-        <Stack key={index} direction="row" justify="between">
-          <Stack direction="row" align="center" spacing="gap-1">
-            <Image
-              alt={imageObj.name}
-              src={imageObj.originalSrc || imageObj.displaySrc || imageObj.src}
-              customStyle="object-contain w-8 h-8 rounded-lg"
-            />
-            <Text>{imageObj.name || `uploaded-image-${index + 1}`}</Text>
-          </Stack>
-          <button onClick={() => handleImageDelete(imageObj)}>
-            <Icon
-              size="md"
-              color={{ light: 'errorLight', dark: 'errorDark' }}
-              icon={<TrashIcon />}
-            />
-          </button>
+      {galleryHasImages && (
+        <Stack direction="row" spacing="gap-x-2" customStyle="sm:gap-x-6">
+          {slicedImagesArr.map((image, index) => (
+            <Fragment key={index}>
+              <Image
+                alt={image.name}
+                src={image.originalSrc || image.displaySrc || image.src}
+                onClick={() => handleImageClick(image)}
+                customStyle="w-[6.125rem] h-[6.125rem] sm:w-[10.625rem] sm:h-[10.625rem] shrink-0 object-cover rounded-lg cursor-pointer"
+              />
+              {showOverlay && (
+                <ImageOverlay
+                  images={slicedImagesArr.map(image => ({
+                    name: image.name,
+                    size: image.size,
+                    src: image.originalSrc || image.displaySrc || image.src,
+                  }))}
+                  clickedImg={{
+                    name: selectedImage.name,
+                    size: selectedImage.size,
+                    src: selectedImage.originalSrc || selectedImage.displaySrc || selectedImage.src,
+                  }}
+                  closeModal={handleCloseOverlay}
+                />
+              )}
+            </Fragment>
+          ))}
         </Stack>
-      ))}
-      {uploading && <Spinner />}
-      <input
-        ref={uploadInputRef}
-        type="file"
-        accept="image/png, image/jpeg, image/webp"
-        onChange={e => {
-          handleImageUpload(e.target.files[0]);
-          uploadInputRef.current.value = '';
-        }}
-        hidden
-      />
+      )}
+      <Text variant="footnotes2" color={{ light: 'grey4', dark: 'grey6' }} weight="normal">
+        {images?.length ?? 0}/{maxGalleryImages} {imagesUploadedLabel}
+      </Text>
     </Stack>
   );
 };

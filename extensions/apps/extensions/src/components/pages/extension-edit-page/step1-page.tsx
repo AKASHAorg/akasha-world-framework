@@ -13,6 +13,7 @@ import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
 import { useGetAppsQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
 import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
+import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 
 type ExtensionEditStep1PageProps = {
   extensionId: string;
@@ -48,10 +49,13 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
     }
   }, [authenticatedDID, showErrorNotification]);
 
-  const formValue = useMemo(
-    () => JSON.parse(sessionStorage.getItem(extensionId)) || {},
-    [extensionId],
-  );
+  const formValue = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(extensionId)) || {};
+    } catch (error) {
+      showErrorNotification(error);
+    }
+  }, [extensionId, showErrorNotification]);
 
   const extensionData = draftExtensions.find(draftExtension => draftExtension.id === extensionId);
 
@@ -110,91 +114,96 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
   }, [appInfoQueryError, showErrorNotification]);
 
   return (
-    <Stack spacing="gap-y-4">
-      <Stack padding={16}>
-        <Text variant="h5" weight="semibold" align="center">
-          {t('Edit Extension Presentation')}
-        </Text>
+    <>
+      <Stack padding={16} justify="center" align="center">
+        <Stepper length={3} currentStep={formValue.lastCompletedStep + 1} />
       </Stack>
-      <ExtensionEditStep1Form
-        extensionIdLabel={t('Extension ID')}
-        extensionDisplayNameLabel={t('Extension Display Name')}
-        defaultValues={formDefault}
-        extensionType={extensionData?.applicationType}
-        header={{
-          coverImage: transformSource(coverImage || formDefault?.coverImage),
-          logoImage: transformSource(logoImage || formDefault?.logoImage),
-          dragToRepositionLabel: t('Drag the image to reposition'),
-          cropErrorLabel: t('Unable to crop the image. Please try again!'),
-          cancelLabel: t('Cancel'),
-          deleteLabel: t('Delete'),
-          saveLabel: t('Save'),
-          logoPreviewTitle: t('Logo preview'),
-          imageTitle: {
-            logoImage: { label: t('Edit Logo') },
-            coverImage: { label: t('Edit Cover') },
-          },
-          deleteTitle: {
-            logoImage: { label: t('Delete Logo') },
-            coverImage: { label: t('Delete Cover') },
-          },
-          confirmationLabel: {
-            logoImage: t(`Are you sure you want to delete the extension's logo image?`),
-            coverImage: t(`Are you sure you want to delete the extension's cover image?`),
-          },
-          isSavingImage,
-          publicImagePath: '/images',
-          logoGuidelines: {
-            titleLabel: t('Logo guidelines'),
-            guidelines: [
-              t('Full square'),
-              t('Non-transparent background'),
-              t('Minimum dimensions: 112 x 112 px'),
-              t('Formats: PNG, JPEG, or WebP'),
-              t('sRGB color space'),
-              t('Max size: 1.5 MB'),
-            ],
-            imageDescription: 'Recommended logo positioning',
-          },
-          onImageSave: (type, image) => saveImage({ type, image, onError: onSaveImageError }),
-          onImageDelete: () => {},
-        }}
-        handleCheckExtName={handleCheckExtName}
-        isDuplicateExtName={isDuplicateLocalExtName || isDuplicatePublishedExtName}
-        loading={loadingAppInfo}
-        cancelButton={{
-          label: t('Cancel'),
-          disabled: false,
-          handleClick: () => {
-            navigate({
-              to: routes[MY_EXTENSIONS],
-            });
-          },
-        }}
-        nextButton={{
-          label: t('Next'),
-          handleClick: data => {
-            const step1Data = {
-              ...data,
-              logoImage: logoImage || formDefault.logoImage,
-              coverImage: coverImage || formDefault.coverImage,
-            };
-            setForm(prev => {
-              return {
-                ...prev,
-                ...step1Data,
-                lastCompletedStep:
-                  !formValue.lastCompletedStep || formValue.lastCompletedStep < 1
-                    ? 1
-                    : formValue.lastCompletedStep,
+      <Stack spacing="gap-y-4">
+        <Stack padding={16}>
+          <Text variant="h5" weight="semibold" align="center">
+            {t('Edit Extension Presentation')}
+          </Text>
+        </Stack>
+        <ExtensionEditStep1Form
+          extensionIdLabel={t('Extension ID')}
+          extensionDisplayNameLabel={t('Extension Display Name')}
+          defaultValues={formDefault}
+          extensionType={extensionData?.applicationType}
+          header={{
+            coverImage: transformSource(coverImage || formDefault?.coverImage),
+            logoImage: transformSource(logoImage || formDefault?.logoImage),
+            dragToRepositionLabel: t('Drag the image to reposition'),
+            cropErrorLabel: t('Unable to crop the image. Please try again!'),
+            cancelLabel: t('Cancel'),
+            deleteLabel: t('Delete'),
+            saveLabel: t('Save'),
+            logoPreviewTitle: t('Logo preview'),
+            imageTitle: {
+              logoImage: { label: t('Edit Logo') },
+              coverImage: { label: t('Edit Cover') },
+            },
+            deleteTitle: {
+              logoImage: { label: t('Delete Logo') },
+              coverImage: { label: t('Delete Cover') },
+            },
+            confirmationLabel: {
+              logoImage: t(`Are you sure you want to delete the extension's logo image?`),
+              coverImage: t(`Are you sure you want to delete the extension's cover image?`),
+            },
+            isSavingImage,
+            publicImagePath: '/images',
+            logoGuidelines: {
+              titleLabel: t('Logo guidelines'),
+              guidelines: [
+                t('Full square'),
+                t('Non-transparent background'),
+                t('Minimum dimensions: 112 x 112 px'),
+                t('Formats: PNG, JPEG, or WebP'),
+                t('sRGB color space'),
+                t('Max size: 1.5 MB'),
+              ],
+              imageDescription: 'Recommended logo positioning',
+            },
+            onImageSave: (type, image) => saveImage({ type, image, onError: onSaveImageError }),
+            onImageDelete: () => {},
+          }}
+          handleCheckExtName={handleCheckExtName}
+          isDuplicateExtName={isDuplicateLocalExtName || isDuplicatePublishedExtName}
+          loading={loadingAppInfo}
+          cancelButton={{
+            label: t('Cancel'),
+            disabled: false,
+            handleClick: () => {
+              navigate({
+                to: routes[MY_EXTENSIONS],
+              });
+            },
+          }}
+          nextButton={{
+            label: t('Next'),
+            handleClick: data => {
+              const step1Data = {
+                ...data,
+                logoImage: logoImage || formDefault.logoImage,
+                coverImage: coverImage || formDefault.coverImage,
               };
-            });
-            navigate({
-              to: '/edit-extension/$extensionId/step2',
-            });
-          },
-        }}
-      />
-    </Stack>
+              setForm(prev => {
+                return {
+                  ...prev,
+                  ...step1Data,
+                  lastCompletedStep:
+                    !formValue.lastCompletedStep || formValue.lastCompletedStep < 1
+                      ? 1
+                      : formValue.lastCompletedStep,
+                };
+              });
+              navigate({
+                to: '/edit-extension/$extensionId/step2',
+              });
+            },
+          }}
+        />
+      </Stack>
+    </>
   );
 };

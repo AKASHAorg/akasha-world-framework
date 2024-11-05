@@ -14,7 +14,7 @@ declare module '@tanstack/react-router' {
 }
 
 const App: React.FC<unknown> = () => {
-  const { getTranslationPlugin, baseRouteName, worldConfig, decodeAppName } =
+  const { getTranslationPlugin, baseRouteName, worldConfig, decodeAppName, plugins } =
     useRootComponentProps();
   const apolloClient = useApolloClient();
 
@@ -30,6 +30,7 @@ const App: React.FC<unknown> = () => {
               baseRouteName,
               apolloClient,
               decodeAppName,
+              plugins,
             })}
           />
         </I18nextProvider>

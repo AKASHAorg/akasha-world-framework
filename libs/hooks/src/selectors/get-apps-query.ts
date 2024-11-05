@@ -68,3 +68,11 @@ export const selectExtensionType = (data: GetAppsQuery) => {
 export const selectExtensionCollaborators = (data: GetAppsQuery) => {
   return selectAkashaApp(data)?.contributors;
 };
+
+export const selectAppId = (data: GetAppsQuery) => {
+  return selectAkashaApp(data)?.id;
+};
+
+export const selectReleasesCount = (data: GetAppsQuery) => {
+  return selectAkashaApp(data)?.releasesCount;
+};
