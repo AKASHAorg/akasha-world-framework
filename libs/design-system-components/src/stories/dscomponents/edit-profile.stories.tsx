@@ -36,6 +36,7 @@ export const Default: Story = {
         avatar: 'Are you sure you want to delete your avatar?',
         coverImage: 'Are you sure you want to delete your cover?',
       },
+      cropErrorLabel: 'Erro cropping image',
       publicImagePath: '/images',
       dragToRepositionLabel: 'Drag to reposition',
       isSavingImage: false,
