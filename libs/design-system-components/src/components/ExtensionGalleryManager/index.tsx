@@ -64,6 +64,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
             <Text variant="h6">{galleryManagerTitle}</Text>
             <Button
               variant="text"
+              size="md"
               label={uploadImagesLabel}
               onClick={() => {
                 uploadInputRef.current.click();
@@ -137,6 +138,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
           </Text>
           <Button
             variant="text"
+            size="md"
             label={cancelButton.label}
             disabled={cancelButton.disabled}
             onClick={cancelButton.handleClick}
@@ -144,6 +146,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
           />
           <Button
             variant="primary"
+            size="md"
             loading={uploading}
             label={saveButton.label}
             disabled={saveButton.disabled}

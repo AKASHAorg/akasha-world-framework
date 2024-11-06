@@ -95,7 +95,12 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To check your extensions you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
   }
