@@ -209,7 +209,7 @@ class NotificationService {
     }
 
     const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
-    const latestStoredNotificationID = parseInt(localStorage.getItem(localStorageKey) || '0');
+    const latestStoredNotificationID = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
 
     // Fetch notifications
     const inboxNotifications: (PushOrgNotification & AddedNotificationProps)[] =
