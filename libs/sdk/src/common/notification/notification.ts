@@ -14,51 +14,6 @@ import pino from 'pino';
 import { z } from 'zod';
 import * as notificationSchemas from './notification-schemas';
 
-interface PushOrgNotification {
-  payload_id: number;
-  sender: string;
-  epoch: string;
-  payload: {
-    data: {
-      app: string;
-      sid: string;
-      url: string;
-      acta: string;
-      aimg: string;
-      amsg: string;
-      asub: string;
-      icon: string;
-      type: number;
-      epoch: string;
-      etime: string;
-      hidden: string;
-      silent: string;
-      sectype: string | null;
-      additionalMeta: {
-        data: string;
-        type: string;
-        domain: string;
-      };
-    };
-    recipients: {
-      [key: string]: string | null;
-    };
-    notification: {
-      body: string;
-      title: string;
-    };
-    verificationProof: string;
-  };
-  source: string;
-  etime: string;
-  sid: string | null;
-}
-
-interface AddedNotificationProps {
-  timestamp: Date;
-  isUnread: boolean;
-}
-
 @injectable()
 class NotificationService {
   private _log: pino.Logger;
@@ -195,7 +150,10 @@ class NotificationService {
    * @returns {Promise<PushOrgNotification[]>}
    */
   @validate(z.number(), z.number())
-  async getNotifications(page: number = 1, limit: number = 10): Promise<PushOrgNotification[]> {
+  async getNotifications(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<notificationSchemas.PushOrgNotification[]> {
     const options: PushProtocol.FeedsOptions = {
       channels: [this._notificationChannelId],
       account: this._web3.state.address,
@@ -212,7 +170,8 @@ class NotificationService {
     const latestStoredNotificationID = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
 
     // Fetch notifications
-    const inboxNotifications: (PushOrgNotification & AddedNotificationProps)[] =
+    const inboxNotifications: (notificationSchemas.PushOrgNotification &
+      notificationSchemas.AddedNotificationProps)[] =
       await this.notificationsClient.notification.list('INBOX', options);
 
     // Mark as unread if their SID is greater than the stored SID and add properties for rendering usage

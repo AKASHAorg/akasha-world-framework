@@ -93,3 +93,48 @@ export const Notification = z.object({
     asub: z.string(),
   }),
 });
+
+export interface PushOrgNotification {
+  payload_id: number;
+  sender: string;
+  epoch: string;
+  payload: {
+    data: {
+      app: string;
+      sid: string;
+      url: string;
+      acta: string;
+      aimg: string;
+      amsg: string;
+      asub: string;
+      icon: string;
+      type: number;
+      epoch: string;
+      etime: string;
+      hidden: string;
+      silent: string;
+      sectype: string | null;
+      additionalMeta: {
+        data: string;
+        type: string;
+        domain: string;
+      };
+    };
+    recipients: {
+      [key: string]: string | null;
+    };
+    notification: {
+      body: string;
+      title: string;
+    };
+    verificationProof: string;
+  };
+  source: string;
+  etime: string;
+  sid: string | null;
+}
+
+export interface AddedNotificationProps {
+  timestamp: Date;
+  isUnread: boolean;
+}
