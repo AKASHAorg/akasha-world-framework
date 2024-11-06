@@ -6,12 +6,20 @@ import type {
 } from '@akashaorg/typings/lib/ui';
 import { createStore } from 'jotai';
 import { atomWithImmer } from 'jotai-immer';
+import { AUTH_EVENTS, CurrentUser } from '@akashaorg/typings/lib/sdk';
 
 const store = createStore();
 
 /**
- * Singleton store for managing login, logout, session restoration and fetching profile.
- * It uses jotai to manage the store
+ * The AuthenticationStore class is a singleton store that manages login, logout, session restoration, and fetching user profile information. It uses the jotai library to manage the store state.
+ *
+ * The class provides methods to handle user authentication, including logging in, logging out, and restoring the current user's session. It also provides a method to subscribe to changes in the store state, allowing components to re-render when the authentication state changes.
+ *
+ * The class is designed to be a singleton, with a static `getInstance` method that returns the single instance of the class. The constructor is private, preventing the class from being instantiated directly.
+ *
+ * @class AuthenticationStore
+ * @implements {IAuthenticationStore<T>}
+ * @template T
  */
 export class AuthenticationStore<T> implements IAuthenticationStore<T> {
   #initialState: IAuthenticationState<T> = {
@@ -22,6 +30,7 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
     authenticationError: null,
   };
   #sdk = getSDK();
+  #logger = this.#sdk.services.log.create('AuthenticationStore');
   static #instance = null;
   #getProfileInfo: IGetProfileInfo<T>['getProfileInfo'];
   #userAtom = atomWithImmer<IAuthenticationState<T>>(this.#initialState);
@@ -31,6 +40,8 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
    */
   private constructor(getProfileInfo: IGetProfileInfo<T>['getProfileInfo']) {
     this.#getProfileInfo = getProfileInfo;
+    // the order here is important
+    this.#initEventListeners();
     this.#restoreSession();
   }
 
@@ -44,6 +55,26 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
       AuthenticationStore.#instance = new AuthenticationStore<T>(getProfileInfo);
     }
     return AuthenticationStore.#instance;
+  }
+
+  #initEventListeners() {
+    this.#sdk.api.globalChannel.subscribe({
+      next: resp => {
+        switch (resp.event) {
+          case AUTH_EVENTS.READY:
+            this.#handleLoggedInState((resp.data as CurrentUser).id).then(() => {
+              this.#logger.info('AuthenticationStore signed in');
+            });
+            break;
+          case AUTH_EVENTS.SIGN_OUT:
+            this.#logger.info('Store signing out');
+            store.set(this.#userAtom, () => this.#initialState);
+            break;
+          default:
+            break;
+        }
+      },
+    });
   }
 
   /**
@@ -66,7 +97,6 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
         }));
         return;
       }
-      await this.#handleLoggedInState(result.data?.id);
     } catch (error) {
       store.set(this.#userAtom, prev => ({
         ...prev,
@@ -82,7 +112,7 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
    */
   logout = () => {
     this.#sdk.api.auth.signOut().then(() => {
-      store.set(this.#userAtom, () => this.#initialState);
+      this.#logger.info('Signed out');
     });
   };
 
@@ -122,7 +152,6 @@ export class AuthenticationStore<T> implements IAuthenticationStore<T> {
         }));
         return;
       }
-      await this.#handleLoggedInState(result?.id);
     } catch (error) {
       store.set(this.#userAtom, prev => ({
         ...prev,
