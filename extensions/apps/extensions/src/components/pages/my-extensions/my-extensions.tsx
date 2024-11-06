@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { capitalize } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
@@ -12,7 +12,6 @@ import {
 import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import {
   EventTypes,
-  Extension,
   ExtensionStatus,
   NotificationEvents,
   NotificationTypes,
@@ -144,7 +143,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       first: 10,
       sorting: { createdAt: SortOrder.Desc },
     },
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'no-cache',
     notifyOnNetworkStatusChange: true,
     skip: !authenticatedDID,
   });
@@ -169,15 +168,13 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       }
       return ext?.applicationType === selectedType.title?.toUpperCase();
     });
-  }, [selectedType]);
+  }, [appsData, selectedType.id, selectedType.title]);
 
   const [draftExtensions, setDraftExtensions] = useState([]);
 
   // fetch the draft extensions that are saved only on local storage
 
-  const allMyExtensions = [...draftExtensions, ...appElements];
-
-  const getDraftExtensions = () => {
+  const getDraftExtensions = useCallback(() => {
     try {
       const existingDraftExtensions =
         JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) ?? [];
@@ -186,10 +183,13 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       showErrorNotification(error);
       setDraftExtensions([]);
     }
-  };
+  }, [authenticatedDID, showErrorNotification]);
 
   useEffect(() => {
     getDraftExtensions();
+    refetch({
+      id: authenticatedDID,
+    });
     // subscribe and listen to events
     const eventsSub = uiEventsRef.current
       .pipe(filterEvents([EventTypes.RefetchMyExtensions]))
@@ -209,7 +209,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         eventsSub.unsubscribe();
       }
     };
-  }, []);
+  }, [authenticatedDID, getDraftExtensions, refetch]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -221,6 +221,8 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       },
     });
   };
+
+  const allMyExtensions = [...draftExtensions, ...appElements];
 
   if (!authenticatedDID) {
     return (
@@ -305,7 +307,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
               const extensionData = allMyExtensions[itemIndex];
               return (
                 <ExtensionElement
-                  extensionData={extensionData as Extension}
+                  extensionData={extensionData}
                   showDivider={itemIndex < allMyExtensions.length - 1}
                   filter={selectedStatus}
                   showMenu
