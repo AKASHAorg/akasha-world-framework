@@ -260,12 +260,9 @@ const EditorBox: React.FC<EditorBoxProps> = props => {
 
   /**
    * creates the object for publishing and resets the editor state after
-  
-   * todo version should be passed as a prop
    */
   const handlePublish = () => {
     const slateContent = editor.children;
-
     const metadata = createMetadata();
     const data = { metadata, slateContent, author: profileId };
     CustomEditor.clearEditor(editor);
