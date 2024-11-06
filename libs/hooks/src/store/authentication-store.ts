@@ -10,6 +10,17 @@ import { AUTH_EVENTS, CurrentUser } from '@akashaorg/typings/lib/sdk';
 
 const store = createStore();
 
+/**
+ * The AuthenticationStore class is a singleton store that manages login, logout, session restoration, and fetching user profile information. It uses the jotai library to manage the store state.
+ *
+ * The class provides methods to handle user authentication, including logging in, logging out, and restoring the current user's session. It also provides a method to subscribe to changes in the store state, allowing components to re-render when the authentication state changes.
+ *
+ * The class is designed to be a singleton, with a static `getInstance` method that returns the single instance of the class. The constructor is private, preventing the class from being instantiated directly.
+ *
+ * @class AuthenticationStore
+ * @implements {IAuthenticationStore<T>}
+ * @template T
+ */
 export class AuthenticationStore<T> implements IAuthenticationStore<T> {
   #initialState: IAuthenticationState<T> = {
     authenticatedDID: null,
