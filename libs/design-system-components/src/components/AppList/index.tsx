@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import DynamicInfiniteScroll, { DynamicInfiniteScrollProps } from '../DynamicInfiniteScroll';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
+import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
@@ -9,7 +10,6 @@ import {
   AkashaAppApplicationType,
   AppImageSource,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import IconFromAppType from '../../utils/iconByAppType';
 
 export type App = {
   displayName?: string;
@@ -77,7 +77,7 @@ const AppList: React.FC<AppListProps> = ({
                           color={{ light: 'secondaryLight', dark: 'white' }}
                           size={'xs'}
                           solid
-                          icon={<IconFromAppType type={app.applicationType} />}
+                          icon={<ExtensionIcon type={app.applicationType} />}
                         />
                       </Stack>
                     )}

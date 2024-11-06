@@ -1,14 +1,14 @@
 import React from 'react';
 import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { Plugin, Widget } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+import { Plugin, Widget } from '../Icon/akasha-icons';
 import { Squares2X2Icon } from '@heroicons/react/24/outline';
 
-export type IconByTypeProps = {
+export type ExtensionIconProps = {
   type: AkashaAppApplicationType;
   defaultIcon?: React.ReactElement;
 };
 
-const IconByAppType: React.FC<IconByTypeProps> = props => {
+const ExtensionIcon: React.FC<ExtensionIconProps> = props => {
   const { type, defaultIcon = <Squares2X2Icon /> } = props;
 
   switch (type) {
@@ -23,4 +23,4 @@ const IconByAppType: React.FC<IconByTypeProps> = props => {
   }
 };
 
-export default IconByAppType;
+export default ExtensionIcon;

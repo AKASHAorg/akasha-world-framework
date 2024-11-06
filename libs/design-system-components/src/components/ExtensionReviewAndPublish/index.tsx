@@ -4,6 +4,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import Accordion from '@akashaorg/design-system-core/lib/components/Accordion';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
+import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Label from '@akashaorg/design-system-core/lib/components/Label';
 import Link from '@akashaorg/design-system-core/lib/components/Link';
@@ -18,7 +19,6 @@ import { Extension, Image } from '@akashaorg/typings/lib/ui';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
 import { getImageFromSeed } from '@akashaorg/design-system-core/lib/utils';
 import { XCircleIcon } from '@heroicons/react/24/outline';
-import IconFromAppType from '../../utils/iconByAppType';
 
 export type ExtensionReviewAndPublishProps = {
   extensionData: Extension;
@@ -144,7 +144,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
           >
             <Icon
               size="sm"
-              icon={<IconFromAppType type={extensionData?.applicationType} />}
+              icon={<ExtensionIcon type={extensionData?.applicationType} />}
               color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
               solid={true}
             />

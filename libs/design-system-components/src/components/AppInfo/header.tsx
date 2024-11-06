@@ -1,4 +1,5 @@
 import React, { MouseEventHandler } from 'react';
+import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { ListItem } from '@akashaorg/design-system-core/lib/components/List';
@@ -14,7 +15,6 @@ import Tooltip from '@akashaorg/design-system-core/lib/components/Tooltip';
 import { InformationCircleIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
-import IconFromAppType from '../../utils/iconByAppType';
 
 export type AppInfoHeaderProps = {
   displayName: string;
@@ -111,7 +111,7 @@ export const AppInfoHeader: React.FC<AppInfoHeaderProps> = props => {
               <AppInfoPill background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}>
                 <Icon
                   size="sm"
-                  icon={<IconFromAppType type={extensionType} />}
+                  icon={<ExtensionIcon type={extensionType} />}
                   color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
                   solid={true}
                 />
