@@ -15,20 +15,47 @@ import { z } from 'zod';
 import * as notificationSchemas from './notification-schemas';
 
 interface PushOrgNotification {
-  cta: string;
-  title: string;
-  message: string;
-  icon: string;
-  url: string;
-  sid: string;
-  app: string;
-  image: string;
-  blockchain: string;
-  notification: {
-    body: string;
-    title: string;
+  payload_id: number;
+  sender: string;
+  epoch: string;
+  payload: {
+    data: {
+      app: string;
+      sid: string;
+      url: string;
+      acta: string;
+      aimg: string;
+      amsg: string;
+      asub: string;
+      icon: string;
+      type: number;
+      epoch: string;
+      etime: string;
+      hidden: string;
+      silent: string;
+      sectype: string | null;
+      additionalMeta: {
+        data: string;
+        type: string;
+        domain: string;
+      };
+    };
+    recipients: {
+      [key: string]: string | null;
+    };
+    notification: {
+      body: string;
+      title: string;
+    };
+    verificationProof: string;
   };
-  secret: string;
+  source: string;
+  etime: string;
+  sid: string | null;
+}
+
+interface AddedNotificationProps {
+  timestamp: Date;
   isUnread: boolean;
 }
 
@@ -42,7 +69,7 @@ class NotificationService {
   private _pushClient?: PushProtocol.PushAPI;
   private _notificationsStream?: PushStream;
   private _notificationChannelId: string;
-  public readonly latestSeenSidKey = 'latestSeenSidKey';
+  public readonly latestSeenNotificationIDKey = 'latestSeenNotificationIDKey';
 
   constructor(
     @inject(SdkTypes.TYPES.Log) logFactory: Logging,
@@ -181,28 +208,35 @@ class NotificationService {
       return [];
     }
 
-    const localStorageKey = `${this._web3.state.address}-${this.latestSeenSidKey}`;
-    const latestStoredSid = parseInt(localStorage.getItem(localStorageKey) || '0');
+    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
+    const latestStoredNotificationID = parseInt(localStorage.getItem(localStorageKey) || '0');
 
-    // Fetch notifications and mark as unread if their SID is greater than the stored SID
-    const inboxNotifications = await this.notificationsClient.notification.list('INBOX', options);
+    // Fetch notifications
+    const inboxNotifications: (PushOrgNotification & AddedNotificationProps)[] =
+      await this.notificationsClient.notification.list('INBOX', options);
+
+    // Mark as unread if their SID is greater than the stored SID and add properties for rendering usage
     for (const notification of inboxNotifications) {
-      const isUnread = latestStoredSid ? parseInt(notification.sid) > latestStoredSid : true;
+      Object.defineProperty(notification, 'timestamp', {
+        value: new Date(notification.epoch),
+      });
+
+      const isUnread = latestStoredNotificationID
+        ? notification.payload_id > latestStoredNotificationID
+        : true;
       Object.defineProperty(notification, 'isUnread', {
         value: isUnread,
-        writable: true,
       });
     }
 
     // Find the largest SID among fetched notifications
-    const largestFetchedSid = Math.max(
-      ...inboxNotifications.map(n => parseInt(n.sid)),
-      latestStoredSid,
+    const largestFetchedNotificationID = Math.max(
+      ...inboxNotifications.map(n => n.payload_id),
+      latestStoredNotificationID,
     );
-
-    // Update local storage if there is a new largest SID
-    if (largestFetchedSid > latestStoredSid) {
-      localStorage.setItem(localStorageKey, largestFetchedSid.toString());
+    // Update local storage if there is a new largest notification ID
+    if (largestFetchedNotificationID > latestStoredNotificationID) {
+      localStorage.setItem(localStorageKey, largestFetchedNotificationID.toString());
     }
 
     return inboxNotifications;
