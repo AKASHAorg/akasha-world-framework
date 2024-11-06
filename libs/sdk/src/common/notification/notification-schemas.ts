@@ -79,21 +79,16 @@ export const ChannelUserSettingsSchema = z
   });
 export type ChannelUserSettingsType = z.infer<typeof NotificationSettingTypeSchema>;
 
-export const Notification = z.object({
-  epoch: z.string(),
-  payload_id: z.number(),
-  data: z.object({
-    app: z.string(),
-    additionalMeta: z.object({
-      data: z.string(),
-      type: z.string(),
-    }),
-    icon: z.string(),
-    amsg: z.string(),
-    asub: z.string(),
-  }),
+export const MetaDataSchema = z.object({
+  data: z.string(),
+  type: z.string(),
 });
 
+export interface AdditionalMetadata {
+  data: string;
+  type: string;
+  domain: string;
+}
 export interface PushOrgNotification {
   payload_id: number;
   sender: string;
@@ -114,11 +109,7 @@ export interface PushOrgNotification {
       hidden: string;
       silent: string;
       sectype: string | null;
-      additionalMeta: {
-        data: string;
-        type: string;
-        domain: string;
-      };
+      additionalMeta: AdditionalMetadata;
     };
     recipients: {
       [key: string]: string | null;
@@ -137,4 +128,12 @@ export interface PushOrgNotification {
 export interface AddedNotificationProps {
   timestamp: Date;
   isUnread: boolean;
+  payload: {
+    data: {
+      parsedMetaData?: {
+        data: { [key: string]: unknown } | string;
+        channelIndex: number;
+      };
+    };
+  };
 }

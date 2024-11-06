@@ -129,7 +129,7 @@ class NotificationService {
   @validate(
     z.array(
       z.object({
-        enable: z.boolean(),
+        enabled: z.boolean(),
       }),
     ),
   )
@@ -149,30 +149,32 @@ class NotificationService {
    * Gets notifications and markes them as read/unread according to highest SID stored in local storage
    * @returns {Promise<PushOrgNotification[]>}
    */
-  @validate(z.number(), z.number())
+  @validate(
+    z.number().positive().optional(),
+    z.number().positive().max(100).optional(),
+    z.array(z.number().positive()).optional(),
+  )
   async getNotifications(
     page: number = 1,
-    limit: number = 10,
-  ): Promise<notificationSchemas.PushOrgNotification[]> {
-    const options: PushProtocol.FeedsOptions = {
-      channels: [this._notificationChannelId],
-      account: this._web3.state.address,
-      page,
-      limit,
-      raw: true,
-    };
-
+    limit: number = 100,
+    optionsIndexes: number[] = [],
+  ): Promise<
+    (notificationSchemas.PushOrgNotification & notificationSchemas.AddedNotificationProps)[]
+  > {
     if (!this._web3.state.address?.length) {
       return [];
     }
 
-    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
-    const latestStoredNotificationID = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
-
     // Fetch notifications
     const inboxNotifications: (notificationSchemas.PushOrgNotification &
-      notificationSchemas.AddedNotificationProps)[] =
-      await this.notificationsClient.notification.list('INBOX', options);
+      notificationSchemas.AddedNotificationProps)[] = await this.getInboxNotifications(
+      page,
+      limit,
+      optionsIndexes,
+    );
+
+    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
+    const latestStoredNotificationID = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
 
     // Mark as unread if their SID is greater than the stored SID and add properties for rendering usage
     for (const notification of inboxNotifications) {
@@ -214,6 +216,112 @@ class NotificationService {
     }
 
     return false;
+  }
+
+  /** Filter the notifications by selected apps (options indexes) */
+  private async getInboxNotifications(page: number, limit: number, optionsIndexes: number[]) {
+    const options: PushProtocol.FeedsOptions = {
+      channels: [this._notificationChannelId],
+      account: this._web3.state.address,
+      page: 1,
+      limit: 100,
+      raw: true,
+    };
+    // if there are no options/apps specified.
+    if (!optionsIndexes.length) {
+      options.page = page;
+      options.limit = limit;
+      const notifications: (notificationSchemas.PushOrgNotification &
+        notificationSchemas.AddedNotificationProps)[] =
+        await this.notificationsClient.notification.list('INBOX', options);
+      // Parse metaData
+      for (const notification of notifications) {
+        this.parseNotificationData(notification);
+      }
+      return notifications;
+    }
+    //By fetching a high limit per page (limit: 100), the code minimizes http requests to pushProtocol service and only makes additional calls if necessary, which improves efficiency.
+    const accumulatedNotifications: (notificationSchemas.PushOrgNotification &
+      notificationSchemas.AddedNotificationProps)[] = [];
+    let hasMorePages = true;
+
+    // Calculate the indices for slicing
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    while (hasMorePages && accumulatedNotifications.length < endIndex) {
+      const inboxNotifications: (notificationSchemas.PushOrgNotification &
+        notificationSchemas.AddedNotificationProps)[] =
+        await this.notificationsClient.notification.list('INBOX', options);
+
+      // Filter notifications based on app options
+      const filteredNotifications = inboxNotifications.filter(notification => {
+        this.parseNotificationData(notification);
+        const parsedMetaData = notification.payload.data.parsedMetaData;
+        return (
+          parsedMetaData?.channelIndex !== undefined &&
+          optionsIndexes.includes(parsedMetaData.channelIndex)
+        );
+      });
+      accumulatedNotifications.push(...filteredNotifications);
+
+      // if there is no notification fetched then it means that there is no pages
+      hasMorePages = !!inboxNotifications.length;
+      options.page!++;
+    }
+
+    return accumulatedNotifications.slice(startIndex, endIndex);
+  }
+
+  parseNotificationData(
+    notification: notificationSchemas.PushOrgNotification &
+      notificationSchemas.AddedNotificationProps,
+  ) {
+    if (notification.payload?.data?.additionalMeta) {
+      const metaData = this.parseMetaData(notification.payload.data.additionalMeta);
+      Object.defineProperty(notification.payload.data, 'parsedMetaData', {
+        value: { channelIndex: metaData.channelIndex, data: metaData.data },
+      });
+    }
+    return notification;
+  }
+
+  parseMetaData(metaData: notificationSchemas.AdditionalMetadata) {
+    let indexOfOption: number | undefined;
+    let data: { [key: string]: unknown } | string = '';
+
+    // Safely access 'type' and split it
+    const splitType = metaData?.type.split('+') ?? [];
+    if (splitType.length > 1) {
+      indexOfOption = parseInt(splitType[1], 10);
+      if (isNaN(indexOfOption)) {
+        this._log.warn({
+          data: metaData.type,
+          msg: 'Unable to parse index from type',
+        });
+        indexOfOption = undefined;
+      }
+    }
+
+    // Parse the 'data' field as JSON
+    if (metaData?.data) {
+      try {
+        data = JSON.parse(metaData.data);
+      } catch (error) {
+        this._log.warn({
+          data: metaData.data,
+          msg: 'Unable to parse data',
+          error,
+        });
+        data = metaData?.data;
+      }
+    }
+
+    // Return the parsed index and data
+    return {
+      channelIndex: indexOfOption,
+      data,
+    };
   }
 
   private async initializeWritableClient(): Promise<void> {
