@@ -78,7 +78,7 @@ class Web3Connector {
         name: 'Ethereum',
         currency: 'ETH',
         explorerUrl: 'https://sepolia.etherscan.io/',
-        rpcUrl: 'https://rpc2.sepolia.org',
+        rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
       },
     ];
 
@@ -90,11 +90,12 @@ class Web3Connector {
         icons: ['https://avatars.githubusercontent.com/u/9638191'],
       },
       defaultChainId: this.networkId.sepolia,
-      rpcUrl: 'https://rpc2.sepolia.org',
+      rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
       enableCoinbase: true,
     });
 
     this.#w3modal = createWeb3Modal({
+      defaultChain: chains[0],
       ethersConfig,
       projectId,
       chains,
@@ -134,12 +135,16 @@ class Web3Connector {
         const unsubscribe = this.#w3modal.subscribeProvider(state => {
           if (state.provider && state.isConnected && state.address) {
             resolve({ connected: true, unsubscribe });
+            if (this.#w3modal.getState().open) {
+              this.#w3modal.close();
+            }
           }
         });
-        await this.#w3modal.open({ view: 'Connect' });
+
+        await this.#w3modal.open();
       });
     }
-    return { connected: this.#w3modal.getIsConnected() };
+    return Promise.resolve({ connected: this.#w3modal.getIsConnected() });
   }
 
   /*
