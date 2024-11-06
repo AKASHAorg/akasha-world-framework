@@ -35,11 +35,6 @@ declare const __LOAD_LOCAL_SOURCES__: boolean;
       applicationType: AkashaAppApplicationType.Widget,
       source: `${origin}/widgets/mini-profile/index.js`,
     },
-    {
-      name: '@akashaorg/ui-widget-my-apps',
-      applicationType: AkashaAppApplicationType.Widget,
-      source: `${origin}/widgets/my-apps/index.js`,
-    },
   ];
 
   if (__DEV__ || __LOAD_LOCAL_SOURCES__) {
@@ -82,7 +77,6 @@ declare const __LOAD_LOCAL_SOURCES__: boolean;
       '@akashaorg/ui-widget-analytics',
       '@akashaorg/ui-widget-sidebar',
       '@akashaorg/ui-widget-mini-profile',
-      '@akashaorg/ui-widget-my-apps',
     ],
     analytics: {
       trackerUrl: process.env.MATOMO_TRACKER_URL || '',
