@@ -107,14 +107,8 @@ export type SlateDescendant = Descendant;
  */
 export interface IMetadata {
   app: string;
-  version: number;
-  images?: {
-    originalSrc?: string;
-    src: { url?: string; fallbackUrl?: string };
-    size: { width: number; height: number; naturalWidth: number; naturalHeight: number };
-    id: string;
-  }[];
   mentions: string[];
+  textContent: string;
 }
 
 declare module 'slate' {

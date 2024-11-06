@@ -69,11 +69,14 @@ export type BlockInstanceMethods = {
    * response - an object containing the blockID and optionally an error message;
    * blockInfo - the block's information (received as React props);
    * retryCount - optional number (retry counter)
+   * each editor type block can expose the mentions added to it by this method
+   * so that it can be accesed on beam publishing and added to the beam model
    */
   createBlock: (arg: CreateContentBlock) => Promise<{
     response: { blockID: string; error?: string };
     blockInfo: BlockInfo;
     retryCount?: number;
+    editorMentions?: string[];
   }>;
   /**
    * If the createBlock fails, or returns an error message, the editor

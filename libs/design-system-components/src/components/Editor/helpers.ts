@@ -196,6 +196,19 @@ export const countMentions = (node: ExtendedNode) => {
   return count;
 };
 
+export const getSlateMentions = (node: ExtendedNode) => {
+  const mentions = [];
+  (function getMentionsRecursive(node: ExtendedNode) {
+    if (Element.isElement(node) && node.type === 'mention') {
+      mentions.push(node.did);
+    }
+    if (Element.isElement(node) && node.children) {
+      node.children.map((n: Descendant) => getMentionsRecursive(n));
+    }
+  })(node);
+  return mentions;
+};
+
 interface IPortal {
   children: React.ReactNode;
   targetNode?: HTMLElement;

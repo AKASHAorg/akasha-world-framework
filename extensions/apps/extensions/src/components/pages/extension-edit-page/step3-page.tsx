@@ -114,7 +114,7 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
         return { ...prev, contributors: extensionData?.contributors };
       });
     }
-  }, [extensionData?.contributors, formValue, setForm]);
+  }, [extensionData?.contributors]);
 
   const handleNavigateToContributorsPage = data => {
     setForm(prev => {
@@ -124,7 +124,7 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
         // this, so when the user gets back to the form the data that the user last entered
         // is prefilled
         lastCompletedStep: 3,
-        data,
+        ...data,
       };
     });
     navigate({ to: '/edit-extension/$extensionId/contributors', params: { extensionId } });
