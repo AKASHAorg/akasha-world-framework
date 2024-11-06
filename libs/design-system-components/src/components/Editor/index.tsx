@@ -251,11 +251,10 @@ const EditorBox: React.FC<EditorBoxProps> = props => {
 
     const metadata: IMetadata = {
       app: publishingApp,
-      textContent: serializeToPlainText(initContent),
       mentions,
     };
-
-    return metadata;
+    const textContent = serializeToPlainText(initContent);
+    return { metadata, textContent };
   };
 
   /**
@@ -263,8 +262,8 @@ const EditorBox: React.FC<EditorBoxProps> = props => {
    */
   const handlePublish = () => {
     const slateContent = editor.children;
-    const metadata = createMetadata();
-    const data = { metadata, slateContent, author: profileId };
+    const { metadata, textContent } = createMetadata();
+    const data = { metadata, slateContent, textContent, author: profileId };
     CustomEditor.clearEditor(editor);
     onPublish(data);
   };

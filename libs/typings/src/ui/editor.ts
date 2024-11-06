@@ -108,7 +108,6 @@ export type SlateDescendant = Descendant;
 export interface IMetadata {
   app: string;
   mentions: string[];
-  textContent: string;
 }
 
 declare module 'slate' {
