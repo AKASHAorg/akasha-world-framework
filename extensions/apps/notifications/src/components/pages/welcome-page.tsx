@@ -86,7 +86,12 @@ const WelcomePage: React.FC<WelcomePageProps> = props => {
         details={`${t('To check your notifications you must be connected')} ⚡️`}
         dataTestId="notifications"
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          label={t('Connect')}
+          size="md"
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
 

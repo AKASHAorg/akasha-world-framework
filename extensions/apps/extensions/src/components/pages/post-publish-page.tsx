@@ -53,7 +53,12 @@ export const PostPublishPage: React.FC<PostPublishPageProps> = ({ type, extensio
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To view this page you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
   }

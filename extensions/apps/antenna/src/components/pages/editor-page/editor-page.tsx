@@ -30,6 +30,7 @@ const EditorPage: React.FC<unknown> = () => {
             >
               <Button
                 label={t('Connect')}
+                size="md"
                 variant="primary"
                 onClick={() =>
                   navigateTo.current({

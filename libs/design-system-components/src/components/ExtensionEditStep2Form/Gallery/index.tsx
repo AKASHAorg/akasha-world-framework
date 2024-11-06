@@ -55,6 +55,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
           </Text>
           <Button
             variant="text"
+            size="md"
             {...(!galleryHasImages && { icon: <PlusIcon />, iconDirection: 'left' })}
             label={galleryHasImages ? uploadAndEditLabel : addLabel}
             onClick={handleMediaClick}
