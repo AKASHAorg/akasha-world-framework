@@ -95,6 +95,7 @@ class Web3Connector {
     });
 
     this.#w3modal = createWeb3Modal({
+      defaultChain: chains[0],
       ethersConfig,
       projectId,
       chains,
@@ -134,12 +135,16 @@ class Web3Connector {
         const unsubscribe = this.#w3modal.subscribeProvider(state => {
           if (state.provider && state.isConnected && state.address) {
             resolve({ connected: true, unsubscribe });
+            if (this.#w3modal.getState().open) {
+              this.#w3modal.close();
+            }
           }
         });
-        await this.#w3modal.open({ view: 'Connect' });
+
+        await this.#w3modal.open();
       });
     }
-    return { connected: this.#w3modal.getIsConnected() };
+    return Promise.resolve({ connected: this.#w3modal.getIsConnected() });
   }
 
   /*
