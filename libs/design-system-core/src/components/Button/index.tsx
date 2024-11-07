@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
-import { apply, tw } from '@twind/core';
-import Stack from '../Stack';
 import Text, { TextProps } from '../Text';
+import { tw, apply } from '@twind/core';
 import { ArrowPathIcon } from '../Icon/hero-icons-outline';
 import { ButtonIcon } from './button-icon';
 import { IconOnlyButton } from './IconOnlyButton';
@@ -30,10 +29,10 @@ import { getColorClasses } from '../../utils';
  * @param plain - boolean (optional) a plain button has no styling applied, can be used as a
  * click wrapper
  * @param breakPointSize - (optional) customize sizes for the break points
- * @param customStyle - (optional) custom styling if any
- * @param active - boolean (optional) whether the buttton is active
+ * @param active - boolean (optional) whether the button is active
  * @param hover - boolean (optional)
  * @param hoverColors - (optional) styling for hover state
+ * @param customStyle - (optional) custom styling if any
  * @param ref - (optional)
  *
  * @example
@@ -45,7 +44,7 @@ const Button: React.FC<ButtonProps> = forwardRef((props, ref) => {
   const {
     plain,
     icon,
-    iconDirection,
+    iconDirection = 'left',
     label,
     size = 'sm',
     variant = 'secondary',
@@ -82,7 +81,7 @@ const Button: React.FC<ButtonProps> = forwardRef((props, ref) => {
       <button
         ref={ref}
         type="button"
-        className={tw(`${disabledStyle} ${hoverStyle} ${customStyle}`)}
+        className={tw(apply`${disabledStyle} ${hoverStyle} ${customStyle}`)}
         disabled={disabled}
         {...rest}
       >
@@ -131,69 +130,69 @@ const Button: React.FC<ButtonProps> = forwardRef((props, ref) => {
   const buttonPaddingStyle = variant !== 'text' ? BUTTON_SIZE_PADDING_MAP[size] : '';
 
   return (
-    <button ref={ref} className={tw(customStyle)} type="button" {...rest} disabled={disabled}>
-      <Stack
-        direction="row"
-        align="center"
-        justify="center"
-        spacing="gap-x-1"
-        customStyle={apply`group ${containerStyle} ${buttonSizeStyle} ${breakPointStyle} ${buttonPaddingStyle}`}
-      >
-        {loading ? (
-          <ButtonIcon
-            size={size}
-            icon={<ArrowPathIcon />}
-            variant={variant}
-            greyBg={greyBg}
-            loading={true}
-            breakPointSize={breakPointSize}
-            disabled={disabled}
-            customStyle={customStyle}
-          />
-        ) : (
-          <>
-            {icon && iconDirection === 'left' && (
-              <ButtonIcon
-                size={size}
-                icon={icon}
-                solid={solidIcon}
-                variant={variant}
-                greyBg={greyBg}
-                loading={false}
-                breakPointSize={breakPointSize}
-                disabled={disabled}
-                active={active}
-                hoverColor={hover ? hoverColors?.icon : null}
-              />
-            )}
-            <Text variant={BUTTON_SIZE_TEXT_MAP[size]} as="span" customStyle={textStyle}>
-              {label}
-            </Text>
-            {icon && iconDirection === 'right' && (
-              <ButtonIcon
-                size={size}
-                icon={icon}
-                solid={solidIcon}
-                variant={variant}
-                greyBg={greyBg}
-                loading={false}
-                breakPointSize={breakPointSize}
-                disabled={disabled}
-                active={active}
-                hoverColor={hover ? hoverColors?.icon : null}
-              />
-            )}
-          </>
-        )}
-      </Stack>
+    <button
+      ref={ref}
+      type="button"
+      className={tw(
+        apply`flex justify-center items-center gap-x-1 group ${containerStyle} ${buttonSizeStyle} ${breakPointStyle} ${buttonPaddingStyle} ${customStyle}`,
+      )}
+      {...rest}
+      disabled={disabled}
+    >
+      {loading ? (
+        <ButtonIcon
+          size={size}
+          icon={<ArrowPathIcon />}
+          variant={variant}
+          greyBg={greyBg}
+          loading={true}
+          breakPointSize={breakPointSize}
+          disabled={disabled}
+          customStyle={customStyle}
+        />
+      ) : (
+        <>
+          {icon && iconDirection === 'left' && (
+            <ButtonIcon
+              size={size}
+              icon={icon}
+              solid={solidIcon}
+              variant={variant}
+              greyBg={greyBg}
+              loading={false}
+              breakPointSize={breakPointSize}
+              disabled={disabled}
+              active={active}
+              hoverColor={hover ? hoverColors?.icon : null}
+            />
+          )}
+          <Text variant={BUTTON_SIZE_TEXT_MAP[size]} as="span" customStyle={textStyle}>
+            {label}
+          </Text>
+          {icon && iconDirection === 'right' && (
+            <ButtonIcon
+              size={size}
+              icon={icon}
+              solid={solidIcon}
+              variant={variant}
+              greyBg={greyBg}
+              loading={false}
+              breakPointSize={breakPointSize}
+              disabled={disabled}
+              active={active}
+              hoverColor={hover ? hoverColors?.icon : null}
+            />
+          )}
+        </>
+      )}
     </button>
   );
 });
 
 export const BUTTON_SIZE_MAP: Record<Exclude<ButtonSize, 'xs'>, string> = {
-  sm: 'h-8 rounded-3xl',
+  sm: 'h-[1.875rem] rounded-[1.25rem]',
   md: 'h-10 rounded-3xl',
-  lg: 'h-14 rounded-[1.875rem]',
+  lg: 'h-[3.625rem] rounded-[1.875rem]',
 };
 
 export const BUTTON_SIZE_PADDING_MAP: Record<Exclude<ButtonSize, 'xs'>, string> = {
@@ -211,9 +210,9 @@ export const BUTTON_SIZE_TEXT_MAP: Record<Exclude<ButtonSize, 'xs'>, TextProps['
 const BUTTON_SIZE_MAP_BY_BREAKPOINT = (
   breakPoint: string,
 ): Record<Exclude<ButtonSize, 'xs'>, string> => ({
-  sm: `${breakPoint}:h-8`,
+  sm: `${breakPoint}:h-[1.875rem]`,
   md: `${breakPoint}:h-10`,
-  lg: `${breakPoint}:h-14`,
+  lg: `${breakPoint}:h-[3.625rem]`,
 });
 
 export default Button;

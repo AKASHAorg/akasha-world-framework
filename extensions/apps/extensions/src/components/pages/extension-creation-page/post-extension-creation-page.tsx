@@ -56,7 +56,12 @@ export const PostExtensionCreationPage: React.FC<{ extensionId: string }> = ({ e
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To view this page you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
   }
@@ -96,9 +101,15 @@ You can add more details to your extension, such as a description, gallery & mor
         </Text>
 
         <Stack direction="row" spacing="gap-4">
-          <Button variant="secondary" label={t('Add Details')} onClick={handleNavigateToEdit} />
+          <Button
+            variant="secondary"
+            size="md"
+            label={t('Add Details')}
+            onClick={handleNavigateToEdit}
+          />
           <Button
             variant="primary"
+            size="md"
             label={t('Manage Releases')}
             onClick={handleNavigateToReleaseManager}
           />
