@@ -321,13 +321,17 @@ class NotificationService {
   }
 
   private getLatestStoredNotificationID() {
-    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
+    const localStorageKey = this.getLocalStorageKeyOfLatestSeenNotification();
     return parseInt(localStorage.getItem(localStorageKey) || '0', 10);
   }
 
   private setLatestStoredNotificationID(val: string) {
-    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
+    const localStorageKey = this.getLocalStorageKeyOfLatestSeenNotification();
     return localStorage.set(localStorageKey, val);
+  }
+
+  private getLocalStorageKeyOfLatestSeenNotification() {
+    return `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
   }
 
   get notificationsClient() {
