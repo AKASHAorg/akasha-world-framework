@@ -164,43 +164,69 @@ class NotificationService {
     if (!this._web3.state.address?.length) {
       return [];
     }
-
     // Fetch notifications
-    const inboxNotifications: (notificationSchemas.PushOrgNotification &
-      notificationSchemas.AddedNotificationProps)[] = await this.getInboxNotifications(
-      page,
-      limit,
-      optionsIndexes,
-    );
+    const options: PushProtocol.FeedsOptions = {
+      channels: [this._notificationChannelId],
+      account: this._web3.state.address,
+      page: 1,
+      limit: 100,
+      raw: true,
+    };
 
-    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
-    const latestStoredNotificationID = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
+    let notifications: (notificationSchemas.PushOrgNotification &
+      notificationSchemas.AddedNotificationProps)[] = [];
 
-    // Mark as unread if their SID is greater than the stored SID and add properties for rendering usage
-    for (const notification of inboxNotifications) {
-      Object.defineProperty(notification, 'timestamp', {
-        value: new Date(notification.epoch),
-      });
+    // if there are no options/apps specified.
+    if (!optionsIndexes.length) {
+      options.page = page;
+      options.limit = limit;
+      notifications = await this.notificationsClient.notification.list('INBOX', options);
+      for (const notification of notifications) {
+        this.parseNotificationData(notification);
+      }
+    } else {
+      // Calculate the indices for slicing
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
 
-      const isUnread = latestStoredNotificationID
-        ? notification.payload_id > latestStoredNotificationID
-        : true;
-      Object.defineProperty(notification, 'isUnread', {
-        value: isUnread,
-      });
+      // By fetching a high limit per page (limit: 100), the code minimizes http requests to pushProtocol service and only makes additional calls if necessary, which improves efficiency.
+      let hasMorePages = true;
+      while (hasMorePages && notifications.length < endIndex) {
+        const inboxNotifications: (notificationSchemas.PushOrgNotification &
+          notificationSchemas.AddedNotificationProps)[] =
+          await this.notificationsClient.notification.list('INBOX', options);
+
+        // Filter notifications based on app options
+        const filteredNotifications = inboxNotifications.filter(notification => {
+          this.parseNotificationData(notification);
+          const parsedMetaData = notification.payload.data.parsedMetaData;
+          return (
+            parsedMetaData?.channelIndex !== undefined &&
+            optionsIndexes.includes(parsedMetaData.channelIndex)
+          );
+        });
+        notifications.push(...filteredNotifications);
+
+        // if there is no notification fetched then it means that there is no pages
+        hasMorePages = !!inboxNotifications.length;
+        options.page!++;
+      }
+
+      notifications.slice(startIndex, endIndex);
     }
 
+    const latestStoredNotificationID = this.getLatestStoredNotificationID();
     // Find the largest SID among fetched notifications
     const largestFetchedNotificationID = Math.max(
-      ...inboxNotifications.map(n => n.payload_id),
+      ...notifications.map(n => n.payload_id),
       latestStoredNotificationID,
     );
     // Update local storage if there is a new largest notification ID
     if (largestFetchedNotificationID > latestStoredNotificationID) {
-      localStorage.setItem(localStorageKey, largestFetchedNotificationID.toString());
+      this.setLatestStoredNotificationID(largestFetchedNotificationID.toString());
     }
 
-    return inboxNotifications;
+    return notifications;
   }
 
   async enableBrowserNotifications() {
@@ -218,61 +244,6 @@ class NotificationService {
     return false;
   }
 
-  /** Filter the notifications by selected apps (options indexes) */
-  private async getInboxNotifications(page: number, limit: number, optionsIndexes: number[]) {
-    const options: PushProtocol.FeedsOptions = {
-      channels: [this._notificationChannelId],
-      account: this._web3.state.address,
-      page: 1,
-      limit: 100,
-      raw: true,
-    };
-    // if there are no options/apps specified.
-    if (!optionsIndexes.length) {
-      options.page = page;
-      options.limit = limit;
-      const notifications: (notificationSchemas.PushOrgNotification &
-        notificationSchemas.AddedNotificationProps)[] =
-        await this.notificationsClient.notification.list('INBOX', options);
-      // Parse metaData
-      for (const notification of notifications) {
-        this.parseNotificationData(notification);
-      }
-      return notifications;
-    }
-    //By fetching a high limit per page (limit: 100), the code minimizes http requests to pushProtocol service and only makes additional calls if necessary, which improves efficiency.
-    const accumulatedNotifications: (notificationSchemas.PushOrgNotification &
-      notificationSchemas.AddedNotificationProps)[] = [];
-    let hasMorePages = true;
-
-    // Calculate the indices for slicing
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-
-    while (hasMorePages && accumulatedNotifications.length < endIndex) {
-      const inboxNotifications: (notificationSchemas.PushOrgNotification &
-        notificationSchemas.AddedNotificationProps)[] =
-        await this.notificationsClient.notification.list('INBOX', options);
-
-      // Filter notifications based on app options
-      const filteredNotifications = inboxNotifications.filter(notification => {
-        this.parseNotificationData(notification);
-        const parsedMetaData = notification.payload.data.parsedMetaData;
-        return (
-          parsedMetaData?.channelIndex !== undefined &&
-          optionsIndexes.includes(parsedMetaData.channelIndex)
-        );
-      });
-      accumulatedNotifications.push(...filteredNotifications);
-
-      // if there is no notification fetched then it means that there is no pages
-      hasMorePages = !!inboxNotifications.length;
-      options.page!++;
-    }
-
-    return accumulatedNotifications.slice(startIndex, endIndex);
-  }
-
   parseNotificationData(
     notification: notificationSchemas.PushOrgNotification &
       notificationSchemas.AddedNotificationProps,
@@ -283,7 +254,18 @@ class NotificationService {
         value: { channelIndex: metaData.channelIndex, data: metaData.data },
       });
     }
-    return notification;
+    // Mark as unread if their SID is greater than the stored SID and add properties for rendering usage
+    Object.defineProperty(notification, 'timestamp', {
+      value: new Date(notification.epoch),
+    });
+
+    const getLatestStoredNotificationID = this.getLatestStoredNotificationID();
+    const isUnread = getLatestStoredNotificationID
+      ? notification.payload_id > getLatestStoredNotificationID
+      : true;
+    Object.defineProperty(notification, 'isUnread', {
+      value: isUnread,
+    });
   }
 
   parseMetaData(metaData: notificationSchemas.AdditionalMetadata) {
@@ -336,6 +318,16 @@ class NotificationService {
       });
       throw new Error('The user did not sign the message');
     }
+  }
+
+  private getLatestStoredNotificationID() {
+    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
+    return parseInt(localStorage.getItem(localStorageKey) || '0', 10);
+  }
+
+  private setLatestStoredNotificationID(val: string) {
+    const localStorageKey = `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
+    return localStorage.set(localStorageKey, val);
   }
 
   get notificationsClient() {
