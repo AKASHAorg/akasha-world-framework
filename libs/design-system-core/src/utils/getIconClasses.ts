@@ -1,4 +1,4 @@
-import { Color, STATUS_TO_COLOR_CLASSES_MAP, Status } from '../../types/common.types';
+import { Color, STATUS_TO_COLOR_CLASSES_MAP, Status } from '../components/types/common.types';
 
 export function getIconClasses(status: Status, disabled?: boolean): Color {
   if (disabled) {

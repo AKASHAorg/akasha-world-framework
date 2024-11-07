@@ -1,4 +1,4 @@
-import { Status } from '../../types/common.types';
+import { Status } from '../components/types/common.types';
 
 export function getInputClasses(disabled: boolean, status: Status, readOnly?: boolean) {
   const defaultClasses = `peer focus:outline-none w-full bg-transparent text-[0.875rem] leading-[1.375rem] font-light`;
