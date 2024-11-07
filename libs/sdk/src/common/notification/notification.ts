@@ -176,13 +176,14 @@ class NotificationService {
     let notifications: (notificationSchemas.PushOrgNotification &
       notificationSchemas.AddedNotificationProps)[] = [];
 
+    const latestStoredNotificationID = this.getLatestStoredNotificationID();
     // if there are no options/apps specified.
     if (!optionsIndexes.length) {
       options.page = page;
       options.limit = limit;
       notifications = await this.notificationsClient.notification.list('INBOX', options);
       for (const notification of notifications) {
-        this.parseNotificationData(notification);
+        this.parseNotificationData(notification, latestStoredNotificationID);
       }
     } else {
       // Calculate the indices for slicing
@@ -198,7 +199,7 @@ class NotificationService {
 
         // Filter notifications based on app options
         const filteredNotifications = inboxNotifications.filter(notification => {
-          this.parseNotificationData(notification);
+          this.parseNotificationData(notification, latestStoredNotificationID);
           const parsedMetaData = notification.payload.data.parsedMetaData;
           return (
             parsedMetaData?.channelIndex !== undefined &&
@@ -215,7 +216,6 @@ class NotificationService {
       notifications.slice(startIndex, endIndex);
     }
 
-    const latestStoredNotificationID = this.getLatestStoredNotificationID();
     // Find the largest SID among fetched notifications
     const largestFetchedNotificationID = Math.max(
       ...notifications.map(n => n.payload_id),
@@ -247,6 +247,7 @@ class NotificationService {
   parseNotificationData(
     notification: notificationSchemas.PushOrgNotification &
       notificationSchemas.AddedNotificationProps,
+    latestStoredNotificationID: number,
   ) {
     if (notification.payload?.data?.additionalMeta) {
       const metaData = this.parseMetaData(notification.payload.data.additionalMeta);
@@ -259,9 +260,8 @@ class NotificationService {
       value: new Date(notification.epoch),
     });
 
-    const getLatestStoredNotificationID = this.getLatestStoredNotificationID();
-    const isUnread = getLatestStoredNotificationID
-      ? notification.payload_id > getLatestStoredNotificationID
+    const isUnread = latestStoredNotificationID
+      ? notification.payload_id > latestStoredNotificationID
       : true;
     Object.defineProperty(notification, 'isUnread', {
       value: isUnread,
