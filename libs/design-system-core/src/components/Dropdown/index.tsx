@@ -67,7 +67,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const optionsWrapperStyle = apply`absolute w-full z-10 max-h-60 ${label ? 'mt-[70px]' : 'mt-[2.7rem]'} rounded-lg overflow-auto bg-(white dark:grey3)`;
+  const optionsWrapperStyle = apply`absolute w-full z-10 max-h-60 ${label ? 'mt-[70px]' : 'mt-[2.5rem]'} rounded-lg overflow-auto bg-(white dark:grey3)`;
 
   const optionStyle = apply`flex items-center justify-between py-1.5 px-2 bg-(hover:grey8 dark:hover:grey5)`;
 
@@ -95,7 +95,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
         aria-label="dropdown"
         type="button"
       >
-        <Text variant="body1">{selected}</Text>
+        <Text variant="body2">{selected}</Text>
         {dropOpen ? (
           <Icon
             icon={<ChevronUpIcon />}
@@ -131,7 +131,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
                     customStyle={`${isSelected ? 'text-secondaryLight' : 'text-black'} hover:bg-(grey8 dark:grey5)`}
                   >
                     <Text
-                      variant="body1"
+                      variant="body2"
                       color={
                         isSelected
                           ? { light: 'secondaryLight', dark: 'secondaryDark' }
