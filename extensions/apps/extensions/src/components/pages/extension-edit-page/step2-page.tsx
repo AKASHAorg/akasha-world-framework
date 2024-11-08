@@ -106,7 +106,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           nsfwDescriptionLabel={t('Once you mark it as NSFW, you can’t change it back')}
           descriptionFieldLabel={t('Description')}
           descriptionPlaceholderLabel={t('What does this extension do?')}
-          galleryFieldLabel={t('Extension Gallery')}
+          galleryFieldLabel={t('Gallery')}
           galleryDescriptionLabel={t(
             'The first three images, based on your order, will be featured on the main extension card.',
           )}
@@ -117,7 +117,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           linkTitleLabel={t('Link')}
           linkPlaceholderLabel={t('Link title')}
           addLabel={t('Add')}
-          uploadAndEditLabel={t('Upload')}
+          updateGalleryLabel={t('Update gallery')}
           imagesUploadedLabel={t('images uploaded')}
           images={galleryImages}
           defaultValues={formDefault}

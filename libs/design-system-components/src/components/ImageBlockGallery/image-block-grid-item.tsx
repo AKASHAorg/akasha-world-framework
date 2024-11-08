@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { apply, tw, tx } from '@twind/core';
-import { DelayLoad } from '../../utils/delay-load';
+import { DelayLoad } from '@akashaorg/design-system-core/lib/utils/delay-load';
 import { type GalleryImage } from '@akashaorg/typings/lib/ui';
 
 export interface IGridItemProps {

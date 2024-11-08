@@ -61,7 +61,7 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
     linkTitleLabel,
     linkPlaceholderLabel,
     addLabel,
-    uploadAndEditLabel,
+    updateGalleryLabel,
     imagesUploadedLabel,
     images,
     maxGalleryImages,
@@ -140,7 +140,7 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
             galleryFieldLabel={galleryFieldLabel}
             galleryDescriptionLabel={galleryDescriptionLabel}
             addLabel={addLabel}
-            uploadAndEditLabel={uploadAndEditLabel}
+            updateGalleryLabel={updateGalleryLabel}
             imagesUploadedLabel={imagesUploadedLabel}
             images={images}
             maxGalleryImages={maxGalleryImages}

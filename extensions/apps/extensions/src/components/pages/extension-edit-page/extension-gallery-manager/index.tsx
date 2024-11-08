@@ -20,7 +20,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useGalleryImages } from './use-gallery-image';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from '../main-page';
-import { MAX_GALLERY_IMAGES } from '../../../../constants';
+import { MAX_GALLERY_IMAGES, MAX_UPLOAD_RETRIES } from '../../../../constants';
 
 type ExtensionGalleryManagerPageProps = {
   extensionId: string;
@@ -36,6 +36,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
   const [uploading, setUploading] = useState(false);
   const [imageIdsWithError, setImageIdsWithError] = useState<Set<string>>(new Set());
   const [showOverlay, setShowOverlay] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const navigate = useNavigate();
   const uiEventsRef = useRef(uiEvents);
@@ -46,12 +47,13 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
   const { galleryImages, setGalleryImages } = useGalleryImages({ extensionId });
   const [, setForm] = useAtom<FormData>(useContext(AtomContext));
 
-  const showErrorNotification = useCallback((title: string) => {
+  const showErrorNotification = useCallback((title: string, description?: string) => {
     uiEventsRef.current.next({
       event: NotificationEvents.ShowNotification,
       data: {
         type: NotificationTypes.Error,
         title,
+        description,
       },
     });
   }, []);
@@ -111,6 +113,14 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
   };
 
   const onSave = async () => {
+    if (retryCount === MAX_UPLOAD_RETRIES) {
+      showErrorNotification(
+        t('Maximum number of attempts reached'),
+        t('Please Remove failed images and upload new ones.'),
+      );
+      return;
+    }
+
     const newImageIdsWithError: Set<string> = new Set();
     const imagesMap = new Map<string, Image>();
 
@@ -134,6 +144,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
 
             //collect id's of images that failed to upload on w3.storage
             if (!mediaFile) {
+              setRetryCount(retryCount + 1);
               newImageIdsWithError.add(image.id);
               return;
             }
@@ -147,6 +158,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
               src: mediaUri,
             });
           } catch (ex) {
+            setRetryCount(retryCount + 1);
             //collect id's of images that failed to upload on w3.storage
             newImageIdsWithError.add(image.id);
           }
@@ -204,7 +216,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     setShowOverlay(false);
   };
 
-  const onImageClick = (image: Image) => {
+  const handleClickImage = (image: Image) => {
     setSelectedImage(image);
     setShowOverlay(true);
   };
@@ -218,7 +230,9 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
             galleryManagerDescription={t(
               'Tap on the images to set their order. Numbers will appear as you tap.',
             )}
-            uploadImagesLabel={t('Upload images')}
+            uploadImagesLabel={t('{{label}}', {
+              label: galleryImages.length < MAX_GALLERY_IMAGES ? 'Upload images' : 'Limit reached!',
+            })}
             emptyGalleryLabel={t('Your gallery is empty.')}
             imagesLabel={t('images')}
             startUploadingLabel={t('Start uploading')}
@@ -245,7 +259,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
               disabled: false,
               handleClick: onSave,
             }}
-            onImageClick={onImageClick}
+            handleClickImage={handleClickImage}
             onDelete={onDelete}
             onUploadImagesClick={onUploadImagesClick}
           />
