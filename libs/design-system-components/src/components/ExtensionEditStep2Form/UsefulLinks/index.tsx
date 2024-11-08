@@ -45,6 +45,7 @@ export const UsefulLinks: React.FC<UsefulLinksProps> = ({
           </Text>
           <Button
             variant="text"
+            size="md"
             icon={<PlusIcon />}
             iconDirection="left"
             label={addNewLinkButtonLabel}

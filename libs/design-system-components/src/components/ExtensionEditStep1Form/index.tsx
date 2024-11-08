@@ -160,12 +160,14 @@ const ExtensionEditStep1Form: React.FC<ExtensionEditStep1FormProps> = props => {
         <Stack direction="row" justify="end" spacing="gap-x-2" customStyle="px-4 pb-4">
           <Button
             variant="text"
+            size="md"
             label={cancelButton.label}
             onClick={cancelButton.handleClick}
             disabled={cancelButton.disabled}
           />
           <Button
             variant="primary"
+            size="md"
             label={nextButton.label}
             disabled={!isValid || loading}
             onClick={onSave}

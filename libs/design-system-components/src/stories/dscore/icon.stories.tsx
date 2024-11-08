@@ -11,7 +11,6 @@ import {
   AlignTextLeft,
   AlignTextRight,
   Antenna,
-  App,
   Blocks,
   Bold,
   Caption,
@@ -49,6 +48,7 @@ import {
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
+import { Squares2X2Icon } from '@heroicons/react/24/outline';
 
 Icon.displayName = 'Icon';
 
@@ -79,7 +79,6 @@ export const IconWithSize: Story = { args: { icon: <Akasha />, solid: true, size
 const solidCustomIconsArr = [
   { icon: <Akasha />, name: 'Akasha' },
   { icon: <Antenna />, name: 'Antenna' },
-  { icon: <App />, name: 'App' },
   { icon: <Discord />, name: 'Discord' },
   { icon: <IntegrationAppCTA />, name: 'IntegrationAppCTA' },
   { icon: <Plugin />, name: 'Plugin' },
@@ -120,6 +119,7 @@ const outlineCustomIconsArr = [
   { icon: <Profile />, name: 'Profile' },
   { icon: <Shield />, name: 'Shield' },
   { icon: <Solana />, name: 'Solana' },
+  { icon: <Squares2X2Icon />, name: 'App' },
   { icon: <Underline />, name: 'Underline' },
   { icon: <Vibes />, name: 'Vibes' },
   { icon: <Walletconnect />, name: 'Walletconnect' },

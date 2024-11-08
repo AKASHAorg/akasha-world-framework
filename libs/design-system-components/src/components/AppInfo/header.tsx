@@ -1,10 +1,6 @@
-import React, { MouseEventHandler, useMemo } from 'react';
+import React, { MouseEventHandler } from 'react';
+import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
-import {
-  Plugin,
-  App,
-  Widget,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { ListItem } from '@akashaorg/design-system-core/lib/components/List';
 import Menu from '@akashaorg/design-system-core/lib/components/Menu';
@@ -65,17 +61,6 @@ export const AppInfoHeader: React.FC<AppInfoHeaderProps> = props => {
     defaultExtensionTooltipContent = `This extension is preinstalled in this world and cannot be uninstalled`,
   } = props;
 
-  const pillIconByAppType = useMemo(() => {
-    switch (extensionType) {
-      case AkashaAppApplicationType.App:
-        return <App />;
-      case AkashaAppApplicationType.Widget:
-        return <Widget />;
-      default:
-        return <Plugin />;
-    }
-  }, [extensionType]);
-
   return (
     <Stack direction="row" align="start" justify="between" padding="pb-3">
       <Stack direction="row" align="stretch" spacing="gap-x-2" customStyle={'flex-grow'}>
@@ -126,7 +111,7 @@ export const AppInfoHeader: React.FC<AppInfoHeaderProps> = props => {
               <AppInfoPill background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}>
                 <Icon
                   size="sm"
-                  icon={pillIconByAppType}
+                  icon={<ExtensionIcon type={extensionType} />}
                   color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
                   solid={true}
                 />

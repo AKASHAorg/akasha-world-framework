@@ -80,7 +80,7 @@ const ProfileCardWidget: React.FC<ProfileCardWidgetProps> = props => {
     <ErrorBoundary
       errorObj={{
         type: 'script-error',
-        title: t('Error in my-apps widget'),
+        title: t('Error in mini-profile widget'),
       }}
       logger={logger}
     >

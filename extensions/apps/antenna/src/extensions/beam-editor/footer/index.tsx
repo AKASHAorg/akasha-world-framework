@@ -67,7 +67,7 @@ export const Footer: React.FC<TFooterProps> = props => {
             variant="footnotes2"
             color="grey7"
           >{`${blocksNumber}/${maxBlocks} ${blocksLabel}`}</Text>
-          <Button variant="secondary" label={cancelLabel} onClick={handleClickCancel} />
+          <Button variant="secondary" size="md" label={cancelLabel} onClick={handleClickCancel} />
         </>
       )}
       {uiState === 'tags' && (
@@ -77,6 +77,7 @@ export const Footer: React.FC<TFooterProps> = props => {
             <Button variant="text" label={cancelLabel} onClick={handleClickCancel} />
             <Button
               variant="primary"
+              size="md"
               disabled={disableTagsSave}
               label={saveTagsLabel}
               onClick={handleClickSave}
@@ -118,6 +119,7 @@ export const Footer: React.FC<TFooterProps> = props => {
             </Stack>
             <Button
               variant="primary"
+              size="md"
               disabled={disableBeamPublishing}
               label={publishLabel}
               onClick={handleBeamPublish}

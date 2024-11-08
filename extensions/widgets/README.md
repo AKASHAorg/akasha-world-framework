@@ -7,7 +7,6 @@
 - [Analytics](./analytics/README.md)
 - [Layout](./layout/README.md)
 - [Mini Profile](./mini-profile/README.md)
-- [My Apps](./my-apps/README.md)
 - [Sidebar](./sidebar/README.md)
 - [Top Bar](./top-bar/README.md)
 - [Trending](./trending/README.md)

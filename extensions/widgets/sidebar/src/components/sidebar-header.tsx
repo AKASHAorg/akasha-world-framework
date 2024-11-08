@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useMemo, useState } from 'react';
 import Avatar from '@akashaorg/design-system-core/lib/components/Avatar';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import DidField from '@akashaorg/design-system-core/lib/components/DidField';
@@ -8,10 +8,15 @@ import Text from '@akashaorg/design-system-core/lib/components/Text';
 import { transformSource, hasOwn } from '@akashaorg/ui-awf-hooks';
 import { useTranslation } from 'react-i18next';
 import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { PowerIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
+import {
+  PowerIcon,
+  XMarkIcon,
+} from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 
 export type SidebarHeaderProps = {
   authenticatedDID: string;
+  connectLabel: string;
+  cancelLabel: string;
   isLoggedIn: boolean;
   isAuthenticating: boolean;
   logoutClickHandler: () => void;
@@ -21,12 +26,16 @@ export type SidebarHeaderProps = {
 
 const SidebarHeader: React.FC<SidebarHeaderProps> = ({
   authenticatedDID,
+  connectLabel,
+  cancelLabel,
   isLoggedIn,
   isAuthenticating,
   loginClickHandler,
   logoutClickHandler,
   handleProfileAvatarClick,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const { t } = useTranslation('ui-widget-sidebar');
 
   const { data, error } = useGetProfileByDidSuspenseQuery({
@@ -48,7 +57,10 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
     }
   }, [data]);
 
-  //this padding style will adjust the header's vertical space to maintain the same height through different states
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
+
+  // this padding style will adjust the header's vertical space to maintain the same height through different states
   const headerPadding = profileName && isLoggedIn && !isAuthenticating ? 'pb-[2.125rem]' : '';
 
   if (error) return null;
@@ -116,7 +128,15 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
       </Stack>
       <Stack customStyle="w-fit h-fit self-start">
         {isAuthenticating && (
-          <Button variant="primary" size="sm" loading onClick={logoutClickHandler} />
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={logoutClickHandler}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            {...(!isHovered && { loading: true })}
+            {...(isHovered && { label: cancelLabel, iconDirection: 'right', icon: <XMarkIcon /> })}
+          />
         )}
         {!isAuthenticating && (
           <>
@@ -124,7 +144,12 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
               <Button icon={<PowerIcon />} size="sm" iconOnly={true} onClick={logoutClickHandler} />
             )}
             {!isLoggedIn && (
-              <Button size="sm" variant="primary" label="Connect" onClick={loginClickHandler} />
+              <Button
+                size="sm"
+                variant="primary"
+                label={connectLabel}
+                onClick={loginClickHandler}
+              />
             )}
           </>
         )}

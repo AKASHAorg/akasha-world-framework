@@ -1,11 +1,8 @@
 import React, { forwardRef, HTMLAttributes } from 'react';
 import { apply, tw } from '@twind/core';
-
 import { ButtonIcon } from '../button-icon';
 import { ButtonProps, ButtonSize } from '../types';
 import { ArrowPathIcon } from '../../Icon/hero-icons-outline';
-import Stack from '../../Stack';
-
 import { getContainerClasses } from '../getContainerClasses';
 
 type IconOnlyButtonProps = {
@@ -65,23 +62,25 @@ export const IconOnlyButton: React.FC<IconOnlyButtonProps & HTMLAttributes<HTMLB
       const plainIconStyle = plainIcon ? 'h-auto w-auto' : '';
 
       return (
-        <button ref={ref} className={tw(customStyle)} type="button" disabled={disabled} {...rest}>
-          <Stack
-            align="center"
-            justify={plainIcon ? null : 'center'}
-            customStyle={apply`group rounded-full ${containerStyle} ${BUTTON_SIZE_MAP[size]} ${breakPointStyle} ${plainIconStyle}`}
-          >
-            <ButtonIcon
-              size={size}
-              icon={loading ? <ArrowPathIcon /> : icon}
-              solid={solidIcon}
-              variant={variant}
-              greyBg={greyBg}
-              loading={loading}
-              breakPointSize={breakPointSize}
-              disabled={disabled}
-            />
-          </Stack>
+        <button
+          ref={ref}
+          type="button"
+          className={tw(
+            apply`flex ${plainIcon ? '' : 'justify-center'} items-center group rounded-full ${containerStyle} ${BUTTON_SIZE_MAP[size]} ${breakPointStyle} ${plainIconStyle} ${customStyle}`,
+          )}
+          disabled={disabled}
+          {...rest}
+        >
+          <ButtonIcon
+            size={size}
+            icon={loading ? <ArrowPathIcon /> : icon}
+            solid={solidIcon}
+            variant={variant}
+            greyBg={greyBg}
+            loading={loading}
+            breakPointSize={breakPointSize}
+            disabled={disabled}
+          />
         </button>
       );
     },
