@@ -1,4 +1,4 @@
-import { Status } from '../components/types/common.types';
+import { Status } from '../../types/common.types';
 
 const STATUS_TO_BORDER_CLASSES_MAP: Record<Status, string> = {
   success: 'border border-success',

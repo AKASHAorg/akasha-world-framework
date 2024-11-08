@@ -3,9 +3,9 @@ import { apply, tw } from '@twind/core';
 import { MultlineProps } from '../types';
 import EditorMeter from '../../EditorMeter';
 import Stack from '../../Stack';
-import { getContainerClasses } from '../../../utils/getContainerClasses';
-import { getInputClasses } from '../../../utils/getInputClasses';
-import { getRadiusClasses } from '../../../utils/getRadiusClasses';
+import { getRadiusClasses } from '../../../utils';
+import { getInputClasses } from '../utils/get-input-classes';
+import { getContainerClasses } from '../utils/get-container-classes';
 
 const MAX_LENGTH = 280;
 

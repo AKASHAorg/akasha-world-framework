@@ -4,10 +4,10 @@ import { InputProps } from '../types';
 import { Color } from '../../types/common.types';
 import Icon from '../../Icon';
 import Stack from '../../Stack';
-import { getContainerClasses } from '../../../utils/getContainerClasses';
-import { getInputClasses } from '../../../utils/getInputClasses';
-import { getIconClasses } from '../../../utils/getIconClasses';
-import { getRadiusClasses } from '../../../utils/getRadiusClasses';
+import { getIconClasses } from '../utils/get-icon-classes';
+import { getInputClasses } from '../utils/get-input-classes';
+import { getContainerClasses } from '../utils/get-container-classes';
+import { getRadiusClasses } from '../../../utils';
 
 export const Input: React.FC<InputProps> = forwardRef((props, ref) => {
   const { id, radius, status, iconLeft, iconRight, readOnly, disabled, altBg, fullWidth, ...rest } =
