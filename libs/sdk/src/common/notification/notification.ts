@@ -158,9 +158,7 @@ class NotificationService {
     page: number = 1,
     limit: number = 100,
     optionsIndexes: number[] = [],
-  ): Promise<
-    (notificationSchemas.PushOrgNotification & notificationSchemas.AddedNotificationProps)[]
-  > {
+  ): Promise<notificationSchemas.PushOrgNotification[]> {
     if (!this._web3.state.address?.length) {
       return [];
     }
@@ -168,19 +166,16 @@ class NotificationService {
     const options: PushProtocol.FeedsOptions = {
       channels: [this._notificationChannelId],
       account: this._web3.state.address,
-      page: 1,
-      limit: 100,
+      page: page,
+      limit: limit,
       raw: true,
     };
 
-    let notifications: (notificationSchemas.PushOrgNotification &
-      notificationSchemas.AddedNotificationProps)[] = [];
+    let notifications: notificationSchemas.PushOrgNotification[] = [];
 
     const latestStoredNotificationID = this.getLatestStoredNotificationID();
     // if there are no options/apps specified.
     if (!optionsIndexes.length) {
-      options.page = page;
-      options.limit = limit;
       notifications = await this.notificationsClient.notification.list('INBOX', options);
       for (const notification of notifications) {
         this.parseNotificationData(notification, latestStoredNotificationID);
@@ -191,10 +186,11 @@ class NotificationService {
       const endIndex = startIndex + limit;
 
       // By fetching a high limit per page (limit: 100), the code minimizes http requests to pushProtocol service and only makes additional calls if necessary, which improves efficiency.
+      options.page = 1;
+      options.limit = 100;
       let hasMorePages = true;
       while (hasMorePages && notifications.length < endIndex) {
-        const inboxNotifications: (notificationSchemas.PushOrgNotification &
-          notificationSchemas.AddedNotificationProps)[] =
+        const inboxNotifications: notificationSchemas.PushOrgNotification[] =
           await this.notificationsClient.notification.list('INBOX', options);
 
         // Filter notifications based on app options
@@ -210,7 +206,7 @@ class NotificationService {
 
         // if there is no notification fetched then it means that there is no pages
         hasMorePages = !!inboxNotifications.length;
-        options.page!++;
+        options.page++;
       }
 
       notifications.slice(startIndex, endIndex);
@@ -244,31 +240,24 @@ class NotificationService {
     return false;
   }
 
-  parseNotificationData(
-    notification: notificationSchemas.PushOrgNotification &
-      notificationSchemas.AddedNotificationProps,
+  private parseNotificationData(
+    notification: notificationSchemas.PushOrgNotification,
     latestStoredNotificationID: number,
   ) {
-    if (notification.payload?.data?.additionalMeta) {
+    if (notification.payload.data.additionalMeta) {
       const metaData = this.parseMetaData(notification.payload.data.additionalMeta);
-      Object.defineProperty(notification.payload.data, 'parsedMetaData', {
-        value: { channelIndex: metaData.channelIndex, data: metaData.data },
-      });
+      notification.payload.data.parsedMetaData = {
+        channelIndex: metaData.channelIndex,
+        data: metaData.data,
+      };
     }
-    // Mark as unread if their SID is greater than the stored SID and add properties for rendering usage
-    Object.defineProperty(notification, 'timestamp', {
-      value: new Date(notification.epoch),
-    });
-
-    const isUnread = latestStoredNotificationID
+    notification.timestamp = new Date(notification.epoch);
+    notification.isUnread = latestStoredNotificationID
       ? notification.payload_id > latestStoredNotificationID
       : true;
-    Object.defineProperty(notification, 'isUnread', {
-      value: isUnread,
-    });
   }
 
-  parseMetaData(metaData: notificationSchemas.AdditionalMetadata) {
+  private parseMetaData(metaData: notificationSchemas.AdditionalMetadata) {
     let indexOfOption: number | undefined;
     let data: { [key: string]: unknown } | string = '';
 

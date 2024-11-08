@@ -84,12 +84,13 @@ export const MetaDataSchema = z.object({
   type: z.string(),
 });
 
-export interface AdditionalMetadata {
+export type AdditionalMetadata = {
   data: string;
   type: string;
   domain: string;
-}
-export interface PushOrgNotification {
+};
+
+export type PushOrgNotification = {
   payload_id: number;
   sender: string;
   epoch: string;
@@ -109,7 +110,11 @@ export interface PushOrgNotification {
       hidden: string;
       silent: string;
       sectype: string | null;
-      additionalMeta: AdditionalMetadata;
+      additionalMeta?: AdditionalMetadata;
+      parsedMetaData?: {
+        data: { [key: string]: unknown } | string;
+        channelIndex: number | undefined;
+      };
     };
     recipients: {
       [key: string]: string | null;
@@ -123,17 +128,6 @@ export interface PushOrgNotification {
   source: string;
   etime: string;
   sid: string | null;
-}
-
-export interface AddedNotificationProps {
-  timestamp: Date;
-  isUnread: boolean;
-  payload: {
-    data: {
-      parsedMetaData?: {
-        data: { [key: string]: unknown } | string;
-        channelIndex: number;
-      };
-    };
-  };
-}
+  timestamp?: Date;
+  isUnread?: boolean;
+};
