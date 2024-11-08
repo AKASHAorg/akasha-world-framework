@@ -1,4 +1,5 @@
-import { boolean, z } from 'zod';
+import { z, boolean } from 'zod';
+import { ChannelOptionIndexes } from '@akashaorg/typings/lib/sdk/notification';
 
 export const setNewSettingsSchema = z.array(
   z.object({
@@ -131,3 +132,10 @@ export type PushOrgNotification = {
   timestamp?: Date;
   isUnread?: boolean;
 };
+
+export type ChannelOptionIndex =
+  | ChannelOptionIndexes.ANTENNA
+  | ChannelOptionIndexes.PROFILE
+  | ChannelOptionIndexes.VIBES;
+
+export const ChannelOptionIndexSchema = z.nativeEnum(ChannelOptionIndexes);

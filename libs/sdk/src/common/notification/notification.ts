@@ -146,18 +146,23 @@ class NotificationService {
   }
 
   /**
-   * Gets notifications and markes them as read/unread according to highest SID stored in local storage
-   * @returns {Promise<PushOrgNotification[]>}
+   * Get notifications and filter them by channel option/app indexes
+   *
+   * @example
+   * // Example usage: Fetch notifications on page 1 with a limit of 50 notifications
+   * // and filter them to include only the "Antenna" and "Profile" apps.
+   * const notifications = await getNotifications(1, 50, [ChannelOptionIndexes.ANTENNA, ChannelOptionIndexes.PROFILE]);
+   * @returns {Promise<PushOrgNotification[]>} - Returns an array of filtered PushOrgNotifications based on the specified channel options.
    */
   @validate(
     z.number().positive().optional(),
     z.number().positive().max(100).optional(),
-    z.array(z.number().positive()).optional(),
+    z.array(notificationSchemas.ChannelOptionIndexSchema).optional(),
   )
   async getNotifications(
     page: number = 1,
     limit: number = 100,
-    optionsIndexes: number[] = [],
+    channelOptionIndexes: notificationSchemas.ChannelOptionIndex[] = [],
   ): Promise<notificationSchemas.PushOrgNotification[]> {
     if (!this._web3.state.address?.length) {
       return [];
@@ -175,7 +180,7 @@ class NotificationService {
 
     const latestStoredNotificationID = this.getLatestStoredNotificationID();
     // if there are no options/apps specified.
-    if (!optionsIndexes.length) {
+    if (!channelOptionIndexes.length) {
       notifications = await this.notificationsClient.notification.list('INBOX', options);
       for (const notification of notifications) {
         this.parseNotificationData(notification, latestStoredNotificationID);
@@ -199,7 +204,7 @@ class NotificationService {
           const parsedMetaData = notification.payload.data.parsedMetaData;
           return (
             parsedMetaData?.channelIndex !== undefined &&
-            optionsIndexes.includes(parsedMetaData.channelIndex)
+            channelOptionIndexes.includes(parsedMetaData.channelIndex)
           );
         });
         notifications.push(...filteredNotifications);
