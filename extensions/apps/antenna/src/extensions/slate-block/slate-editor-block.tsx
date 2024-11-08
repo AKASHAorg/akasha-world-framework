@@ -82,6 +82,8 @@ export const SlateEditorBlock = (
 
       const editorValue = editorActionsRef?.current?.children;
 
+      const editorMentions: string[] = editorActionsRef?.current?.getAddedSlateMentions();
+
       const content = encodeSlateToBase64(editorValue);
 
       const contentBlockValue: BlockLabeledValue = {
@@ -109,6 +111,7 @@ export const SlateEditorBlock = (
           response: { blockID: resp.data.createAkashaContentBlock.document.id },
           blockInfo: props.blockInfo,
           retryCount: retryCount.current,
+          editorMentions,
         };
       } catch (err) {
         logger.error('error creating content block', err);
