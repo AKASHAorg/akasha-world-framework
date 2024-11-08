@@ -46,7 +46,7 @@ import {
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import EditorMeter from '@akashaorg/design-system-core/lib/components/EditorMeter';
 
-import { countMentions, CustomEditor } from './helpers';
+import { countMentions, CustomEditor, getSlateMentions } from './helpers';
 import { serializeToPlainText } from './serialize';
 import { MentionPopover } from './mention-popover';
 import { editorDefaultValue } from './initialValue';
@@ -64,7 +64,7 @@ export type EditorActions = {
   insertText: (text: string) => void;
   insertBreak: () => void;
   children: Descendant[];
-  overwriteEditorChildren?: (value: Descendant[]) => void;
+  getAddedSlateMentions: () => string[];
 };
 
 export type EditorBoxProps = {
@@ -202,7 +202,14 @@ const EditorBox: React.FC<EditorBoxProps> = props => {
     editorActionsRef,
     () => {
       const { insertText, insertBreak } = editor;
-      return { insertText, insertBreak, children };
+      const getAddedSlateMentions = () => {
+        /**
+         * wrap editor children in object to make recursive getMentions work
+         */
+        const initContent: { children: Descendant[] } = { children };
+        return getSlateMentions(initContent);
+      };
+      return { insertText, insertBreak, children, getAddedSlateMentions };
     },
     [editor, children],
   );
@@ -230,32 +237,32 @@ const EditorBox: React.FC<EditorBoxProps> = props => {
   }, [editor, index, mentionTargetRange, mentionPopoverRef]);
 
   /**
-   * creates the object for publishing and resets the editor state after
-   * metadata contains mentions, quote, the publishing app and the version of the document
-   * todo version should be passed as a prop
+   * metadata contains mentions, and the simple text version of the slate structure
    */
-  const handlePublish = () => {
+
+  const createMetadata = () => {
     const slateContent = editor.children;
-
-    const metadata: IMetadata = {
-      app: publishingApp,
-      mentions: [],
-      version: 1,
-    };
-
     /**
      * wrap slateContent in object to make recursive getMetadata work
      */
     const initContent: { children: Descendant[] } = { children: slateContent };
-    (function getMetadata(node: ExtendedNode) {
-      if (Element.isElement(node) && node.type === 'mention') {
-        metadata.mentions.push(node.id);
-      }
-      if (Element.isElement(node) && node.children) {
-        node.children.map((n: Descendant) => getMetadata(n));
-      }
-    })(initContent);
-    const textContent: string = serializeToPlainText({ children: slateContent });
+
+    const mentions = getSlateMentions(initContent);
+
+    const metadata: IMetadata = {
+      app: publishingApp,
+      mentions,
+    };
+    const textContent = serializeToPlainText(initContent);
+    return { metadata, textContent };
+  };
+
+  /**
+   * creates the object for publishing and resets the editor state after
+   */
+  const handlePublish = () => {
+    const slateContent = editor.children;
+    const { metadata, textContent } = createMetadata();
     const data = { metadata, slateContent, textContent, author: profileId };
     CustomEditor.clearEditor(editor);
     onPublish(data);
