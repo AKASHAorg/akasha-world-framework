@@ -6,7 +6,10 @@ export type SettingsOption =
   | 'Apps'
   | 'Plugins'
   | 'Widgets'
-  | 'NSFW Content';
+  | 'NSFW Content'
+  | 'Notifications'
+  | 'Browser Notifications'
+  | 'Preferences';
 
 export interface ISettingsItem {
   label: SettingsOption;
@@ -30,6 +33,10 @@ export const settingsItems: ISettingsItem[] = [
   },
   {
     label: 'NSFW Content',
+    clickable: true,
+  },
+  {
+    label: 'Notifications',
     clickable: true,
   },
   // disable these until they are used
