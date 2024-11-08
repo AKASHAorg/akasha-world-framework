@@ -17,6 +17,7 @@ export type DropdownProps = {
   menuItems: string[];
   setSelected: React.Dispatch<React.SetStateAction<string>>;
   required?: boolean;
+  customStyle?: string;
 };
 
 /**
@@ -29,6 +30,7 @@ export type DropdownProps = {
  * @param selected - (optional) selected item by default
  * @param menuItems - a list of menu items to be displayed on activation
  * @param setSelected - handler function to set the selected item
+ * @param customStyle - [optional] additional style to customize the wrapper
  * is used in a form, and it is a required field
  * ```tsx
  *  <Dropdown
@@ -44,7 +46,15 @@ export type DropdownProps = {
  * ```
  **/
 const Dropdown: React.FC<DropdownProps> = props => {
-  const { label, placeholderLabel, menuItems, selected, setSelected, required } = props;
+  const {
+    label,
+    placeholderLabel,
+    menuItems,
+    selected,
+    setSelected,
+    required,
+    customStyle = '',
+  } = props;
 
   const [dropOpen, setDropOpen] = React.useState<boolean>(false);
 
@@ -75,7 +85,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
   };
 
   return (
-    <Stack customStyle="relative min-w-[8rem] gap-y-2 " ref={anchorRef}>
+    <Stack customStyle={`relative min-w-[8rem] gap-y-2 ${customStyle}`} ref={anchorRef}>
       {label && <Label required={required}>{label}</Label>}
       <button
         className={tx`inline-flex items-center justify-between min-w-[8rem] p-2 rounded-lg bg-(white dark:grey3) rounded-lg border-(1 solid ${
