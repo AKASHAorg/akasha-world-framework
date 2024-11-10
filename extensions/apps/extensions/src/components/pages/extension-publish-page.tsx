@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import appRoutes, { SUBMIT_EXTENSION } from '../../routes';
@@ -12,8 +12,9 @@ import { transformSource, useAkashaStore, useRootComponentProps } from '@akashao
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../constants';
 import getSDK from '@akashaorg/core-sdk';
-import { useCreateAppMutation } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { useCreateAppMutation, useGetAppsQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
 import { SubmitType } from '../app-routes';
+import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
 
 type ExtensionPublishPageProps = {
   extensionId: string;
@@ -29,12 +30,13 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
   const navigateTo = getCorePlugins().routing.navigateTo;
   const sdk = useRef(getSDK());
 
-  const showErrorNotification = React.useCallback((title: string) => {
+  const showErrorNotification = React.useCallback((title: string, description?: string) => {
     uiEventsRef.current.next({
       event: NotificationEvents.ShowNotification,
       data: {
         type: NotificationTypes.Error,
         title,
+        description,
       },
     });
   }, []);
@@ -66,7 +68,7 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
     draftRelease => draftRelease.applicationID === extensionId,
   );
 
-  const [createAppMutation, { loading }] = useCreateAppMutation({
+  const [createAppMutation, { loading: loadingAppMutation }] = useCreateAppMutation({
     context: { source: sdk.current.services.gql.contextSources.composeDB },
     onCompleted: data => {
       // after the extension has been published to the ceramic model
@@ -97,8 +99,11 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
         params: { extensionId },
       });
     },
-    onError: () => {
-      showErrorNotification(`${t(`Something went wrong when publishing the extension`)}.`);
+    onError: error => {
+      showErrorNotification(
+        `${t(`Something went wrong when publishing the extension`)}.`,
+        error.message,
+      );
     },
   });
 
@@ -113,29 +118,84 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
     });
   };
 
+  const {
+    data: appInfoName,
+    loading: loadingAppInfoName,
+    error: appInfoQueryErrorName,
+    called: calledAppInfoName,
+  } = useGetAppsQuery({
+    variables: {
+      first: 1,
+      filters: { where: { name: { equalTo: extensionData?.name } } },
+    },
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
+    skip: !extensionData?.name || !authenticatedDID,
+  });
+
+  const isDuplicatePublishedExtName = useMemo(() => !!selectAkashaApp(appInfoName), [appInfoName]);
+
+  const {
+    data: appInfoDisplayName,
+    loading: loadingAppInfoDisplayName,
+    error: appInfoQueryErrorDisplayName,
+    called: calledAppInfoDisplayName,
+  } = useGetAppsQuery({
+    variables: {
+      first: 1,
+      filters: { where: { name: { equalTo: extensionData?.displayName } } },
+    },
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
+    skip: !extensionData?.displayName || !authenticatedDID,
+  });
+
+  const isDuplicatePublishedExtDisplayName = useMemo(
+    () => !!selectAkashaApp(appInfoDisplayName),
+    [appInfoDisplayName],
+  );
+
+  useEffect(() => {
+    if (appInfoQueryErrorDisplayName) {
+      showErrorNotification(appInfoQueryErrorDisplayName.message);
+    }
+    if (appInfoQueryErrorName) {
+      showErrorNotification(appInfoQueryErrorName.message);
+    }
+  }, [appInfoQueryErrorName, appInfoQueryErrorDisplayName, showErrorNotification]);
+
   const handleClickPublish = () => {
-    const extData = {
-      applicationType: extensionData?.applicationType,
-      contributors: extensionData?.contributors,
-      coverImage: extensionData?.coverImage,
-      createdAt: new Date().toISOString(),
-      description: extensionData?.description,
-      displayName: extensionData?.displayName,
-      gallery: extensionData?.gallery,
-      keywords: extensionData?.keywords,
-      license: extensionData?.license,
-      links: extensionData?.links,
-      logoImage: extensionData?.logoImage,
-      name: extensionData?.name,
-      nsfw: extensionData?.nsfw,
-    };
-    createAppMutation({
-      variables: {
-        i: {
-          content: extData,
+    if (
+      calledAppInfoDisplayName &&
+      calledAppInfoName &&
+      !loadingAppInfoDisplayName &&
+      !loadingAppInfoName &&
+      !isDuplicatePublishedExtName &&
+      !isDuplicatePublishedExtDisplayName
+    ) {
+      const extData = {
+        applicationType: extensionData?.applicationType,
+        contributors: extensionData?.contributors,
+        coverImage: extensionData?.coverImage,
+        createdAt: new Date().toISOString(),
+        description: extensionData?.description,
+        displayName: extensionData?.displayName,
+        gallery: extensionData?.gallery,
+        keywords: extensionData?.keywords,
+        license: extensionData?.license,
+        links: extensionData?.links,
+        logoImage: extensionData?.logoImage,
+        name: extensionData?.name,
+        nsfw: extensionData?.nsfw,
+      };
+      createAppMutation({
+        variables: {
+          i: {
+            content: extData,
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   const handleClickCancel = () => {
@@ -192,7 +252,13 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
           tagsLabel={t('Tags')}
           backButtonLabel={t('Cancel')}
           publishButtonLabel={t('Publish')}
-          loading={loading}
+          duplicateExtNameErrLabel={t('An extension with this name has already been published')}
+          duplicateExtDisplayNameErrLabel={t(
+            'An extension with this display name has already been published',
+          )}
+          loading={loadingAppMutation || loadingAppInfoDisplayName || loadingAppInfoName}
+          isDuplicateExtName={isDuplicatePublishedExtName}
+          isDuplicateExtDisplayName={isDuplicatePublishedExtDisplayName}
           transformSource={transformSource}
           onClickCancel={handleClickCancel}
           onClickSubmit={handleClickPublish}

@@ -1,19 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import routes, { CREATE_EXTENSION, MY_EXTENSIONS } from '../../../routes';
-import { useRootComponentProps, useAkashaStore } from '@akashaorg/ui-awf-hooks';
+import {
+  useRootComponentProps,
+  useAkashaStore,
+  useValidateUniqueExtensionProp,
+} from '@akashaorg/ui-awf-hooks';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
-import AppCreationForm from '@akashaorg/design-system-components/lib/components/AppCreationForm';
-import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../../constants';
+import ExtensionCreationForm from '@akashaorg/design-system-components/lib/components/ExtensionCreationForm';
+import { DRAFT_EXTENSIONS } from '../../../constants';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import { useGetAppsQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
-import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
 
 export const ExtensionCreationPage: React.FC<unknown> = () => {
   const navigate = useNavigate();
@@ -56,40 +58,12 @@ export const ExtensionCreationPage: React.FC<unknown> = () => {
     }
   }, [authenticatedDID, showErrorNotification]);
 
-  const draftReleases = useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem(`${DRAFT_RELEASES}-${authenticatedDID}`)) || [];
-    } catch (error) {
-      showErrorNotification(error);
-    }
-  }, [authenticatedDID, showErrorNotification]);
-
-  const [currentExtName, setCurrentExtName] = useState('');
-
   const {
-    data: appInfo,
     loading: loadingAppInfo,
     error: appInfoQueryError,
-  } = useGetAppsQuery({
-    variables: {
-      first: 1,
-      filters: { where: { name: { equalTo: currentExtName } } },
-    },
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-    skip: !currentExtName,
-  });
-
-  const handleCheckExtName = (fieldValue: string) => {
-    setCurrentExtName(fieldValue);
-  };
-
-  const isDuplicateLocalExtName = useMemo(
-    () => !!draftExtensions.find(ext => ext.name === currentExtName),
-    [draftExtensions, currentExtName],
-  );
-
-  const isDuplicatePublishedExtName = useMemo(() => !!selectAkashaApp(appInfo), [appInfo]);
+    handleCheckExtProp,
+    isDuplicateExtProp,
+  } = useValidateUniqueExtensionProp(draftExtensions);
 
   useEffect(() => {
     if (appInfoQueryError) {
@@ -122,7 +96,7 @@ export const ExtensionCreationPage: React.FC<unknown> = () => {
         </Text>
         <Divider />
         <Stack>
-          <AppCreationForm
+          <ExtensionCreationForm
             extensionDisplayNameFieldLabel={t('Extension Display Name')}
             extensionDisplayNamePlaceholderLabel={t('extension x')}
             extensionNameFieldLabel={t('Extension ID')}
@@ -133,8 +107,8 @@ export const ExtensionCreationPage: React.FC<unknown> = () => {
             disclaimerLabel={t(
               `📝 You can modify or update any details later when editing the extension.`,
             )}
-            handleCheckExtName={handleCheckExtName}
-            isDuplicateExtName={isDuplicateLocalExtName || isDuplicatePublishedExtName}
+            handleCheckExtProp={handleCheckExtProp}
+            isDuplicateExtProp={isDuplicateExtProp}
             loading={loadingAppInfo}
             cancelButton={{
               label: t('Cancel'),
@@ -151,30 +125,18 @@ export const ExtensionCreationPage: React.FC<unknown> = () => {
                 const extensionId = crypto.randomUUID();
                 const newExtension = {
                   id: extensionId,
-                  applicationType: data?.extensionType,
+                  applicationType: data?.applicationType,
                   createdAt: new Date().toISOString(),
                   description: '',
-                  displayName: data?.extensionDisplayName,
-                  license: data?.extensionLicense,
-                  name: data?.extensionID,
+                  displayName: data?.displayName,
+                  license: data?.license,
+                  name: data?.name,
                   localDraft: true,
                 };
 
                 localStorage.setItem(
                   `${DRAFT_EXTENSIONS}-${authenticatedDID}`,
                   JSON.stringify([...draftExtensions, newExtension]),
-                );
-
-                const newRelease = {
-                  applicationID: extensionId,
-                  version: '0.0.1',
-                  description: 'Introduced the core functionality allowing developer to test.',
-                  source: '',
-                };
-
-                localStorage.setItem(
-                  `${DRAFT_RELEASES}-${authenticatedDID}`,
-                  JSON.stringify([...draftReleases, newRelease]),
                 );
 
                 navigate({

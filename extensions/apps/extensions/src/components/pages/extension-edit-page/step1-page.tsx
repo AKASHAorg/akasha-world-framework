@@ -1,19 +1,22 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import routes, { MY_EXTENSIONS } from '../../../routes';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
+import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 import ExtensionEditStep1Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep1Form';
 import { useSaveImage } from '../../../utils/use-save-image';
-import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import {
+  transformSource,
+  useAkashaStore,
+  useRootComponentProps,
+  useValidateUniqueExtensionProp,
+} from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { DRAFT_EXTENSIONS } from '../../../constants';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
-import { useGetAppsQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
-import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
-import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 
 type ExtensionEditStep1PageProps = {
   extensionId: string;
@@ -80,32 +83,12 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
     showErrorNotification(t("The image wasn't uploaded correctly. Please try again!"));
   };
 
-  const [currentExtName, setCurrentExtName] = useState('');
-
   const {
-    data: appInfo,
     loading: loadingAppInfo,
     error: appInfoQueryError,
-  } = useGetAppsQuery({
-    variables: {
-      first: 1,
-      filters: { where: { name: { equalTo: currentExtName } } },
-    },
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-    skip: !currentExtName,
-  });
-
-  const handleCheckExtName = (fieldValue: string) => {
-    setCurrentExtName(fieldValue);
-  };
-
-  const isDuplicateLocalExtName = useMemo(
-    () => !!draftExtensions.find(ext => ext.name === currentExtName),
-    [draftExtensions, currentExtName],
-  );
-
-  const isDuplicatePublishedExtName = useMemo(() => !!selectAkashaApp(appInfo), [appInfo]);
+    handleCheckExtProp,
+    isDuplicateExtProp,
+  } = useValidateUniqueExtensionProp(draftExtensions, extensionData.id);
 
   useEffect(() => {
     if (appInfoQueryError) {
@@ -167,8 +150,8 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
             onImageSave: (type, image) => saveImage({ type, image, onError: onSaveImageError }),
             onImageDelete: () => {},
           }}
-          handleCheckExtName={handleCheckExtName}
-          isDuplicateExtName={isDuplicateLocalExtName || isDuplicatePublishedExtName}
+          handleCheckExtProp={handleCheckExtProp}
+          isDuplicateExtProp={isDuplicateExtProp}
           loading={loadingAppInfo}
           cancelButton={{
             label: t('Cancel'),

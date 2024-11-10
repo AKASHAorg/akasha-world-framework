@@ -257,6 +257,10 @@ export const Header: React.FC<HeaderProps> = ({
             <AppAvatar
               appType={extensionType}
               avatar={logoImageUrl}
+              onClick={() => {
+                setShowLogoImageActions(!showLogoImageActions);
+                setAppImageType('logo-image');
+              }}
               customStyle={`border-2 ${getColorClasses(
                 {
                   light: 'white',
