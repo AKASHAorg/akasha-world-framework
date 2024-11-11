@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { apply, tw, tx } from '@twind/core';
-import Stack from '../Stack';
+import Card from '../Card';
 import Icon from '../Icon';
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '../Icon/hero-icons-outline';
-import Text from '../Text';
-import Link from '../Link';
 import Label from '../Label';
+import Link from '../Link';
+import Stack from '../Stack';
+import Text from '../Text';
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '../Icon/hero-icons-outline';
 import { useCloseActions } from '../../utils';
 
 export type DropdownProps = {
@@ -16,6 +17,7 @@ export type DropdownProps = {
   menuItems: string[];
   setSelected: React.Dispatch<React.SetStateAction<string>>;
   required?: boolean;
+  customStyle?: string;
 };
 
 /**
@@ -28,6 +30,7 @@ export type DropdownProps = {
  * @param selected - (optional) selected item by default
  * @param menuItems - a list of menu items to be displayed on activation
  * @param setSelected - handler function to set the selected item
+ * @param customStyle - [optional] additional style to customize the wrapper
  * is used in a form, and it is a required field
  * ```tsx
  *  <Dropdown
@@ -43,7 +46,15 @@ export type DropdownProps = {
  * ```
  **/
 const Dropdown: React.FC<DropdownProps> = props => {
-  const { label, placeholderLabel, menuItems, selected, setSelected, required } = props;
+  const {
+    label,
+    placeholderLabel,
+    menuItems,
+    selected,
+    setSelected,
+    required,
+    customStyle = '',
+  } = props;
 
   const [dropOpen, setDropOpen] = React.useState<boolean>(false);
 
@@ -56,7 +67,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const optionsWrapperStyle = apply`absolute w-full z-10 max-h-60 ${label ? 'mt-[80px]' : 'mt-12'} py-0 rounded-lg overflow-auto bg-(white dark:grey5) border(1 grey8 dark:grey3)`;
+  const optionsWrapperStyle = apply`absolute w-full z-10 max-h-60 ${label ? 'mt-[70px]' : 'mt-[2.5rem]'} rounded-lg overflow-auto bg-(white dark:grey3)`;
 
   const optionStyle = apply`flex items-center justify-between py-1.5 px-2 bg-(hover:grey8 dark:hover:grey5)`;
 
@@ -74,17 +85,17 @@ const Dropdown: React.FC<DropdownProps> = props => {
   };
 
   return (
-    <Stack customStyle="relative min-w-[8rem] gap-y-2 " ref={anchorRef}>
+    <Stack customStyle={`relative min-w-[8rem] gap-y-2 ${customStyle}`} ref={anchorRef}>
       {label && <Label required={required}>{label}</Label>}
       <button
-        className={tx`inline-flex items-center justify-between min-w-[8rem] p-2 rounded-lg bg-(white dark:grey5) rounded-lg border-(1 solid ${
-          dropOpen ? 'secondaryLight dark:secondark-dark' : 'grey8 dark:grey3'
+        className={tx`inline-flex items-center justify-between min-w-[8rem] p-2 rounded-lg bg-(white dark:grey3) rounded-lg border-(1 solid ${
+          dropOpen ? 'secondaryLight dark:secondark-dark' : 'grey6 dark:grey5'
         })`}
         onClick={handleDropClick}
         aria-label="dropdown"
         type="button"
       >
-        <Text variant="body1">{selected}</Text>
+        <Text variant="body2">{selected}</Text>
         {dropOpen ? (
           <Icon
             icon={<ChevronUpIcon />}
@@ -102,7 +113,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
 
       {/* <!-- Dropdown menu --> */}
       {dropOpen && (
-        <Stack customStyle={optionsWrapperStyle}>
+        <Card padding="p-0" elevation="1" customStyle={optionsWrapperStyle}>
           <ul aria-labelledby="dropdownDefaultButton">
             {menuItems.map((menuItem, idx) => {
               const isSelected = selected === menuItem;
@@ -110,21 +121,17 @@ const Dropdown: React.FC<DropdownProps> = props => {
                 <Link
                   key={idx}
                   tabIndex={-1}
-                  className={tw(
-                    `${optionStyle} ${
-                      idx < menuItems.length - 1 ? 'border-b(1 grey8 dark:grey3)' : ''
-                    } cursor-pointer`,
-                  )}
+                  className={`${optionStyle} cursor-pointer`}
                   onClick={handleChange(menuItem)}
                 >
                   <Stack
                     direction="row"
                     align="center"
                     spacing="gap-x-2"
-                    customStyle={`${isSelected ? 'text-secondaryLight' : 'text-black'} hover:bg-(grey8 dark:grey3)`}
+                    customStyle={`${isSelected ? 'text-secondaryLight' : 'text-black'} hover:bg-(grey8 dark:grey5)`}
                   >
                     <Text
-                      variant="body1"
+                      variant="body2"
                       color={
                         isSelected
                           ? { light: 'secondaryLight', dark: 'secondaryDark' }
@@ -146,7 +153,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
               );
             })}
           </ul>
-        </Stack>
+        </Card>
       )}
     </Stack>
   );
