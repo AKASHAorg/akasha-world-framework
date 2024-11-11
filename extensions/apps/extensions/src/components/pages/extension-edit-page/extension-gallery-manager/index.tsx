@@ -79,8 +79,13 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
   };
 
   const onDeleteConfirmed = (imageId: string) => {
-    setGalleryImages(galleryImages.filter(image => image.id !== imageId));
+    const newGalleryImages = galleryImages.filter(image => image.id !== imageId);
+    setGalleryImages(newGalleryImages);
     onDeleteModalClose();
+
+    if (!newGalleryImages.some(image => imageIdsWithError.has(image.id))) {
+      setRetryCount(0);
+    }
   };
 
   const onDeleteModalClose = () => {
@@ -116,7 +121,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     if (retryCount === MAX_UPLOAD_RETRIES) {
       showErrorNotification(
         t('Maximum number of attempts reached'),
-        t('Please Remove failed images and upload new ones.'),
+        t('Please remove failed images and upload new ones.'),
       );
       return;
     }

@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import ExtensionEditStep2Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep2Form';
+import ExtensionEditStep2Form, {
+  ExtensionEditStep2FormValues,
+} from '@akashaorg/design-system-components/lib/components/ExtensionEditStep2Form';
 import { useAkashaStore, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { NotificationEvents, NotificationTypes, Extension } from '@akashaorg/typings/lib/ui';
 import { DRAFT_EXTENSIONS, MAX_GALLERY_IMAGES } from '../../../constants';
@@ -90,6 +92,29 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
     });
   }, [formDefault?.gallery, formValue.gallery, showErrorNotification]);
 
+  const storeFormData = (data: ExtensionEditStep2FormValues) => {
+    const step2Data = {
+      ...data,
+      gallery: galleryImages?.map(galleryImage => {
+        return {
+          width: galleryImage.size?.width,
+          height: galleryImage.size?.height,
+          src: galleryImage.src,
+        };
+      }),
+    };
+    setForm(prev => {
+      return {
+        ...prev,
+        ...step2Data,
+        lastCompletedStep:
+          !formValue.lastCompletedStep || formValue.lastCompletedStep < 2
+            ? 2
+            : formValue.lastCompletedStep,
+      };
+    });
+  };
+
   return (
     <>
       <Stack padding={16} justify="center" align="center">
@@ -122,7 +147,8 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           images={galleryImages}
           defaultValues={formDefault}
           maxGalleryImages={MAX_GALLERY_IMAGES}
-          handleMediaClick={() => {
+          handleManageGalleryClick={formData => {
+            storeFormData(formData);
             navigate({
               to: '/edit-extension/$extensionId/gallery-manager',
               params: {
@@ -142,26 +168,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
           nextButton={{
             label: t('Next'),
             handleClick: data => {
-              const step2Data = {
-                ...data,
-                gallery: galleryImages?.map(galleryImage => {
-                  return {
-                    width: galleryImage.size?.width,
-                    height: galleryImage.size?.height,
-                    src: galleryImage.src,
-                  };
-                }),
-              };
-              setForm(prev => {
-                return {
-                  ...prev,
-                  ...step2Data,
-                  lastCompletedStep:
-                    !formValue.lastCompletedStep || formValue.lastCompletedStep < 2
-                      ? 2
-                      : formValue.lastCompletedStep,
-                };
-              });
+              storeFormData(data);
               navigate({
                 to: '/edit-extension/$extensionId/step3',
               });

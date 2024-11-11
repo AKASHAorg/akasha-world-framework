@@ -41,9 +41,10 @@ export type ExtensionEditStep2FormProps = {
   cancelButton: ButtonType;
   nextButton: {
     label: string;
-    handleClick: (data: ExtensionEditStep2FormValues) => void;
+    handleClick: (formData: ExtensionEditStep2FormValues) => void;
   };
-} & GalleryProps;
+  handleManageGalleryClick?: (formData: ExtensionEditStep2FormValues) => void;
+} & Omit<GalleryProps, 'handleMediaClick'>;
 
 const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
   const {
@@ -65,7 +66,7 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
     imagesUploadedLabel,
     images,
     maxGalleryImages,
-    handleMediaClick,
+    handleManageGalleryClick,
   } = props;
 
   const {
@@ -144,7 +145,7 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
             imagesUploadedLabel={imagesUploadedLabel}
             images={images}
             maxGalleryImages={maxGalleryImages}
-            handleMediaClick={handleMediaClick}
+            handleMediaClick={() => handleManageGalleryClick(getValues())}
           />
           <Divider />
 
