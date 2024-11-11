@@ -63,7 +63,7 @@ export const ExtensionCreationPage: React.FC<unknown> = () => {
     error: appInfoQueryError,
     handleCheckExtProp,
     isDuplicateExtProp,
-  } = useValidateUniqueExtensionProp(draftExtensions);
+  } = useValidateUniqueExtensionProp(authenticatedDID, draftExtensions);
 
   useEffect(() => {
     if (appInfoQueryError) {

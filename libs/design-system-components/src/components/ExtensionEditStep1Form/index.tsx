@@ -36,10 +36,7 @@ export type ExtensionEditStep1FormProps = {
     label: string;
     handleClick: (data: ExtensionEditStep1FormValues) => void;
   };
-  handleCheckExtProp?: (
-    propToValidate: FieldName.name | FieldName.displayName,
-    fieldValue: string,
-  ) => void;
+  handleCheckExtProp?: (propToValidate: FieldName.name, fieldValue: string) => void;
   isDuplicateExtProp?: boolean;
   loading?: boolean;
   extensionIdLabel?: string;

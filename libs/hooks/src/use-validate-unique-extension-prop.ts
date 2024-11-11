@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { useGetAppsQuery } from './generated/apollo';
+import { useGetAppsByPublisherDidQuery } from './generated/apollo';
 import { Extension } from '@akashaorg/typings/lib/ui';
-import { selectAkashaApp } from './selectors/get-apps-query';
+import { selectAkashaApp } from './selectors/get-apps-by-publisher-did-query';
 
 /**
  * Hook to validate uniqness of a an extensions name or displayName before publishing it.
+ * @param authenticatedDID - the DID of the logged in user
  * @param draftExtensions - list of local extensions
  * @param extensionId - id of the extension to be validated, if extension was created locally already
  * @returns { loading, error, handleCheckExtProp, isDuplicateExtProp  } - Object containing
@@ -14,7 +15,11 @@ import { selectAkashaApp } from './selectors/get-apps-query';
  * const { loading, error, handleCheckExtProp, isDuplicateExtProp } = useMentions(draftExtensions, extensionData, 'name');
  * ```
  **/
-const useValidateUniqueExtensionProp = (draftExtensions: Extension[], extensionId?: string) => {
+const useValidateUniqueExtensionProp = (
+  authenticatedDID: string,
+  draftExtensions: Extension[],
+  extensionId?: string,
+) => {
   const [currentExtProp, setCurrentExtProp] = React.useState('');
   const [propToValidate, setPropToValidate] = React.useState('');
 
@@ -22,8 +27,6 @@ const useValidateUniqueExtensionProp = (draftExtensions: Extension[], extensionI
     switch (propToValidate) {
       case 'name':
         return { where: { name: { equalTo: currentExtProp } } };
-      case 'displayName':
-        return { where: { displayName: { equalTo: currentExtProp } } };
       default:
         return {};
     }
@@ -33,17 +36,18 @@ const useValidateUniqueExtensionProp = (draftExtensions: Extension[], extensionI
     data: appInfo,
     loading,
     error,
-  } = useGetAppsQuery({
+  } = useGetAppsByPublisherDidQuery({
     variables: {
+      id: authenticatedDID,
       first: 1,
       filters: filters,
     },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
-    skip: !currentExtProp || !propToValidate,
+    skip: !currentExtProp || !propToValidate || !authenticatedDID,
   });
 
-  const handleCheckExtProp = (propToValidate: 'name' | 'displayName', fieldValue: string) => {
+  const handleCheckExtProp = (propToValidate: 'name', fieldValue: string) => {
     setCurrentExtProp(fieldValue);
     setPropToValidate(propToValidate);
   };

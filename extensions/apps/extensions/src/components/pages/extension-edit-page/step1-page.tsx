@@ -88,7 +88,7 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
     error: appInfoQueryError,
     handleCheckExtProp,
     isDuplicateExtProp,
-  } = useValidateUniqueExtensionProp(draftExtensions, extensionData.id);
+  } = useValidateUniqueExtensionProp(authenticatedDID, draftExtensions, extensionData.id);
 
   useEffect(() => {
     if (appInfoQueryError) {
