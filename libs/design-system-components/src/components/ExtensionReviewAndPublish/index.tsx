@@ -39,11 +39,9 @@ export type ExtensionReviewAndPublishProps = {
   backButtonLabel: string;
   publishButtonLabel: string;
   duplicateExtNameErrLabel?: string;
-  duplicateExtDisplayNameErrLabel?: string;
   publicImagePath?: string;
   loading?: boolean;
   isDuplicateExtName?: boolean;
-  isDuplicateExtDisplayName?: boolean;
   onViewGalleryClick?: () => void;
   onClickCancel: () => void;
   onClickSubmit: () => void;
@@ -68,11 +66,9 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
     tagsLabel,
     backButtonLabel,
     publishButtonLabel,
-    duplicateExtDisplayNameErrLabel,
     duplicateExtNameErrLabel,
     publicImagePath = '/images',
     loading,
-    isDuplicateExtDisplayName,
     isDuplicateExtName,
     onViewGalleryClick,
     onClickCancel,
@@ -95,9 +91,8 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
       !extensionData?.license ||
       !extensionData?.description ||
       extensionData?.keywords?.length === 0 ||
-      isDuplicateExtDisplayName ||
       isDuplicateExtName,
-    [extensionData, isDuplicateExtDisplayName, isDuplicateExtName],
+    [extensionData, isDuplicateExtName],
   );
 
   const onAccordionClick = accordionId => {
@@ -179,11 +174,6 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
           <Text variant="body2" truncate>
             {extensionData?.displayName}
           </Text>
-          {isDuplicateExtDisplayName && (
-            <Text variant="body2" color={{ light: 'errorLight', dark: 'errorDark' }}>
-              {duplicateExtDisplayNameErrLabel}
-            </Text>
-          )}
         </Section>
 
         <Section title={nsfwLabel} required hasToggle isToggleChecked={extensionData?.nsfw}>

@@ -12,9 +12,12 @@ import { transformSource, useAkashaStore, useRootComponentProps } from '@akashao
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../constants';
 import getSDK from '@akashaorg/core-sdk';
-import { useCreateAppMutation, useGetAppsQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
+import {
+  useCreateAppMutation,
+  useGetAppsByPublisherDidQuery,
+} from '@akashaorg/ui-awf-hooks/lib/generated';
 import { SubmitType } from '../app-routes';
-import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
+import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
 
 type ExtensionPublishPageProps = {
   extensionId: string;
@@ -123,8 +126,9 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
     loading: loadingAppInfoName,
     error: appInfoQueryErrorName,
     called: calledAppInfoName,
-  } = useGetAppsQuery({
+  } = useGetAppsByPublisherDidQuery({
     variables: {
+      id: authenticatedDID,
       first: 1,
       filters: { where: { name: { equalTo: extensionData?.name } } },
     },
@@ -135,44 +139,14 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
 
   const isDuplicatePublishedExtName = useMemo(() => !!selectAkashaApp(appInfoName), [appInfoName]);
 
-  const {
-    data: appInfoDisplayName,
-    loading: loadingAppInfoDisplayName,
-    error: appInfoQueryErrorDisplayName,
-    called: calledAppInfoDisplayName,
-  } = useGetAppsQuery({
-    variables: {
-      first: 1,
-      filters: { where: { name: { equalTo: extensionData?.displayName } } },
-    },
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-    skip: !extensionData?.displayName || !authenticatedDID,
-  });
-
-  const isDuplicatePublishedExtDisplayName = useMemo(
-    () => !!selectAkashaApp(appInfoDisplayName),
-    [appInfoDisplayName],
-  );
-
   useEffect(() => {
-    if (appInfoQueryErrorDisplayName) {
-      showErrorNotification(appInfoQueryErrorDisplayName.message);
-    }
     if (appInfoQueryErrorName) {
       showErrorNotification(appInfoQueryErrorName.message);
     }
-  }, [appInfoQueryErrorName, appInfoQueryErrorDisplayName, showErrorNotification]);
+  }, [appInfoQueryErrorName, showErrorNotification]);
 
   const handleClickPublish = () => {
-    if (
-      calledAppInfoDisplayName &&
-      calledAppInfoName &&
-      !loadingAppInfoDisplayName &&
-      !loadingAppInfoName &&
-      !isDuplicatePublishedExtName &&
-      !isDuplicatePublishedExtDisplayName
-    ) {
+    if (calledAppInfoName && !loadingAppInfoName && !isDuplicatePublishedExtName) {
       const extData = {
         applicationType: extensionData?.applicationType,
         contributors: extensionData?.contributors,
@@ -253,12 +227,8 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
           backButtonLabel={t('Cancel')}
           publishButtonLabel={t('Publish')}
           duplicateExtNameErrLabel={t('An extension with this name has already been published')}
-          duplicateExtDisplayNameErrLabel={t(
-            'An extension with this display name has already been published',
-          )}
-          loading={loadingAppMutation || loadingAppInfoDisplayName || loadingAppInfoName}
+          loading={loadingAppMutation || loadingAppInfoName}
           isDuplicateExtName={isDuplicatePublishedExtName}
-          isDuplicateExtDisplayName={isDuplicatePublishedExtDisplayName}
           transformSource={transformSource}
           onClickCancel={handleClickCancel}
           onClickSubmit={handleClickPublish}

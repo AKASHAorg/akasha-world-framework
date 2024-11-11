@@ -91,7 +91,7 @@ const ExtensionEditStep1Form: React.FC<ExtensionEditStep1FormProps> = props => {
     }
   };
 
-  const [validatedField, setValidatedField] = useState<FieldName.name | FieldName.displayName>();
+  const [validatedField, setValidatedField] = useState<FieldName.name>();
   useEffect(() => {
     if (isDuplicateExtProp) {
       setError(validatedField, { message: `Extension ${validatedField} must be unique!` });
@@ -155,10 +155,6 @@ const ExtensionEditStep1Form: React.FC<ExtensionEditStep1FormProps> = props => {
                 caption={error?.message}
                 status={error?.message ? 'error' : null}
                 onChange={onChange}
-                onBlur={() => {
-                  setValidatedField(FieldName.displayName);
-                  handleCheckExtProp(FieldName.displayName, value);
-                }}
                 inputRef={ref}
                 required={true}
               />
