@@ -6,7 +6,7 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ErrorIcon from './error-icon';
 import InstallIcon from './install-icon';
 import SuccessIcon from './success-icon';
-import { getColorClasses } from '@akashaorg/design-system-core/lib/utils/getColorClasses';
+import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
 import { apply, tw } from '@twind/core';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
 import {

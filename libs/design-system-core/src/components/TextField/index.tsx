@@ -51,7 +51,7 @@ const TextField: React.FC<TextFieldProps> = props => {
           {label}
         </Label>
       )}
-      {rest.type === 'multiline' ? (
+      {rest.type === 'multiline' && (
         <Multiline
           id={id}
           required={required}
@@ -60,7 +60,8 @@ const TextField: React.FC<TextFieldProps> = props => {
           ref={inputRef}
           {...rest}
         />
-      ) : (
+      )}
+      {rest.type === 'text' && (
         <Input
           id={id}
           required={required}

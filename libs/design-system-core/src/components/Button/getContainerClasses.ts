@@ -1,5 +1,5 @@
-import { getColorClasses } from '../../utils/getColorClasses';
-import { getElevationClasses } from '../../utils/getElevationClasses';
+import { getColorClasses } from '../../utils/get-color-classes';
+import { getElevationClasses } from '../../utils/get-elevation-classes';
 import { ButtonProps } from './types';
 interface IContainerClasses {
   greyBg: ButtonProps['greyBg'];
