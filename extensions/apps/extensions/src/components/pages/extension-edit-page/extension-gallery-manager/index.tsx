@@ -174,7 +174,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     setUploading(false);
 
     setGalleryImages([
-      ...imagesMap.values().map(image => {
+      ...Array.from(imagesMap.values()).map(image => {
         if (image.src.startsWith('ipfs://')) {
           const transformedSource = transformSource(image);
           return { ...image, src: transformedSource.src };
@@ -188,8 +188,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     setForm(prev => ({
       ...prev,
       gallery: [
-        ...imagesMap
-          .values()
+        ...Array.from(imagesMap.values())
           //filter images which have been uploaded to w3.storage
           .filter(image => !newImageIdsWithError.has(image.id))
           .map(image => ({ src: image.src, width: image.width, height: image.height })),
