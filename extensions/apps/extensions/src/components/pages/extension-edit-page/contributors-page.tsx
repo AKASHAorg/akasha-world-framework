@@ -198,10 +198,10 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
               >
                 {contributors?.length === 0 && (
                   <Stack padding={16} spacing="gap-y-2">
-                    <Text variant="body2" weight="bold">
+                    <Text variant="body2" weight="bold" color={{ light: 'grey4', dark: 'grey6' }}>
                       {t('No matches found.')}
                     </Text>
-                    <Text variant="body2">
+                    <Text variant="body2" color={{ light: 'grey4', dark: 'grey6' }}>
                       {t('To add a user as a contributor, you should follow each other.')}
                     </Text>
                   </Stack>
