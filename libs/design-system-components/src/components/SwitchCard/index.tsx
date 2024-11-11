@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { getColorClasses } from '@akashaorg/design-system-core/lib/utils/getColorClasses';
+import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 
