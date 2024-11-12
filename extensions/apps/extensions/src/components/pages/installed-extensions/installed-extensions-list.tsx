@@ -122,13 +122,17 @@ export const InstalledExtensionsList = () => {
                   />
                 </Stack>
                 <Text variant="h6">{t('No extensions installed yet!')}</Text>
-                <Stack direction="row" align="center" spacing="gap-x-1">
-                  <Button
-                    variant="text"
-                    size="md"
-                    label={t('Discover')}
-                    onClick={handleDiscoverClick}
-                  />
+                <Stack align="center">
+                  <Text as="span" variant="body2" color={{ light: 'grey5', dark: 'grey6' }}>
+                    <Button
+                      variant="text"
+                      size="md"
+                      label={t('Discover')}
+                      onClick={handleDiscoverClick}
+                      customStyle="inline-block"
+                    />{' '}
+                    {t('cool extensions and install them')}
+                  </Text>
                   <Text variant="body2" color={{ light: 'grey5', dark: 'grey6' }}>
                     {t('cool extensions and install them to customize your world')}
                   </Text>
