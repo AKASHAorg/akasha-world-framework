@@ -22,19 +22,21 @@ export type GalleryImageProps = {
   uploadingLabel: string;
   uploadingErrorLabel: string;
   state?: GalleryImageState;
-  onImageClick?: () => void;
+  handleClickImage?: () => void;
   onDelete: () => void;
 };
 
 export const GalleryImage: React.FC<GalleryImageProps> = props => {
-  const { name, src, state, uploadingLabel, uploadingErrorLabel, onImageClick, onDelete } = props;
+  const { name, src, state, uploadingLabel, uploadingErrorLabel, handleClickImage, onDelete } =
+    props;
   return (
     <Stack customStyle="relative w-[9.125rem] h-[9.125rem] min-[400px]:w-[10.625rem] min-[400px]:h-[10.625rem] overflow-hidden rounded-lg cursor-pointer">
       <Image
         alt={name}
         src={src}
-        onClick={onImageClick}
+        onClick={handleClickImage}
         customStyle={`object-cover w-full h-full ${state === GalleryImageState.ERROR || state === GalleryImageState.LOADING ? 'opacity-20' : ''}`}
+        showLoadingIndicator
       />
       {
         //action buttons
