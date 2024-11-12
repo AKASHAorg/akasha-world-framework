@@ -161,7 +161,7 @@ class NotificationService {
   )
   async getNotifications(
     page: number = 1,
-    limit: number = 100,
+    limit: number = 30,
     channelOptionIndexes: notificationSchemas.ChannelOptionIndex[] = [],
   ): Promise<notificationSchemas.PushOrgNotification[]> {
     if (!this._web3.state.address?.length) {
@@ -315,16 +315,14 @@ class NotificationService {
   }
 
   private getLatestStoredNotificationID() {
-    const localStorageKey = this.getLocalStorageKeyOfLatestSeenNotification();
-    return parseInt(localStorage.getItem(localStorageKey) || '0', 10);
+    return parseInt(localStorage.getItem(this.localStorageKeyOfLatestSeenNotification) || '0', 10);
   }
 
   private setLatestStoredNotificationID(val: string) {
-    const localStorageKey = this.getLocalStorageKeyOfLatestSeenNotification();
-    return localStorage.set(localStorageKey, val);
+    return localStorage.set(this.localStorageKeyOfLatestSeenNotification, val);
   }
 
-  private getLocalStorageKeyOfLatestSeenNotification() {
+  private get localStorageKeyOfLatestSeenNotification() {
     return `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
   }
 

@@ -91,7 +91,7 @@ export type AdditionalMetadata = {
   domain: string;
 };
 
-export type PushOrgNotification = {
+export type PushOrgNotification<T = { [key: string]: unknown }> = {
   payload_id: number;
   sender: string;
   epoch: string;
@@ -113,7 +113,7 @@ export type PushOrgNotification = {
       sectype: string | null;
       additionalMeta?: AdditionalMetadata;
       parsedMetaData?: {
-        data: { [key: string]: unknown } | string;
+        data: T | string;
         channelIndex: number | undefined;
       };
     };
