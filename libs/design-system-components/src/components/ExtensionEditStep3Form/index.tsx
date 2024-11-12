@@ -15,7 +15,7 @@ import { apply, tw } from '@twind/core';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ButtonType } from '../types/common.types';
-import { Licenses } from '../AppCreationForm';
+import { Licenses } from '../ExtensionCreationForm';
 import { AkashaProfile, Image } from '@akashaorg/typings/lib/ui';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { PlusIcon } from '@heroicons/react/24/outline';

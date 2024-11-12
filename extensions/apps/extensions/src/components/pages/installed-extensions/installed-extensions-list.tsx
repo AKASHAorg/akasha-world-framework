@@ -129,6 +129,7 @@ export const InstalledExtensionsList = () => {
                       size="md"
                       label={t('Discover')}
                       onClick={handleDiscoverClick}
+                      customStyle="inline-block"
                     />{' '}
                     {t('cool extensions and install them')}
                   </Text>
