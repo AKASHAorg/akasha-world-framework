@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import * as z from 'zod';
 import { Controller } from 'react-hook-form';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -36,8 +36,8 @@ export type ExtensionEditStep1FormProps = {
     label: string;
     handleClick: (data: ExtensionEditStep1FormValues) => void;
   };
-  handleCheckExtName?: (fieldValue: string) => void;
-  isDuplicateExtName?: boolean;
+  handleCheckExtProp?: (propToValidate: FieldName.name, fieldValue: string) => void;
+  isDuplicateExtProp?: boolean;
   loading?: boolean;
   extensionIdLabel?: string;
   extensionDisplayNameLabel?: string;
@@ -56,8 +56,8 @@ const ExtensionEditStep1Form: React.FC<ExtensionEditStep1FormProps> = props => {
     },
     cancelButton,
     nextButton,
-    handleCheckExtName,
-    isDuplicateExtName,
+    handleCheckExtProp,
+    isDuplicateExtProp,
     loading,
     extensionIdLabel,
     extensionDisplayNameLabel,
@@ -88,13 +88,14 @@ const ExtensionEditStep1Form: React.FC<ExtensionEditStep1FormProps> = props => {
     }
   };
 
+  const [validatedField, setValidatedField] = useState<FieldName.name>();
   useEffect(() => {
-    if (isDuplicateExtName) {
-      setError('name', { message: 'Extension ID must be unique!' });
+    if (isDuplicateExtProp) {
+      setError(validatedField, { message: `Extension ${validatedField} must be unique!` });
     } else {
-      clearErrors('name');
+      clearErrors(validatedField);
     }
-  }, [isDuplicateExtName, setError, clearErrors]);
+  }, [isDuplicateExtProp, setError, clearErrors, validatedField]);
 
   return (
     <form onSubmit={onSave} className={tw(apply`h-full`)}>
@@ -126,7 +127,10 @@ const ExtensionEditStep1Form: React.FC<ExtensionEditStep1FormProps> = props => {
                 caption={error?.message}
                 status={error?.message ? 'error' : null}
                 onChange={onChange}
-                onBlur={() => handleCheckExtName(value)}
+                onBlur={() => {
+                  setValidatedField(FieldName.name);
+                  handleCheckExtProp(FieldName.name, value);
+                }}
                 inputRef={ref}
                 required={true}
               />
