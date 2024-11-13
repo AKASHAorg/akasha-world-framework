@@ -20,7 +20,6 @@ export type NotificationSettingsCardProps = {
 const NotificationSettingsCard: React.FC<NotificationSettingsCardProps> = ({
   title,
   text,
-  imageSrc,
   isLoading,
   showButton = true,
   handleButtonClick,
@@ -28,15 +27,11 @@ const NotificationSettingsCard: React.FC<NotificationSettingsCardProps> = ({
   return (
     <Card radius={16} customStyle="p-0 w-full grow flex-wrap">
       <Stack padding="p-5" align="center">
-        {imageSrc ? (
-          <Image
-            customStyle="w-[180px] h-[180px] object-contain mb-4"
-            src={imageSrc}
-            alt="Notification illustration"
-          />
-        ) : (
-          <div aria-hidden="true" className="w-[180px] h-[180px] bg-[#C4C4C4] mb-4"></div>
-        )}
+        <Image
+          customStyle="w-[180px] h-[180px] object-contain mb-4"
+          src={'/images/notificationapp-welcome-min.webp'}
+          alt="Notification illustration"
+        />
         <Text variant="h5" customStyle="mb-2 text-center">
           {title}
         </Text>
