@@ -8,6 +8,8 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { ISettingsItem, SettingsOption } from '../../utils/settings-items';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
+import appRoutes, { NOTIFICATIONS } from '../../routes';
 
 const notificationsSettingsItems: ISettingsItem[] = [
   {
@@ -21,23 +23,13 @@ const notificationsSettingsItems: ISettingsItem[] = [
 ];
 
 const NotificationsOption: React.FC = () => {
+  const { baseRouteName, getCorePlugins } = useRootComponentProps();
+  const navigateTo = getCorePlugins().routing.navigateTo;
   const { t } = useTranslation('app-settings-ewa');
-
   const {
     data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
   const isLoggedIn = !!authenticatedDID;
-
-  const { getCorePlugins } = useRootComponentProps();
-  const routingPlugin = useRef(getCorePlugins().routing);
-
-  if (!isLoggedIn && !isAuthenticating) {
-    // if not logged in, redirect to homepage
-    routingPlugin.current?.navigateTo?.({
-      appName: '@akashaorg/app-antenna',
-      getNavigationUrl: () => '/',
-    });
-  }
 
   const handleSettingsOptionClick = (option: SettingsOption) => () => {
     return getCorePlugins().routing.navigateTo?.({
@@ -45,6 +37,36 @@ const NotificationsOption: React.FC = () => {
       getNavigationUrl: navRoutes => navRoutes[option],
     });
   };
+
+  const handleConnectButtonClick = () => {
+    navigateTo?.({
+      appName: '@akashaorg/app-auth-ewa',
+      getNavigationUrl: (routes: Record<string, string>) => {
+        return `${routes.Connect}?${new URLSearchParams({
+          redirectTo: `${baseRouteName}/${appRoutes[NOTIFICATIONS]}`,
+        }).toString()}`;
+      },
+    });
+  };
+
+  if (!isLoggedIn && !isAuthenticating) {
+    return (
+      <Stack>
+        <ErrorLoader
+          type={'not-authenticated'}
+          title={t('Uh-oh! You are not connected!')}
+          details={t('To check notifications options you must be connected ⚡️')}
+        >
+          <Button
+            label={t('Connect')}
+            size="md"
+            variant="primary"
+            onClick={handleConnectButtonClick}
+          />
+        </ErrorLoader>
+      </Stack>
+    );
+  }
 
   return (
     <PageLayout title={t('Notifications Settings')}>
@@ -64,7 +86,7 @@ const NotificationsOption: React.FC = () => {
           );
 
           return (
-            <React.Fragment key={`${idx}${item.label}`}>
+            <React.Fragment key={`${item.label}`}>
               {item.clickable && (
                 <Button
                   plain={true}
