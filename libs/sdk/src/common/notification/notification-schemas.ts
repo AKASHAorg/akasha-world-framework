@@ -1,5 +1,12 @@
 import { z, boolean } from 'zod';
-import { ChannelOptionIndexes } from '@akashaorg/typings/lib/sdk/notification';
+import {
+  ChannelOptionIndexes,
+  type FollowNotificationMetaData,
+  type MentionNotificationMetaData,
+  type NotificationMetaTypes,
+  type NotificationParsedMetaData,
+  type ReflectionNotificationMetaData,
+} from '@akashaorg/typings/lib/sdk/notification';
 
 export const setNewSettingsSchema = z.array(
   z.object({
@@ -91,7 +98,7 @@ export type AdditionalMetadata = {
   domain: string;
 };
 
-export type PushOrgNotification<T = { [key: string]: unknown }> = {
+export type PushOrgNotification = {
   payload_id: number;
   sender: string;
   epoch: string;
@@ -112,10 +119,7 @@ export type PushOrgNotification<T = { [key: string]: unknown }> = {
       silent: string;
       sectype: string | null;
       additionalMeta?: AdditionalMetadata;
-      parsedMetaData?: {
-        data: T | string;
-        channelIndex: number | undefined;
-      };
+      parsedMetaData?: NotificationParsedMetaData;
     };
     recipients: {
       [key: string]: string | null;
@@ -133,9 +137,22 @@ export type PushOrgNotification<T = { [key: string]: unknown }> = {
   isUnread?: boolean;
 };
 
-export type ChannelOptionIndex =
-  | ChannelOptionIndexes.ANTENNA
-  | ChannelOptionIndexes.PROFILE
-  | ChannelOptionIndexes.VIBES;
-
 export const ChannelOptionIndexSchema = z.nativeEnum(ChannelOptionIndexes);
+
+export function isFollowNotification(
+  data: NotificationMetaTypes,
+): data is FollowNotificationMetaData {
+  return data.type === 'follow';
+}
+
+export function isMentionNotification(
+  data: NotificationMetaTypes,
+): data is MentionNotificationMetaData {
+  return data.type === 'mention';
+}
+
+export function isReflectionNotification(
+  data: NotificationMetaTypes,
+): data is ReflectionNotificationMetaData {
+  return data.type === 'reflection';
+}

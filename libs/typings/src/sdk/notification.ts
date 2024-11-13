@@ -3,21 +3,42 @@ export enum ChannelOptionIndexes {
   PROFILE = 2,
   VIBES = 3,
 }
+export type NotificationParsedMetaData = {
+  data: NotificationMetaTypes;
+  channelIndex: number;
+};
 
-export type NewFollowNotification = NotificationBasicData & {
+export type UnknownMetaData = { [key: string]: unknown };
+
+export type FollowNotificationMetaData = NotificationBaseMetaData & {
+  type: 'following';
   follower: string;
 };
 
-export type NewReflectionNotification = NewMentionNotification &
-  NotificationBasicData & {
-    reflectionID: string;
-  };
+export type ReflectionNotificationMetaData = NotificationBaseMetaData & {
+  type: 'reflection';
+  author: string;
+  beamID: string;
+  reflectionID: string;
+};
 
-export type NewMentionNotification = NotificationBasicData & {
+export type MentionNotificationMetaData = NotificationBaseMetaData & {
+  type: 'mention';
   author: string;
   beamID: string;
 };
 
-type NotificationBasicData = {
+export type NotificationBaseMetaData = {
   appId: string;
 };
+
+export type NotificationMetaTypes =
+  | UnknownMetaData
+  | FollowNotificationMetaData
+  | ReflectionNotificationMetaData
+  | MentionNotificationMetaData;
+
+export type ChannelOptionIndex =
+  | ChannelOptionIndexes.ANTENNA
+  | ChannelOptionIndexes.PROFILE
+  | ChannelOptionIndexes.VIBES;

@@ -1,7 +1,11 @@
-import * as PushProtocol from '@pushprotocol/restapi';
-import type { PushStream } from '@pushprotocol/restapi/src/lib/pushstream/PushStream';
-
-import * as SdkTypes from '@akashaorg/typings/lib/sdk';
+import { PushStream } from '@pushprotocol/restapi/src/lib/pushstream/PushStream';
+import {
+  type ApiSubscriptionType,
+  type UserSetting,
+  type FeedsOptions,
+  PushAPI,
+  CONSTANTS,
+} from '@pushprotocol/restapi/src/lib';
 
 import Logging from '../../logging';
 import EventBus from '../event-bus';
@@ -12,7 +16,25 @@ import { validate } from '../validator';
 import { inject, injectable } from 'inversify';
 import pino from 'pino';
 import { z } from 'zod';
-import * as notificationSchemas from './notification-schemas';
+
+import {
+  type AdditionalMetadata,
+  type UserSettingType,
+  type PushOrgNotification,
+  type InitializeOptions,
+  type ChannelSettings,
+  InitializeOptionsSchema,
+  ChannelInfoResponseSchema,
+  ChannelUserSettingsSchema,
+  ChannelOptionIndexSchema,
+} from './notification-schemas';
+import {
+  TYPES,
+  NOTIFICATION_EVENTS,
+  type ChannelOptionIndex,
+  type NotificationMetaTypes,
+  type NotificationParsedMetaData,
+} from '@akashaorg/typings/lib/sdk';
 
 @injectable()
 class NotificationService {
@@ -21,16 +43,16 @@ class NotificationService {
   private _globalChannel: EventBus;
   private readonly _web3: Web3Connector;
   private _config: AWF_Config;
-  private _pushClient?: PushProtocol.PushAPI;
+  private _pushClient?: PushAPI;
   private _notificationsStream?: PushStream;
   private _notificationChannelId: string;
   public readonly latestSeenNotificationIDKey = 'latestSeenNotificationIDKey';
 
   constructor(
-    @inject(SdkTypes.TYPES.Log) logFactory: Logging,
-    @inject(SdkTypes.TYPES.EventBus) globalChannel: EventBus,
-    @inject(SdkTypes.TYPES.Config) config: AWF_Config,
-    @inject(SdkTypes.TYPES.Web3) web3: Web3Connector,
+    @inject(TYPES.Log) logFactory: Logging,
+    @inject(TYPES.EventBus) globalChannel: EventBus,
+    @inject(TYPES.Config) config: AWF_Config,
+    @inject(TYPES.Web3) web3: Web3Connector,
   ) {
     this._logFactory = logFactory;
     this._log = this._logFactory.create('Notification');
@@ -44,8 +66,8 @@ class NotificationService {
    * @param options - Initialization options with readonly set to true initialize the client in read-only mode without prompting for signature.
    * @throws Will throw an error if initialization fails or if the user declines the signing request.
    */
-  @validate(notificationSchemas.InitializeOptionsSchema)
-  async initialize(options: notificationSchemas.InitializeOptions = { readonly: true }) {
+  @validate(InitializeOptionsSchema)
+  async initialize(options: InitializeOptions = { readonly: true }) {
     if (!this._web3.state.connected) throw new Error('Must connect first to a web3 provider!');
     const { readonly } = options;
 
@@ -56,7 +78,7 @@ class NotificationService {
     if (readonly) {
       // Readonly will not prompt the user with a signing process
       const address = this._web3.state.address;
-      this._pushClient = await PushProtocol.PushAPI.initialize({ account: address });
+      this._pushClient = await PushAPI.initialize({ account: address });
     } else {
       /**
        * We initialize with a signer in order to send notification or change the opt-in/settings
@@ -71,14 +93,14 @@ class NotificationService {
     if (!accepted) throw new Error('The user has refused to receive notifications');
 
     this._notificationsStream = await this.notificationsClient!.initStream(
-      [PushProtocol.CONSTANTS.STREAM.NOTIF],
+      [CONSTANTS.STREAM.NOTIF],
       {
         filter: {
           channels: [this._notificationChannelId],
         },
       },
     );
-    this._notificationsStream.on(PushProtocol.CONSTANTS.STREAM.NOTIF, (data: any) => {
+    this._notificationsStream.on(CONSTANTS.STREAM.NOTIF, (data: any) => {
       const notification = new Notification(data?.message?.notification.body, {
         body: data?.message?.notification.body,
         icon: data?.channel?.icon,
@@ -97,21 +119,21 @@ class NotificationService {
   async stopListeningToNotificationEvents() {
     if (this._notificationsStream) {
       await this._notificationsStream.disconnect();
-      this._notificationsStream.removeAllListeners(PushProtocol.CONSTANTS.STREAM.NOTIF);
+      this._notificationsStream.removeAllListeners(CONSTANTS.STREAM.NOTIF);
       this._notificationsStream = undefined;
     }
   }
 
-  async getSettingsOfChannel(): Promise<notificationSchemas.ChannelSettings[]> {
+  async getSettingsOfChannel(): Promise<ChannelSettings[]> {
     const response = await this.notificationsClient.channel.info(this._notificationChannelId);
-    const parseResponse = notificationSchemas.ChannelInfoResponseSchema.safeParse(response);
+    const parseResponse = ChannelInfoResponseSchema.safeParse(response);
     if (!parseResponse.success) throw new Error('User Settings unable to parse');
 
     return parseResponse.data;
   }
 
-  async getSettingsOfUser(): Promise<notificationSchemas.UserSettingType[]> {
-    const subscriptions: PushProtocol.ApiSubscriptionType[] =
+  async getSettingsOfUser(): Promise<UserSettingType[]> {
+    const subscriptions: ApiSubscriptionType[] =
       await this.notificationsClient.notification.subscriptions({
         channel: this._notificationChannelId,
       });
@@ -120,7 +142,7 @@ class NotificationService {
     );
     if (!channelSubscriptionInfo) throw new Error('Settings not found');
 
-    const result = notificationSchemas.ChannelUserSettingsSchema.safeParse(channelSubscriptionInfo);
+    const result = ChannelUserSettingsSchema.safeParse(channelSubscriptionInfo);
     if (!result.success) throw new Error('User Settings unable to parse');
 
     return result.data.userSettings;
@@ -133,7 +155,7 @@ class NotificationService {
       }),
     ),
   )
-  async setSettings(newSettings: PushProtocol.UserSetting[]): Promise<void> {
+  async setSettings(newSettings: UserSetting[]): Promise<void> {
     const settingsFromChannel = await this.getSettingsOfChannel();
     if (newSettings.length !== settingsFromChannel.length)
       // If the settings are sent without order or there are some opt-in missing PushProtocol sets all the opt-in to false
@@ -157,18 +179,18 @@ class NotificationService {
   @validate(
     z.number().positive().optional(),
     z.number().positive().max(100).optional(),
-    z.array(notificationSchemas.ChannelOptionIndexSchema).optional(),
+    z.array(ChannelOptionIndexSchema).optional(),
   )
   async getNotifications(
     page: number = 1,
     limit: number = 30,
-    channelOptionIndexes: notificationSchemas.ChannelOptionIndex[] = [],
-  ): Promise<notificationSchemas.PushOrgNotification[]> {
+    channelOptionIndexes: ChannelOptionIndex[] = [],
+  ): Promise<PushOrgNotification[]> {
     if (!this._web3.state.address?.length) {
       return [];
     }
     // Fetch notifications
-    const options: PushProtocol.FeedsOptions = {
+    const options: FeedsOptions = {
       channels: [this._notificationChannelId],
       account: this._web3.state.address,
       page: page,
@@ -176,7 +198,7 @@ class NotificationService {
       raw: true,
     };
 
-    let notifications: notificationSchemas.PushOrgNotification[] = [];
+    let notifications: PushOrgNotification[] = [];
 
     const latestStoredNotificationID = this.getLatestStoredNotificationID();
     // if there are no options/apps specified.
@@ -195,7 +217,7 @@ class NotificationService {
       options.limit = 100;
       let hasMorePages = true;
       while (hasMorePages && notifications.length < endIndex) {
-        const inboxNotifications: notificationSchemas.PushOrgNotification[] =
+        const inboxNotifications: PushOrgNotification[] =
           await this.notificationsClient.notification.list('INBOX', options);
 
         // Filter notifications based on app options
@@ -214,7 +236,7 @@ class NotificationService {
         options.page++;
       }
 
-      notifications.slice(startIndex, endIndex);
+      notifications = notifications.slice(startIndex, endIndex);
     }
 
     // Find the largest SID among fetched notifications
@@ -246,25 +268,26 @@ class NotificationService {
   }
 
   private parseNotificationData(
-    notification: notificationSchemas.PushOrgNotification,
+    notification: PushOrgNotification,
     latestStoredNotificationID: number,
   ) {
     if (notification.payload.data.additionalMeta) {
-      const metaData = this.parseMetaData(notification.payload.data.additionalMeta);
-      notification.payload.data.parsedMetaData = {
-        channelIndex: metaData.channelIndex,
-        data: metaData.data,
-      };
+      const metaData: NotificationParsedMetaData = this.parseMetaData(
+        notification.payload.data.additionalMeta,
+      );
+      notification.payload.data.parsedMetaData = metaData;
     }
     notification.timestamp = new Date(notification.epoch);
     notification.isUnread = latestStoredNotificationID
       ? notification.payload_id > latestStoredNotificationID
       : true;
+
+    return notification;
   }
 
-  private parseMetaData(metaData: notificationSchemas.AdditionalMetadata) {
+  private parseMetaData(metaData: AdditionalMetadata): NotificationParsedMetaData {
     let indexOfOption: number | undefined;
-    let data: { [key: string]: unknown } | string = '';
+    let data: NotificationMetaTypes | string = '';
 
     // Safely access 'type' and split it
     const splitType = metaData?.type.split('+') ?? [];
@@ -303,11 +326,11 @@ class NotificationService {
   private async initializeWritableClient(): Promise<void> {
     const signer = await this._web3.getSigner();
     if (!signer) throw new Error('There is no signer');
-    this._pushClient = await PushProtocol.PushAPI.initialize(signer);
+    this._pushClient = await PushAPI.initialize(signer);
 
     if (this._pushClient.readmode()) {
       this._globalChannel.next({
-        event: SdkTypes.NOTIFICATION_EVENTS.SUBSCRIPTION_NOT_ACCEPTED,
+        event: NOTIFICATION_EVENTS.SUBSCRIPTION_NOT_ACCEPTED,
         data: {},
       });
       throw new Error('The user did not sign the message');
