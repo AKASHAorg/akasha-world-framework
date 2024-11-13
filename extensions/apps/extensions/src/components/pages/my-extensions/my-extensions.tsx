@@ -90,7 +90,6 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     error,
     loading,
     fetchMore,
-    refetch,
   } = useGetAppsByPublisherDidQuery({
     variables: {
       id: authenticatedDID,
@@ -141,9 +140,6 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
 
   useEffect(() => {
     getDraftExtensions();
-    refetch({
-      id: authenticatedDID,
-    });
     // subscribe and listen to events
     const eventsSub = uiEventsRef.current
       .pipe(filterEvents([EventTypes.RefetchMyExtensions]))
@@ -151,9 +147,6 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         next: (eventInfo: UIEventData) => {
           if (eventInfo.event === EventTypes.RefetchMyExtensions) {
             getDraftExtensions();
-            refetch({
-              id: authenticatedDID,
-            });
           }
         },
       });
@@ -163,7 +156,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         eventsSub.unsubscribe();
       }
     };
-  }, [authenticatedDID, getDraftExtensions, refetch]);
+  }, [authenticatedDID, getDraftExtensions]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
