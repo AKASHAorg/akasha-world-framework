@@ -255,12 +255,12 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
                   <Text variant="body2" weight="bold">
                     {contributorsProfiles[0]?.name}
                   </Text>
-                  {contributorsProfiles.length > MAX_CONTRIBUTORS_DISPLAY && (
+                  {contributorsProfiles.length > 1 && (
                     <Text
                       variant="footnotes2"
                       color={{ light: 'grey4', dark: 'grey6' }}
                       weight="light"
-                    >{`+${contributorsProfiles.length - MAX_CONTRIBUTORS_DISPLAY} ${moreLabel}`}</Text>
+                    >{`and ${contributorsProfiles.length - 1} ${moreLabel}`}</Text>
                   )}
                 </Stack>
               </Stack>

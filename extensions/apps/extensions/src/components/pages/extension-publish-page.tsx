@@ -291,12 +291,12 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
                   />
                   <Stack>
                     <Text variant="button-sm">{profilesData[0]?.name}</Text>
-                    {profilesData.length > MAX_CONTRIBUTORS_DISPLAY && (
+                    {profilesData.length > 1 && (
                       <Text
                         variant="footnotes2"
                         color="grey7"
                         weight="normal"
-                      >{`+${profilesData.length - MAX_CONTRIBUTORS_DISPLAY} ${t('more')}`}</Text>
+                      >{`and ${profilesData.length - 1} ${t('more')}`}</Text>
                     )}
                   </Stack>
                   <Button
