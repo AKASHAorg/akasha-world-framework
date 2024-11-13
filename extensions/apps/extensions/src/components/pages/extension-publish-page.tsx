@@ -17,7 +17,7 @@ import {
   useRootComponentProps,
 } from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../constants';
+import { DRAFT_EXTENSIONS, DRAFT_RELEASES, MAX_CONTRIBUTORS_DISPLAY } from '../../constants';
 import getSDK from '@akashaorg/core-sdk';
 import {
   useCreateAppMutation,
@@ -284,15 +284,19 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
               )}
               {profilesData?.length > 0 && (
                 <Stack direction="row" spacing="gap-2" align="center">
-                  <StackedAvatar userData={contributorAvatars} maxAvatars={3} size="md" />
+                  <StackedAvatar
+                    userData={contributorAvatars}
+                    maxAvatars={MAX_CONTRIBUTORS_DISPLAY}
+                    size="md"
+                  />
                   <Stack>
                     <Text variant="button-sm">{profilesData[0]?.name}</Text>
-                    {profilesData.length > 3 && (
+                    {profilesData.length > MAX_CONTRIBUTORS_DISPLAY && (
                       <Text
                         variant="footnotes2"
                         color="grey7"
                         weight="normal"
-                      >{`+${profilesData.length - 3} ${t('more')}`}</Text>
+                      >{`+${profilesData.length - MAX_CONTRIBUTORS_DISPLAY} ${t('more')}`}</Text>
                     )}
                   </Stack>
                   <Button

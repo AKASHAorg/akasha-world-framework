@@ -26,6 +26,8 @@ const MAX_TAGS = 4;
 
 const MIN_TAG_CHARACTERS = 3;
 
+export const MAX_CONTRIBUTORS_DISPLAY = 3;
+
 export enum FieldName {
   license = 'license',
   licenseOther = 'licenseOther',
@@ -221,6 +223,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
                 <Text variant="h6">{collaboratorsFieldLabel}</Text>
                 <Button
                   variant="text"
+                  size="md"
                   icon={<PlusIcon />}
                   iconDirection="left"
                   label={contributorsProfiles.length > 0 ? addAndEditLabel : addLabel}
@@ -243,16 +246,22 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
             )}
             {contributorAvatars?.length > 0 && (
               <Stack direction="row" spacing="gap-2" align="center">
-                <StackedAvatar userData={contributorAvatars} maxAvatars={3} size="md" />
+                <StackedAvatar
+                  userData={contributorAvatars}
+                  maxAvatars={MAX_CONTRIBUTORS_DISPLAY}
+                  size="md"
+                />
                 <Stack>
                   <Text variant="body2" weight="bold">
                     {contributorsProfiles[0]?.name}
                   </Text>
-                  <Text
-                    variant="footnotes2"
-                    color={{ light: 'grey4', dark: 'grey6' }}
-                    weight="light"
-                  >{`+${contributorsProfiles?.length - 1} ${moreLabel}`}</Text>
+                  {contributorsProfiles.length > MAX_CONTRIBUTORS_DISPLAY && (
+                    <Text
+                      variant="footnotes2"
+                      color={{ light: 'grey4', dark: 'grey6' }}
+                      weight="light"
+                    >{`+${contributorsProfiles.length - MAX_CONTRIBUTORS_DISPLAY} ${moreLabel}`}</Text>
+                  )}
                 </Stack>
               </Stack>
             )}
