@@ -4,8 +4,8 @@ export enum ChannelOptionIndexes {
   VIBES = 3,
 }
 export type NotificationParsedMetaData = {
-  data: NotificationMetaTypes;
-  channelIndex: number;
+  data: NotificationMetaTypes | string;
+  channelIndex: number | undefined;
 };
 
 export type UnknownMetaData = { [key: string]: unknown };
