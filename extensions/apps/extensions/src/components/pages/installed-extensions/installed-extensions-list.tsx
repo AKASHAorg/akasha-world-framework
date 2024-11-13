@@ -134,7 +134,7 @@ export const InstalledExtensionsList = () => {
                     {t('cool extensions and install them')}
                   </Text>
                   <Text variant="body2" color={{ light: 'grey5', dark: 'grey6' }}>
-                    {t('cool extensions and install them to customize your world')}
+                    {t('to customize your world')}
                   </Text>
                 </Stack>
               </>
@@ -142,7 +142,7 @@ export const InstalledExtensionsList = () => {
             {!!installedExtensions.length && (
               <AppList
                 apps={installedExtensions}
-                // implementation requires pagination support on installed extensions service on sdk
+                //implementation requires pagination support on installed extensions service on sdk
                 onLoadMore={() => null}
               />
             )}
