@@ -97,7 +97,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       first: 10,
       sorting: { createdAt: SortOrder.Desc },
     },
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
     skip: !authenticatedDID,
   });
@@ -219,14 +219,12 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
           menuItems={extensionTypeMenuItems}
           selected={selectedType}
           setSelected={setSelectedType}
-          placeholderLabel={t('Type')}
           customStyle="grow"
         />
         <Dropdown
           menuItems={extensionStatusMenuItems}
           selected={selectedStatus}
           setSelected={setSelectedStatus}
-          placeholderLabel={t('Status')}
           customStyle="grow"
         />
         <Button variant="text" onClick={handleResetClick} label={t('Reset')} />
@@ -268,7 +266,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
                 <ExtensionElement
                   extensionData={extensionData}
                   showDivider={itemIndex < allMyExtensions.length - 1}
-                  filter={selectedStatus}
+                  filters={[selectedType, selectedStatus]}
                   showMenu
                 />
               );

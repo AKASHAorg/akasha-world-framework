@@ -97,7 +97,7 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
               details={t('There was an error loading the releases')}
             />
           )}
-          {releases && (
+          {releases && releases.length > 0 && (
             <DynamicInfiniteScroll
               count={releasesCount}
               overScan={5}
@@ -109,7 +109,7 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
             >
               {item => {
                 const release = releases[item.itemIndex];
-                const isExpanded = expandedRelease === release.node?.id;
+                const isExpanded = expandedRelease === release?.node?.id;
                 const description = release.node?.meta?.find(
                   m => m.property === 'description',
                 )?.value;

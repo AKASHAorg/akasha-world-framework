@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import getSDK from '@akashaorg/core-sdk';
 import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
-import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Menu from '@akashaorg/design-system-core/lib/components/Menu';
@@ -26,14 +25,14 @@ import { getExtensionStatus, getStatusIndicatorStyle } from '../../../utils/exte
 type ExtensionElement = {
   extensionData: Extension;
   showDivider?: boolean;
-  filter?: string;
+  filters?: string[];
   showMenu?: boolean;
 };
 
 export const ExtensionElement: React.FC<ExtensionElement> = ({
   extensionData,
   showDivider = false,
-  filter,
+  filters,
   showMenu = false,
 }) => {
   const { t } = useTranslation('app-extensions');
@@ -173,104 +172,98 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
   };
 
   const showElement = () => {
-    if (!filter) {
+    /**
+     * show element if;
+     * no filter, or
+     * filters are both in 'All' state
+     */
+    if (filters.length === 0 || (filters.length && filters[0] === 'All' && filters[1] === 'All')) {
       return true;
-    } else if (filter) {
-      if (filter === 'All') {
-        return true;
-      }
-      return (
-        filter ===
-        getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)
-      );
     }
+    return (
+      filters[0] === extensionData.applicationType &&
+      filters[1] ===
+        getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)
+    );
   };
 
+  const iconType = useMemo(() => extensionData?.applicationType, [extensionData]);
+
+  if (!showElement()) return null;
+
   return (
-    <>
-      {showElement() && (
-        <Stack spacing="gap-y-4">
-          <Stack direction="row" justify="between" spacing="gap-x-8" fullWidth>
-            <Stack direction="row" spacing="gap-x-3" customStyle="max-h-[60px] w-[60%]">
-              <AppAvatar
-                appType={extensionData?.applicationType}
-                avatar={transformSource(extensionData?.logoImage)}
-                extensionId={extensionData?.id}
-              />
-              <Stack direction="column" justify="between" customStyle="w-0 min-w-full">
-                <Stack direction="row" spacing="gap-2">
-                  <Text variant="button-sm" truncate>
-                    {extensionData?.name}
-                  </Text>
+    <Stack spacing="gap-y-4">
+      <Stack direction="row" justify="between" spacing="gap-x-8" fullWidth>
+        <Stack direction="row" spacing="gap-x-3" customStyle="max-h-[60px] w-[60%]">
+          <AppAvatar
+            appType={extensionData?.applicationType}
+            avatar={transformSource(extensionData?.logoImage)}
+            extensionId={extensionData?.id}
+          />
+          <Stack direction="column" justify="between" customStyle="w-0 min-w-full">
+            <Stack direction="row" spacing="gap-2">
+              <Text variant="button-sm" truncate>
+                {extensionData?.name}
+              </Text>
 
-                  {extensionData?.applicationType && (
-                    <Stack
-                      customStyle="w-[18px] h-[18px] rounded-full shrink-0"
-                      background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
-                      justify="center"
-                      align="center"
-                    >
-                      <Icon
-                        color={{ light: 'white', dark: 'white' }}
-                        size={'xs'}
-                        solid
-                        icon={<ExtensionIcon type={extensionData?.applicationType} />}
-                      />
-                    </Stack>
-                  )}
-                </Stack>
-                <Text
-                  variant="footnotes2"
-                  weight="normal"
-                  color={{ light: 'grey4', dark: 'grey7' }}
-                  truncate
-                >
-                  {extensionData?.description || extensionData?.displayName}
-                </Text>
-              </Stack>
-            </Stack>
-
-            <Stack
-              direction="column"
-              justify={showMenu ? 'between' : 'end'}
-              align="end"
-              customStyle="shrink-0"
-              padding={showMenu ? 'p-0' : 'pr-4'}
-            >
-              {showMenu && (
-                <Menu
-                  anchor={{
-                    icon: <EllipsisHorizontalIcon />,
-                    variant: 'primary',
-                    greyBg: true,
-                    iconOnly: true,
-                    'aria-label': 'settings',
-                  }}
-                  items={menuItems(
-                    getExtensionStatus(
-                      extensionData?.localDraft,
-                      appStreamData?.edges[0]?.node?.status,
-                    ),
-                  )}
-                  customStyle="w-max z-99"
-                />
-              )}
-              <Stack direction="row" align="center" spacing="gap-x-1.5">
+              {extensionData?.applicationType && (
                 <Stack
-                  customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}`}
-                />
-                <Text variant="footnotes2" weight="normal">
-                  {getExtensionStatus(
-                    extensionData?.localDraft,
-                    appStreamData?.edges[0]?.node?.status,
-                  )}
-                </Text>
-              </Stack>
+                  customStyle="w-[18px] h-[18px] rounded-full shrink-0"
+                  background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
+                  justify="center"
+                  align="center"
+                >
+                  <ExtensionIcon size="xs" type={iconType} />
+                </Stack>
+              )}
             </Stack>
+            <Text
+              variant="footnotes2"
+              weight="normal"
+              color={{ light: 'grey4', dark: 'grey7' }}
+              truncate
+            >
+              {extensionData?.description || extensionData?.displayName}
+            </Text>
           </Stack>
-          {showDivider && <Divider />}
         </Stack>
-      )}
-    </>
+
+        <Stack
+          direction="column"
+          justify={showMenu ? 'between' : 'end'}
+          align="end"
+          customStyle="shrink-0"
+          padding={showMenu ? 'p-0' : 'pr-4'}
+        >
+          {showMenu && (
+            <Menu
+              anchor={{
+                icon: <EllipsisHorizontalIcon />,
+                variant: 'primary',
+                greyBg: true,
+                iconOnly: true,
+                'aria-label': 'settings',
+              }}
+              items={menuItems(
+                getExtensionStatus(
+                  extensionData?.localDraft,
+                  appStreamData?.edges[0]?.node?.status,
+                ),
+              )}
+              customStyle="w-max z-99"
+            />
+          )}
+          <Stack direction="row" align="center" spacing="gap-x-1.5">
+            <Stack
+              customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}`}
+            />
+            <Text variant="footnotes2" weight="normal">
+              {getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}
+            </Text>
+          </Stack>
+        </Stack>
+      </Stack>
+      {showDivider && <Divider />}
+    </Stack>
   );
 };
