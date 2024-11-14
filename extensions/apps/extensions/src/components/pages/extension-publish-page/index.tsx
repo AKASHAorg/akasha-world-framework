@@ -82,7 +82,7 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
         },
       },
     ) => {
-      createAppMutationCache({ cache, authenticatedDID, data: document });
+      createAppMutationCache({ cache, authenticatedDID, document });
     },
     onCompleted: data => {
       // after the extension has been published to the ceramic model

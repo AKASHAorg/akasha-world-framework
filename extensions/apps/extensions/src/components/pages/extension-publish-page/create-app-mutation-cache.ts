@@ -10,10 +10,10 @@ import { ApolloCache } from '@apollo/client';
 interface IUpdateCache {
   cache: ApolloCache<unknown>;
   authenticatedDID: string;
-  data: CreateAppMutation['setAkashaApp']['document'];
+  document: CreateAppMutation['setAkashaApp']['document'];
 }
 
-export async function createAppMutationCache({ cache, authenticatedDID, data }: IUpdateCache) {
+export async function createAppMutationCache({ cache, authenticatedDID, document }: IUpdateCache) {
   const variables = {
     id: authenticatedDID,
     first: 10,
@@ -24,7 +24,19 @@ export async function createAppMutationCache({ cache, authenticatedDID, data }: 
     variables,
   });
   const apps = selectApps(query);
-  const updatedApps = [data, ...apps];
+  const updatedApps = [
+    {
+      ...document,
+      logoImage: null,
+      coverImage: null,
+      gallery: null,
+      meta: null,
+      links: [],
+      createdAt: new Date().toISOString(),
+    },
+    ...apps,
+  ];
+
   cache.writeQuery<GetAppsByPublisherDidQuery>({
     query: GetAppsByPublisherDidDocument,
     variables,
@@ -32,11 +44,11 @@ export async function createAppMutationCache({ cache, authenticatedDID, data }: 
       node: {
         ...query.node,
         akashaAppList: {
+          ...('akashaAppList' in query.node && query.node?.akashaAppList),
           edges: updatedApps.map(app => ({
             node: app,
             cursor: '',
           })),
-          pageInfo: null,
         },
       },
     },
