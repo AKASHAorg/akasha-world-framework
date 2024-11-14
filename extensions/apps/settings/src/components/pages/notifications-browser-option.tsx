@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import PageLayout from './base-layout';
@@ -7,8 +7,19 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import appRoutes, { BROWSER_NOTIFICATIONS } from '../../routes';
+import NotificationSettingsCard, {
+  NotificationsImageSrc,
+} from '@akashaorg/design-system-components/lib/components/NotificationSettingsCard';
+
+type States = 'default' | 'enabled' | 'disabled';
+type StatesContent = {
+  [key in States]: { title: string; description: string; image: NotificationsImageSrc };
+};
 
 const BrowserNotificationsOption: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState('disabled');
+
   const { baseRouteName, getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
   const { t } = useTranslation('app-settings-ewa');
@@ -16,6 +27,24 @@ const BrowserNotificationsOption: React.FC = () => {
     data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
   const isLoggedIn = !!authenticatedDID;
+
+  const STATES_CONTENT: StatesContent = {
+    default: {
+      title: t('Turn on browser notifications'),
+      description: t('You will see a browser prompt to allow notifications'),
+      image: 'browserDefault',
+    },
+    enabled: {
+      title: t('Browser notifications Enabled'),
+      description: t('You can disable them from your browser’s settings at any time.'),
+      image: 'browserEnabled',
+    },
+    disabled: {
+      title: t('Browser notifications disabled'),
+      description: t('You can enable them from your browser’s settings at any time.'),
+      image: 'browserDisabled',
+    },
+  };
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -47,9 +76,25 @@ const BrowserNotificationsOption: React.FC = () => {
     );
   }
 
+  const handleEnableBrowserNotifications = () => {
+    setLoading(true);
+    setResult('enabled');
+    // TODO - call SDK API
+  };
+
   return (
     <PageLayout title={t('Browser notifications')}>
-      <Text>TODO - add content</Text>
+      <Stack padding="p-4">
+        <NotificationSettingsCard
+          isLoading={loading}
+          handleButtonClick={handleEnableBrowserNotifications}
+          text={STATES_CONTENT[result].description}
+          title={STATES_CONTENT[result].title}
+          image={STATES_CONTENT[result].image}
+          showButton={result === 'default'}
+          buttonLabel={t('Turn on')}
+        />
+      </Stack>
     </PageLayout>
   );
 };

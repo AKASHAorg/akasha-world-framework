@@ -6,13 +6,24 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Image from '@akashaorg/design-system-core/lib/components/Image';
 
+const IMAGES = {
+  notificationsDefault: '/images/notificationapp-welcome-min.webp',
+  browserDefault: '/images/notification-browser.webp',
+  browserEnabled: '/images/notification-browser-enabled.webp',
+  browserDisabled: '/images/notification-browser-disabled.webp',
+  noNotifications: '/images/notificationapp-welcome-min.webp',
+};
+
+export type NotificationsImageSrc = keyof typeof IMAGES;
+
 export type NotificationSettingsCardProps = {
   // data
   title: string;
   text: string;
-  imageSrc?: string;
+  image?: NotificationsImageSrc;
   isLoading?: boolean;
   showButton?: boolean;
+  buttonLabel?: string;
   // handlers
   handleButtonClick: () => void;
 };
@@ -20,7 +31,9 @@ export type NotificationSettingsCardProps = {
 const NotificationSettingsCard: React.FC<NotificationSettingsCardProps> = ({
   title,
   text,
+  image = IMAGES.notificationsDefault,
   isLoading,
+  buttonLabel,
   showButton = true,
   handleButtonClick,
 }) => {
@@ -29,7 +42,7 @@ const NotificationSettingsCard: React.FC<NotificationSettingsCardProps> = ({
       <Stack padding="p-5" align="center">
         <Image
           customStyle="w-[180px] h-[180px] object-contain mb-4"
-          src={'/images/notificationapp-welcome-min.webp'}
+          src={IMAGES[image]}
           alt="Notification illustration"
         />
         <Text variant="h5" customStyle="mb-2 text-center">
@@ -41,7 +54,7 @@ const NotificationSettingsCard: React.FC<NotificationSettingsCardProps> = ({
 
         {showButton && (
           <Button
-            label="Go to Settings"
+            label={buttonLabel}
             variant="primary"
             size="md"
             customStyle="w-fit"

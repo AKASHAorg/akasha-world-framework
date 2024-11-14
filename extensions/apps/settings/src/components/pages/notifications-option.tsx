@@ -89,8 +89,8 @@ const NotificationsOption: React.FC = () => {
 
   const handleEnableNotifications = () => {
     setLoading(true);
-    setNotificationsEnabled(true);
     // TODO - call SDK API
+    setNotificationsEnabled(true);
 
     const result = true ? 'success' : 'error';
     _uiEvents.current.next({
@@ -108,10 +108,12 @@ const NotificationsOption: React.FC = () => {
       {!notificationsEnabled && (
         <Stack padding="p-4">
           <NotificationSettingsCard
+            image={'notificationsDefault'}
             isLoading={loading}
             handleButtonClick={handleEnableNotifications}
             text={t('You’ll be prompted with 1 signature')}
-            title={t('Turn on')}
+            title={t('Turn on in-app notifications')}
+            buttonLabel={t('Turn on')}
           />
         </Stack>
       )}
