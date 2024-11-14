@@ -17,6 +17,11 @@ import { NetworkStatus } from '@apollo/client';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import {
+  selectAppsReleases,
+  selectAppsReleasesPageInfo,
+} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-releases-query';
+import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
 
 type ReleasesPageProps = {
   appName: string;
@@ -55,18 +60,20 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
   };
 
   const handleLoadMoreReleases = () => {
-    if (releasesReq.data?.akashaAppReleaseIndex?.edges.length < releasesCount) {
-      return;
+    const edges = selectAppsReleases(releasesReq.data);
+    const pageInfo = selectAppsReleasesPageInfo(releasesReq.data);
+
+    if (edges.length < releasesCount && pageInfo.endCursor.length) {
+      releasesReq.fetchMore({
+        variables: {
+          after: pageInfo.endCursor,
+        },
+      });
     }
-    releasesReq.fetchMore({
-      variables: {
-        after: releasesReq.data?.akashaAppReleaseIndex?.pageInfo.endCursor,
-      },
-    });
   };
 
   const releases = useMemo(() => {
-    return releasesReq.data?.akashaAppReleaseIndex.edges;
+    return releasesReq.data?.akashaAppReleaseIndex.edges || [];
   }, [releasesReq]);
 
   useEffect(() => {
@@ -91,15 +98,29 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
             appType={extensionType}
           />
           {hasErrors && (
-            <ErrorLoader
-              type="list-not-available"
-              title={t('Loading error')}
-              details={t('There was an error loading the releases')}
-            />
+            <>
+              <Divider />
+              <ErrorLoader
+                noWrapperCard={true}
+                type="list-not-available"
+                title={t('Loading error')}
+                details={t('There was an error loading the releases')}
+              />
+            </>
+          )}
+          {releasesReq.networkStatus === NetworkStatus.ready && !releases.length && (
+            <>
+              <Divider />
+              <DefaultEmptyCard
+                noBorder={true}
+                assetName="longbeam-notfound"
+                infoText={t('There are no releases for this extension yet')}
+              />
+            </>
           )}
           {releases && (
             <DynamicInfiniteScroll
-              count={releasesCount}
+              count={releases.length}
               overScan={5}
               estimatedHeight={80}
               itemSpacing={16}
@@ -109,6 +130,7 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
             >
               {item => {
                 const release = releases[item.itemIndex];
+                if (!release) return null;
                 const isExpanded = expandedRelease === release.node?.id;
                 const description = release.node?.meta?.find(
                   m => m.property === 'description',
