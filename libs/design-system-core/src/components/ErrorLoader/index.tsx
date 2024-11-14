@@ -6,13 +6,7 @@ export type ErrorLoaderProps = React.PropsWithChildren<{
   /**
    * Error type
    */
-  type:
-    | 'no-apps'
-    | 'not-authenticated'
-    | 'script-error'
-    | 'page-not-found'
-    | 'list-not-available'
-    | 'empty-list';
+  type: 'no-apps' | 'not-authenticated' | 'script-error' | 'page-not-found' | 'list-not-available';
   /* Path to public folder */
   publicImgPath?: string;
   /**
@@ -70,9 +64,6 @@ const ErrorLoader: React.FC<ErrorLoaderProps> = ({ children, ...props }) => {
       break;
     case 'list-not-available':
       imagesrc = `${publicImgPath}/list-not-available.webp`;
-      break;
-    case 'empty-list':
-      imagesrc = `${publicImgPath}/longbeam-notfound.webp`;
       break;
     default:
       imagesrc = `${publicImgPath}/general-error.webp`;

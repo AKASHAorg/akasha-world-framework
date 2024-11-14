@@ -17,6 +17,11 @@ import { NetworkStatus } from '@apollo/client';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import {
+  selectAppsReleases,
+  selectAppsReleasesPageInfo,
+} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-releases-query';
+import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
 
 type ReleasesPageProps = {
   appName: string;
@@ -55,10 +60,13 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
   };
 
   const handleLoadMoreReleases = () => {
-    if (releasesReq.data?.akashaAppReleaseIndex?.edges.length < releasesCount) {
+    const edges = selectAppsReleases(releasesReq.data);
+    const pageInfo = selectAppsReleasesPageInfo(releasesReq.data);
+
+    if (edges.length < releasesCount && pageInfo.endCursor.length) {
       releasesReq.fetchMore({
         variables: {
-          after: releasesReq.data?.akashaAppReleaseIndex?.pageInfo.endCursor,
+          after: pageInfo.endCursor,
         },
       });
     }
@@ -103,10 +111,10 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
           {releasesReq.networkStatus === NetworkStatus.ready && !releases.length && (
             <>
               <Divider />
-              <ErrorLoader
-                noWrapperCard={true}
-                type="empty-list"
-                title={t('There are no releases for this extension yet')}
+              <DefaultEmptyCard
+                noBorder={true}
+                assetName="longbeam-notfound"
+                infoText={t('There are no releases for this extension yet')}
               />
             </>
           )}

@@ -19,6 +19,7 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import { NetworkStatus } from '@apollo/client';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
+import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
 
 type DevInfoPageProps = {
   devDid: string;
@@ -134,10 +135,10 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
           {appsReq.networkStatus === NetworkStatus.ready && !apps?.length && (
             <>
               <Divider />
-              <ErrorLoader
-                noWrapperCard={true}
-                type="empty-list"
-                title={t('No extensions created by this developer')}
+              <DefaultEmptyCard
+                noBorder={true}
+                assetName="longbeam-notfound"
+                infoText={t('There are no releases for this extension yet')}
               />
             </>
           )}
