@@ -42,7 +42,7 @@ export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
       loadingFn: () => import('./extensions/profile-avatar'),
     },
     {
-      mountsIn: 'unsaved-changes_edit-profile',
+      mountsIn: 'unsaved-changes_*',
       loadingFn: () => import('./extensions/unsaved-changes'),
     },
   ],

@@ -25,19 +25,19 @@ const Component: React.FC<IRootExtensionProps> = () => {
   }, []);
 
   return (
-    <>
-      <UnsavedChangesModal
-        showModal={modalData?.name === 'unsaved-changes_edit-profile'}
-        cancelButtonLabel={t('Cancel')}
-        leavePageButtonLabel={t('Leave page')}
-        title={t('Unsaved changes')}
-        description={t(
-          "Are you sure you want to leave this page? The changes you've made will not be saved.",
-        )}
-        handleModalClose={handleModalClose}
-        handleLeavePage={handleLeavePage}
-      />
-    </>
+    <UnsavedChangesModal
+      showModal={['unsaved-changes_edit-profile', 'unsaved-changes_edit-interests'].includes(
+        modalData?.name,
+      )}
+      cancelButtonLabel={t('Cancel')}
+      leavePageButtonLabel={t('Leave page')}
+      title={t('Unsaved changes')}
+      description={t(
+        "Are you sure you want to leave this page? The changes you've made will not be saved.",
+      )}
+      handleModalClose={handleModalClose}
+      handleLeavePage={handleLeavePage}
+    />
   );
 };
 
