@@ -26,8 +26,6 @@ const MAX_TAGS = 4;
 
 const MIN_TAG_CHARACTERS = 3;
 
-export const MAX_CONTRIBUTORS_DISPLAY = 3;
-
 export enum FieldName {
   license = 'license',
   licenseOther = 'licenseOther',
@@ -60,6 +58,7 @@ export type ExtensionEditStep3FormProps = {
   contributorsProfiles?: AkashaProfile[];
   errorProfilesData?: ApolloError;
   loadingProfilesData?: boolean;
+  maxContributorsDisplay: number;
   cancelButton: ButtonType;
   nextButton: {
     label: string;
@@ -96,6 +95,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     tagsDescriptionLabel,
     tagsAddedLabel,
     noteLabel,
+    maxContributorsDisplay,
     noteDescriptionLabel,
     errorProfilesDataLabel,
   } = props;
@@ -248,7 +248,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
               <Stack direction="row" spacing="gap-2" align="center">
                 <StackedAvatar
                   userData={contributorAvatars}
-                  maxAvatars={MAX_CONTRIBUTORS_DISPLAY}
+                  maxAvatars={maxContributorsDisplay}
                   size="md"
                 />
                 <Stack>
