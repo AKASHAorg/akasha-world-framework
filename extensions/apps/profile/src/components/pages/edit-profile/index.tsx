@@ -30,7 +30,7 @@ type EditProfilePageProps = {
 const EditProfilePage: React.FC<EditProfilePageProps> = props => {
   const { profileDID } = props;
   const { t } = useTranslation('app-profile');
-  const { getCorePlugins, logger, uiEvents } = useRootComponentProps();
+  const { getCorePlugins, logger, uiEvents, navigateToModal } = useRootComponentProps();
   const { newAvatarImage, newCoverImage, saveImage, loading: isSavingImage } = useSaveImage();
   const [showNsfwModal, setShowNsfwModal] = useState(false);
   const [nsfwFormValues, setNsfwFormValues] = useState<PublishProfileData>();
@@ -233,8 +233,20 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
           cancelButton={{
             label: t('Cancel'),
             disabled: isProcessing,
-            handleClick: () => {
-              navigateToProfileInfoPage();
+            handleClick: canSave => {
+              /**
+               * if form is dirty and save button is enabled,
+               * - prompt user of unsaved changes
+               * otherwise,
+               * - exit page
+               */
+
+              if (canSave) {
+                navigateToModal({
+                  name: `unsaved-changes_edit-profile`,
+                  message: profileDID,
+                });
+              } else navigateToProfileInfoPage();
             },
           }}
           saveButton={{
