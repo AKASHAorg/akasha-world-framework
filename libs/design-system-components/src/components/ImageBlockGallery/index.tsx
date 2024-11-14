@@ -8,6 +8,7 @@ import ImageOverlay from '../ImageOverlay';
 import { type GalleryImage } from '@akashaorg/typings/lib/ui';
 
 export interface IImageGallery {
+  imageNotLoadedLabel: string;
   images: GalleryImage[];
   uploading?: boolean;
 }
@@ -18,7 +19,7 @@ export interface IImageGallery {
  * @param uploading - used to apply a different style in the editor when a  new image is uploaded
  */
 const ImageBlockGallery: React.FC<IImageGallery> = props => {
-  const { images, uploading } = props;
+  const { imageNotLoadedLabel, images, uploading } = props;
 
   const [showOverlay, setShowOverlay] = React.useState(false);
   const [clickedImg, setClickedImg] = React.useState(null);
@@ -55,6 +56,7 @@ const ImageBlockGallery: React.FC<IImageGallery> = props => {
       <div className={images.length === 1 ? tw('flex') : tw(`${gridStyle}`)}>
         {images.map((image, index) => (
           <ImageBlockGridItem
+            imageNotLoadedLabel={imageNotLoadedLabel}
             image={image}
             key={index}
             handleClickImage={handleClickImage}
