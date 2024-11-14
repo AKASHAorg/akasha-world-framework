@@ -35,11 +35,12 @@ export const ImageBlockGridItem: React.FC<IGridItemProps> = props => {
   const [showImgFailedToLoad, setShowImgFailedToLoad] = React.useState(false);
 
   React.useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       if (!imgLoaded) {
         setShowImgFailedToLoad(true);
       }
     }, 60000);
+    return clearTimeout(timer);
   }, [imgLoaded]);
 
   const multipleImageStyle = apply`${images.length > 1 && aspectRatio}`;
