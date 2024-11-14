@@ -33,7 +33,7 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
   const {
     data: { authenticatedDID, isAuthenticating: authenticating },
   } = useAkashaStore();
-  const { getCorePlugins } = useRootComponentProps();
+  const { getCorePlugins, navigateToModal } = useRootComponentProps();
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeInterests, setActiveInterests] = useState([]);
   const isLoggedIn = !!authenticatedDID;
@@ -213,11 +213,25 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
             cancelButton={{
               label: t('Cancel'),
               disabled: isProcessing,
-              handleClick: () => {
-                navigateTo({
-                  appName: '@akashaorg/app-profile',
-                  getNavigationUrl: () => `/${profileDID}`,
-                });
+              handleClick: canSave => {
+                /**
+                 * if new interest(s) have been created,
+                 * - prompt user of unsaved changes
+                 * otherwise,
+                 * - exit page
+                 */
+
+                if (canSave) {
+                  navigateToModal({
+                    name: `unsaved-changes_edit-interests`,
+                    message: profileDID,
+                  });
+                } else {
+                  navigateTo({
+                    appName: '@akashaorg/app-profile',
+                    getNavigationUrl: () => `/${profileDID}`,
+                  });
+                }
               },
             }}
             saveButton={{
