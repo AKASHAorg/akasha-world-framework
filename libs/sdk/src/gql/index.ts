@@ -112,6 +112,7 @@ class Gql {
         Query: {
           fields: {
             akashaBeamIndex: relayStylePagination(['sorting', 'filters']),
+            akashaAppReleaseIndex: relayStylePagination(['sorting', 'filters']),
           },
         },
       },
