@@ -28,12 +28,16 @@ const ErrorCard: React.FC<
             {title}
           </Text>
         )}
-        {typeof details === 'object' ? (
-          <>{details}</>
-        ) : (
-          <Text variant="body2" selectable={false}>
-            {details}
-          </Text>
+        {details && (
+          <>
+            {typeof details === 'object' ? (
+              <>{details}</>
+            ) : (
+              <Text variant="body2" selectable={false}>
+                {details}
+              </Text>
+            )}
+          </>
         )}
       </Stack>
       {children}

@@ -16,7 +16,7 @@ export type ErrorLoaderProps = React.PropsWithChildren<{
   /**
    * Additional details about the error
    */
-  details: React.ReactNode;
+  details?: React.ReactNode;
   dataTestId?: string;
   noWrapperCard?: boolean;
   imageBoxStyle?: string; // use valid twind classes
