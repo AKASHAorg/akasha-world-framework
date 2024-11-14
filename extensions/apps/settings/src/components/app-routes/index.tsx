@@ -4,7 +4,19 @@ import NsfwOption from '../pages/nsfw-option';
 import PrivacyOption from '../pages/privacy-option';
 import ThemeOption from '../pages/theme-option';
 import SettingsPage from '../pages/settings-page';
-import routes, { APPS, NSFW, PRIVACY, THEME, HOME } from '../../routes';
+import NotificationsOption from '../pages/notifications-option';
+import NotificationsPreferencesOption from '../pages/notifications-preferences-option';
+import BrowserNotificationsOption from '../pages/notifications-browser-option';
+import routes, {
+  APPS,
+  NSFW,
+  PRIVACY,
+  THEME,
+  HOME,
+  NOTIFICATIONS,
+  PREFERENCES,
+  BROWSER_NOTIFICATIONS,
+} from '../../routes';
 import {
   CatchBoundary,
   Outlet,
@@ -80,6 +92,42 @@ const themeRoute = createRoute({
   ),
 });
 
+const notificationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: `${routes[NOTIFICATIONS]}`,
+  component: () => (
+    <CatchBoundary getResetKey={() => 'notifications_reset'} errorComponent={NotFoundComponent}>
+      <NotificationsOption />
+    </CatchBoundary>
+  ),
+});
+
+const notificationsPreferencesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: `${routes[PREFERENCES]}`,
+  component: () => (
+    <CatchBoundary
+      getResetKey={() => 'notifications-preferences_reset'}
+      errorComponent={NotFoundComponent}
+    >
+      <NotificationsPreferencesOption />
+    </CatchBoundary>
+  ),
+});
+
+const browserNotificationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: `${routes[BROWSER_NOTIFICATIONS]}`,
+  component: () => (
+    <CatchBoundary
+      getResetKey={() => 'notifications-browser_reset'}
+      errorComponent={NotFoundComponent}
+    >
+      <BrowserNotificationsOption />
+    </CatchBoundary>
+  ),
+});
+
 const routeTree = rootRoute.addChildren([
   defaultRoute,
   settingsRoute,
@@ -87,6 +135,9 @@ const routeTree = rootRoute.addChildren([
   nsfwRoute,
   privacyRoute,
   themeRoute,
+  notificationsRoute,
+  notificationsPreferencesRoute,
+  browserNotificationsRoute,
 ]);
 
 export const router = ({ baseRouteName }: ICreateRouter) =>

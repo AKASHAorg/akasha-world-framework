@@ -30,7 +30,7 @@ export type Interest = {
 export interface IPublishData {
   metadata: IMetadata;
   slateContent: (Descendant & { url?: string; type?: string; fallbackUrl?: string })[];
-  textContent: string;
+  textContent?: string;
   author: string | null;
   userId?: string;
 }

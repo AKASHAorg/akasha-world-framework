@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Dropdown, { DropdownProps } from '@akashaorg/design-system-core/lib/components/Dropdown';
 
@@ -18,24 +19,45 @@ const meta: Meta<DropdownProps> = {
 
 type Story = StoryObj<DropdownProps>;
 
+const menuItems = ['Option 1', 'Option 2', 'Option 3'];
+
 export const Default: Story = {
   args: {
     name: 'Dropdown',
-    menuItems: ['Option 1', 'Option 2', 'Option 3'],
+    placeholderLabel: 'Select an option',
+    menuItems: menuItems,
   },
+};
+
+const DropdownComponent = () => {
+  const [selected, setSelected] = useState('');
+
+  return (
+    <Dropdown
+      name="Dropdown"
+      placeholderLabel="Select an option"
+      menuItems={menuItems}
+      selected={selected}
+      setSelected={setSelected}
+    />
+  );
+};
+
+export const ControlledDropdown: Story = {
+  render: () => <DropdownComponent />,
 };
 
 export const DropdownWithoutIcon: Story = {
   args: {
     name: 'Dropdown',
-    menuItems: ['Option 1', 'Option 2'],
+    menuItems: menuItems,
   },
 };
 
 export const DropdownWithLabel: Story = {
   args: {
     name: 'Dropdown',
-    menuItems: ['Option 1', 'Option 2', 'Option 3'],
+    menuItems: menuItems,
     label: 'Select one',
   },
 };
@@ -43,7 +65,7 @@ export const DropdownWithLabel: Story = {
 export const DropdownWithPlaceholderLabel: Story = {
   args: {
     name: 'Dropdown',
-    menuItems: ['Option 1', 'Option 2', 'Option 3'],
+    menuItems: menuItems,
     placeholderLabel: 'Select an option',
   },
 };

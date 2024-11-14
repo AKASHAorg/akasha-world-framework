@@ -15,7 +15,7 @@ import {
 import { CropperProps } from 'react-easy-crop';
 import { ProfileImageType, Profile, type Image } from '@akashaorg/typings/lib/ui';
 import { ModalProps } from '@akashaorg/design-system-core/lib/components/Modal';
-import { getColorClasses } from '@akashaorg/design-system-core/lib/utils/getColorClasses';
+import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
 import { useCloseActions } from '@akashaorg/design-system-core/lib/utils/useCloseActions';
 import { DeleteImageModal } from './DeleteImageModal';
 import { getImageFromSeed } from '@akashaorg/design-system-core/lib/utils';

@@ -6,3 +6,4 @@ export const PROVIDER = 'Extensions App';
 export const PROPERTY = 'description';
 export const MAX_CONTRIBUTORS = 16;
 export const MAX_GALLERY_IMAGES = 16;
+export const MAX_UPLOAD_RETRIES = 3;

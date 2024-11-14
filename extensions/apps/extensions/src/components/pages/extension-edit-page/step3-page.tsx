@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
+import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 import ExtensionEditStep3Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep3Form';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { transformSource, useProfilesList } from '@akashaorg/ui-awf-hooks';
@@ -10,7 +11,6 @@ import { DRAFT_EXTENSIONS } from '../../../constants';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { AtomContext } from './main-page';
 import { useAtom } from 'jotai';
-import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 
 type ExtensionEditStep3PageProps = {
   extensionId: string;
@@ -114,7 +114,7 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
         return { ...prev, contributors: extensionData?.contributors };
       });
     }
-  }, [extensionData?.contributors, formValue, setForm]);
+  }, [extensionData?.contributors]);
 
   const handleNavigateToContributorsPage = data => {
     setForm(prev => {
@@ -124,7 +124,7 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
         // this, so when the user gets back to the form the data that the user last entered
         // is prefilled
         lastCompletedStep: 3,
-        data,
+        ...data,
       };
     });
     navigate({ to: '/edit-extension/$extensionId/contributors', params: { extensionId } });

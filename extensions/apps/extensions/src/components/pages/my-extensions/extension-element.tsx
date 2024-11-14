@@ -26,7 +26,7 @@ import { getExtensionStatus, getStatusIndicatorStyle } from '../../../utils/exte
 type ExtensionElement = {
   extensionData: Extension;
   showDivider?: boolean;
-  filter?: { id?: string; title?: string; opt?: string };
+  filter?: string;
   showMenu?: boolean;
 };
 
@@ -176,11 +176,11 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
     if (!filter) {
       return true;
     } else if (filter) {
-      if (filter.id === '0') {
+      if (filter === 'All') {
         return true;
       }
       return (
-        filter.title ===
+        filter ===
         getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)
       );
     }
