@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Section, { SectionProps } from '../../../../design-system-core/src/components/Section';
-import { DividerPosition } from '@akashaorg/design-system-core/lib/components/Section';
+import Section, {
+  DividerPosition,
+  SectionProps,
+} from '@akashaorg/design-system-core/lib/components/Section';
 
 Section.displayName = 'Section';
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
@@ -109,6 +109,27 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
 
   const localRelease = draftReleases.find(release => release.applicationID === extensionId);
 
+  const newRelease = useMemo(() => {
+    return {
+      applicationID: extensionId,
+      version: '0.0.1',
+      description: 'Introduced the core functionality allowing the developer to test.',
+      source: '',
+    };
+  }, [extensionId]);
+
+  const testRelease = localRelease || newRelease;
+
+  useEffect(() => {
+    // if there is no local test release create it now
+    if (!localRelease) {
+      localStorage.setItem(
+        `${DRAFT_RELEASES}-${authenticatedDID}`,
+        JSON.stringify([...draftReleases, newRelease]),
+      );
+    }
+  }, [localRelease, authenticatedDID, draftReleases, extensionId, newRelease]);
+
   const {
     data: appsReleasesReq,
     loading: loadingAppsReleasesQuery,
@@ -140,20 +161,6 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
   };
 
   const handleTestReleaseNav = () => {
-    // if there is no local test release create it now
-    if (!localRelease) {
-      const newRelease = {
-        applicationID: extensionId,
-        version: '0.0.1',
-        description: 'Introduced the core functionality allowing developer to test.',
-        source: '',
-      };
-
-      localStorage.setItem(
-        `${DRAFT_RELEASES}-${authenticatedDID}`,
-        JSON.stringify([...draftReleases, newRelease]),
-      );
-    }
     navigate({ to: '/release-manager/$extensionId/edit-test-release', params: { extensionId } });
   };
 
@@ -183,7 +190,12 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To check your extensions you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
   }
@@ -225,13 +237,13 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
           </Text>
           <Button label={t('Test release')} variant="secondary" onClick={handleTestReleaseNav} />
         </Stack>
-        {localRelease && (
+        {testRelease && (
           <Card padding={16} background={{ light: 'grey9', dark: 'grey2' }}>
             <Stack spacing="gap-4">
               <Text variant="body2" weight="semibold">
-                {`Release ${localRelease?.version || '0.0.1'}`}
+                {`Release ${testRelease?.version || '0.0.1'}`}
               </Text>
-              <Text variant="footnotes2">{`Release ${localRelease?.description || t('A local test release')}`}</Text>
+              <Text variant="footnotes2">{`Release ${testRelease?.description || t('A local test release')}`}</Text>
             </Stack>
           </Card>
         )}

@@ -14,6 +14,7 @@ import {
   getRadiusClasses,
   getColorClasses,
 } from '../../utils';
+import { IconProps } from '../Icon';
 
 export type AppIconProps = {
   appImg?: LogoSourceType;
@@ -24,6 +25,7 @@ export type AppIconProps = {
   stackedIcon?: boolean;
   hasNewNotifs?: boolean;
   size?: BasicIconSize;
+  iconSize?: IconProps['size'];
   breakPointSize?: BreakPointSize;
   hover?: boolean;
   active?: boolean;
@@ -53,12 +55,14 @@ export type AppIconProps = {
  *   />
  * ```
  **/
+//@TODO: revisit implementation of AppIcon component(it may well be removed)
 const AppIcon: React.FC<AppIconProps> = props => {
   const {
     appImg,
     placeholderIcon,
     solid,
     size = 'md',
+    iconSize,
     breakPointSize,
     accentColor,
     stackedIcon,
@@ -107,7 +111,7 @@ const AppIcon: React.FC<AppIconProps> = props => {
       <Stack align="center" justify="center" customStyle={iconContainerStyle}>
         <IconByType
           appImg={appImg}
-          size={size}
+          size={iconSize ?? size}
           breakPointSize={breakPointSize}
           placeholderIcon={placeholderIcon}
           solid={solid}
@@ -124,7 +128,7 @@ const AppIcon: React.FC<AppIconProps> = props => {
     <Stack align="center" justify="center" customStyle={iconContainerStyle}>
       <IconByType
         appImg={appImg}
-        size={size}
+        size={iconSize ?? size}
         breakPointSize={breakPointSize}
         placeholderIcon={placeholderIcon}
         solid={solid}

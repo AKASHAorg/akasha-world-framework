@@ -3,13 +3,16 @@ import Button from '../Button';
 import Stack from '../Stack';
 import Text, { TextProps } from '../Text';
 import { ButtonProps } from '../Button/types';
-import { Color } from '../types/common.types';
+import { BasicSize, Color } from '../types/common.types';
 import { getColorClasses } from '../../utils';
+
+type PillSize = Exclude<BasicSize, 'md' | 'xl'>;
 
 type ActionPillProps = Pick<
   ButtonProps,
-  'label' | 'size' | 'icon' | 'iconDirection' | 'loading' | 'customStyle'
+  'label' | 'icon' | 'iconDirection' | 'loading' | 'customStyle'
 > & {
+  size?: PillSize;
   hover?: { icon: ButtonProps['icon']; active: boolean };
   active?: boolean;
   onPillClick?: (active?: boolean) => void;
@@ -85,8 +88,17 @@ const Pill: React.FC<PillProps> = props => {
 };
 
 const ActionPill: React.FC<ActionPillProps> = props => {
-  const { label, size, active, hover, icon, iconDirection, loading, customStyle, onPillClick } =
-    props;
+  const {
+    label,
+    size = 'sm',
+    active,
+    hover,
+    icon,
+    iconDirection,
+    loading,
+    customStyle = '',
+    onPillClick,
+  } = props;
   const [showHover, setShowHover] = useState(false);
   const handlePillClick = () => {
     if (onPillClick) {
@@ -98,17 +110,22 @@ const ActionPill: React.FC<ActionPillProps> = props => {
       aria-label="dismiss"
       hover={false}
       label={label}
-      size={size}
       icon={showHover && hover ? hover.icon : icon}
       iconDirection={iconDirection}
       active={showHover && hover ? hover.active : active}
       loading={loading}
-      customStyle={customStyle}
       onMouseEnter={() => setShowHover(true)}
       onMouseLeave={() => setShowHover(false)}
       onClick={handlePillClick}
+      customStyle={`${PILL_SIZE_MAP[size]} ${customStyle}`}
     />
   );
 };
 
 export default Pill;
+
+export const PILL_SIZE_MAP: Record<PillSize, string> = {
+  xs: 'h-[1.125rem] rounded-[0.625rem] px-1.5',
+  sm: 'h-[1.625rem] rounded-[1.25rem] px-2',
+  lg: 'h-10 rounded-[1.875rem] px-4',
+};

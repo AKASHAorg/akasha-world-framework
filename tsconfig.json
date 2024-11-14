@@ -35,9 +35,6 @@
       "path": "./extensions/widgets/mini-profile"
     },
     {
-      "path": "./extensions/widgets/my-apps"
-    },
-    {
       "path": "./extensions/widgets/sidebar"
     },
     {

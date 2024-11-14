@@ -77,7 +77,12 @@ export const DeveloperModePage: React.FC<unknown> = () => {
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To toggle developer mode you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
   }

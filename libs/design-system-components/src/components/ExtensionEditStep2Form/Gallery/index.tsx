@@ -13,7 +13,7 @@ export type GalleryProps = {
   galleryFieldLabel: string;
   galleryDescriptionLabel: string;
   addLabel: string;
-  uploadAndEditLabel: string;
+  updateGalleryLabel: string;
   imagesUploadedLabel: string;
   images: GalleryImage[];
   maxGalleryImages: number;
@@ -25,7 +25,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
     galleryFieldLabel,
     galleryDescriptionLabel,
     addLabel,
-    uploadAndEditLabel,
+    updateGalleryLabel,
     imagesUploadedLabel,
     images,
     maxGalleryImages,
@@ -33,7 +33,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
   } = props;
 
   const galleryHasImages = images?.length > 0;
-  const slicedImagesArr = galleryHasImages ? images.slice(0, MAX_IMAGES_DISPLAY) : [];
+  const displayImages = galleryHasImages ? images.slice(0, MAX_IMAGES_DISPLAY) : [];
   const [showOverlay, setShowOverlay] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage>(null);
 
@@ -41,7 +41,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
     setShowOverlay(false);
   };
 
-  const handleImageClick = (image: GalleryImage) => {
+  const handleClickImage = (image: GalleryImage) => {
     setShowOverlay(true);
     setSelectedImage(image);
   };
@@ -55,8 +55,9 @@ export const Gallery: React.FC<GalleryProps> = props => {
           </Text>
           <Button
             variant="text"
+            size="md"
             {...(!galleryHasImages && { icon: <PlusIcon />, iconDirection: 'left' })}
-            label={galleryHasImages ? uploadAndEditLabel : addLabel}
+            label={galleryHasImages ? updateGalleryLabel : addLabel}
             onClick={handleMediaClick}
           />
         </Stack>
@@ -65,18 +66,22 @@ export const Gallery: React.FC<GalleryProps> = props => {
         </Text>
       </Stack>
       {galleryHasImages && (
-        <Stack direction="row" spacing="gap-x-2" customStyle="sm:gap-x-6">
-          {slicedImagesArr.map((image, index) => (
-            <Fragment key={index}>
+        <Stack customStyle="grid grid-cols-[repeat(auto-fill,_minmax(min(10rem,_100%),_1fr))] gap-4">
+          {displayImages.map((image, index) => (
+            <Stack
+              key={index}
+              customStyle="w-[6.125rem] h-[6.125rem] sm:w-[10.625rem] sm:h-[10.625rem] overflow-hidden object-cover rounded-lg cursor-pointer"
+            >
               <Image
                 alt={image.name}
                 src={image.originalSrc || image.displaySrc || image.src}
-                onClick={() => handleImageClick(image)}
-                customStyle="w-[6.125rem] h-[6.125rem] sm:w-[10.625rem] sm:h-[10.625rem] shrink-0 object-cover rounded-lg cursor-pointer"
+                onClick={() => handleClickImage(image)}
+                customStyle="object-cover w-full h-full"
+                showLoadingIndicator
               />
               {showOverlay && (
                 <ImageOverlay
-                  images={slicedImagesArr.map(image => ({
+                  images={displayImages.map(image => ({
                     name: image.name,
                     size: image.size,
                     src: image.originalSrc || image.displaySrc || image.src,
@@ -89,7 +94,7 @@ export const Gallery: React.FC<GalleryProps> = props => {
                   closeModal={handleCloseOverlay}
                 />
               )}
-            </Fragment>
+            </Stack>
           ))}
         </Stack>
       )}

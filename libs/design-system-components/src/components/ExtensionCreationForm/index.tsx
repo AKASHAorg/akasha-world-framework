@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import * as z from 'zod';
 import { Controller, useWatch } from 'react-hook-form';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -14,11 +14,11 @@ import { ButtonType } from '../types/common.types';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 
 export enum FieldName {
-  extensionType = 'extensionType',
-  extensionID = 'extensionID',
-  extensionDisplayName = 'extensionDisplayName',
-  extensionLicense = 'extensionLicense',
-  extensionLicenseOther = 'extensionLicenseOther',
+  applicationType = 'applicationType',
+  name = 'name',
+  displayName = 'displayName',
+  license = 'license',
+  licenseOther = 'licenseOther',
 }
 
 export enum Licenses {
@@ -30,15 +30,15 @@ export enum Licenses {
   OTHER = 'Other',
 }
 
-type AppCreationFormValues = {
-  extensionType: AkashaAppApplicationType;
-  extensionID: string;
-  extensionDisplayName: string;
-  extensionLicense: Licenses | string;
-  extensionLicenseOther: string;
+type ExtensionCreationFormValues = {
+  applicationType: AkashaAppApplicationType;
+  name: string;
+  displayName: string;
+  license: Licenses | string;
+  licenseOther: string;
 };
 
-export type AppCreationFormProps = {
+export type ExtensionCreationFormProps = {
   extensionNameFieldLabel?: string;
   extensionNamePlaceholderLabel?: string;
   extensionDisplayNameFieldLabel?: string;
@@ -47,28 +47,28 @@ export type AppCreationFormProps = {
   extensionLicenseFieldLabel?: string;
   extensionLicenseOtherPlaceholderLabel?: string;
   disclaimerLabel?: string;
-  defaultValues?: AppCreationFormValues;
-  handleCheckExtName?: (fieldValue: string) => void;
-  isDuplicateExtName?: boolean;
+  defaultValues?: ExtensionCreationFormValues;
+  handleCheckExtProp?: (propToValidate: 'name' | 'displayName', fieldValue: string) => void;
+  isDuplicateExtProp?: boolean;
   loading?: boolean;
   cancelButton: ButtonType;
   createButton: {
     label: string;
     loading?: boolean;
-    handleClick: (data: AppCreationFormValues) => void;
+    handleClick: (data: ExtensionCreationFormValues) => void;
   };
 };
 
-const AppCreationForm: React.FC<AppCreationFormProps> = ({
+const ExtensionCreationForm: React.FC<ExtensionCreationFormProps> = ({
   defaultValues = {
-    extensionType: AkashaAppApplicationType.App,
-    extensionID: '',
-    extensionDisplayName: '',
-    extensionLicense: Licenses.MIT,
-    extensionLicenseOther: '',
+    applicationType: AkashaAppApplicationType.App,
+    name: '',
+    displayName: '',
+    license: Licenses.MIT,
+    licenseOther: '',
   },
-  handleCheckExtName,
-  isDuplicateExtName,
+  handleCheckExtProp,
+  isDuplicateExtProp,
   loading,
   cancelButton,
   createButton,
@@ -87,13 +87,13 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
     setError,
     clearErrors,
     formState: { errors, dirtyFields },
-  } = useForm<AppCreationFormValues>({
+  } = useForm<ExtensionCreationFormValues>({
     defaultValues,
     resolver: zodResolver(schema),
     mode: 'onChange',
   });
 
-  const extensionLicenseValue = useWatch({ control, name: FieldName.extensionLicense });
+  const extensionLicenseValue = useWatch({ control, name: FieldName.license });
 
   const extensionTypes = [
     AkashaAppApplicationType.App,
@@ -111,15 +111,15 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
   ];
 
   const isFormDirty =
-    Object.keys(dirtyFields).includes(FieldName.extensionID) &&
-    Object.keys(dirtyFields).includes(FieldName.extensionDisplayName);
+    Object.keys(dirtyFields).includes(FieldName.name) &&
+    Object.keys(dirtyFields).includes(FieldName.displayName);
   const isValid = !Object.keys(errors).length;
 
   const onSave = (event: SyntheticEvent) => {
     event.preventDefault();
     const formValues = getValues();
-    if (formValues.extensionLicense === Licenses.OTHER) {
-      formValues.extensionLicense = formValues.extensionLicenseOther;
+    if (formValues.license === Licenses.OTHER) {
+      formValues.license = formValues.licenseOther;
     }
     if (isValid && isFormDirty) {
       createButton.handleClick({
@@ -128,13 +128,14 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
     }
   };
 
+  const [validatedField, setValidatedField] = useState<FieldName.name>();
   useEffect(() => {
-    if (isDuplicateExtName) {
-      setError('extensionID', { message: 'Extension ID must be unique!' });
+    if (isDuplicateExtProp) {
+      setError(validatedField, { message: `Extension ${validatedField} must be unique!` });
     } else {
-      clearErrors('extensionID');
+      clearErrors(validatedField);
     }
-  }, [isDuplicateExtName, setError, clearErrors]);
+  }, [isDuplicateExtProp, setError, clearErrors, validatedField]);
 
   return (
     <form onSubmit={onSave} className={tw(apply`h-full`)}>
@@ -142,7 +143,7 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
         <Stack padding="px-4 pb-3" spacing="gap-y-4">
           <Controller
             control={control}
-            name={FieldName.extensionType}
+            name={FieldName.applicationType}
             render={({ field: { name, value, onChange } }) => (
               <DropDown
                 label={extensionTypeFieldLabel}
@@ -157,7 +158,7 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
           <Divider />
           <Controller
             control={control}
-            name={FieldName.extensionID}
+            name={FieldName.name}
             render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
               <TextField
                 id={name}
@@ -169,7 +170,10 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
                 caption={error?.message}
                 status={error?.message ? 'error' : null}
                 onChange={onChange}
-                onBlur={() => handleCheckExtName(value)}
+                onBlur={() => {
+                  setValidatedField(FieldName.name);
+                  handleCheckExtProp(FieldName.name, value);
+                }}
                 inputRef={ref}
                 required={true}
               />
@@ -178,7 +182,7 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
           <Divider />
           <Controller
             control={control}
-            name={FieldName.extensionDisplayName}
+            name={FieldName.displayName}
             render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
               <TextField
                 id={name}
@@ -198,7 +202,7 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
           <Divider />
           <Controller
             control={control}
-            name={FieldName.extensionLicense}
+            name={FieldName.license}
             render={({ field: { name, value, onChange } }) => (
               <>
                 <DropDown
@@ -216,7 +220,7 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
           {extensionLicenseValue === Licenses.OTHER && (
             <Controller
               control={control}
-              name={FieldName.extensionLicenseOther}
+              name={FieldName.licenseOther}
               render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
                 <TextField
                   id={name}
@@ -245,12 +249,14 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
         <Stack direction="row" spacing="gap-x-2" customStyle="ml-auto mt-auto px-4">
           <Button
             variant="text"
+            size="md"
             label={cancelButton.label}
             onClick={cancelButton.handleClick}
             disabled={cancelButton.disabled}
           />
           <Button
             variant="primary"
+            size="md"
             label={createButton.label}
             loading={createButton.loading}
             disabled={!isFormDirty || !isValid || loading}
@@ -263,10 +269,10 @@ const AppCreationForm: React.FC<AppCreationFormProps> = ({
   );
 };
 
-export default AppCreationForm;
+export default ExtensionCreationForm;
 
 const schema = z.object({
-  extensionID: z
+  name: z
     .string()
     .trim()
     .min(6, { message: 'Must be at least 6 characters' })
@@ -275,12 +281,12 @@ const schema = z.object({
       value => /^[a-zA-Z0-9-_.]+$/.test(value),
       'ID should contain only alphabets, numbers or -_.',
     ),
-  extensionType: z.string(),
-  extensionDisplayName: z
+  applicationType: z.string(),
+  displayName: z
     .string()
     .trim()
     .min(4, { message: 'Must be at least 4 characters' })
     .max(24, { message: 'Must be maximum 24 characters' }),
-  extensionLicense: z.string(),
-  extensionLicenseOther: z.string().trim().min(3, { message: 'Must be at least 3 characters' }),
+  license: z.string(),
+  licenseOther: z.string().trim().min(3, { message: 'Must be at least 3 characters' }),
 });

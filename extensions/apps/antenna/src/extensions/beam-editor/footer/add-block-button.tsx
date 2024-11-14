@@ -14,6 +14,7 @@ export const AddBlock: React.FC<AddBlockButtonProps> = props => {
     <Button
       greyBg={true}
       variant="text"
+      size="md"
       icon={<PlusIcon />}
       iconDirection="left"
       label={addBlockLabel}

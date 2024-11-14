@@ -15,7 +15,7 @@ import { apply, tw } from '@twind/core';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ButtonType } from '../types/common.types';
-import { Licenses } from '../AppCreationForm';
+import { Licenses } from '../ExtensionCreationForm';
 import { AkashaProfile, Image } from '@akashaorg/typings/lib/ui';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { PlusIcon } from '@heroicons/react/24/outline';
@@ -322,11 +322,18 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
         <Stack direction="row" justify="end" spacing="gap-x-2" customStyle="px-4 pb-4">
           <Button
             variant="text"
+            size="md"
             label={cancelButton.label}
             onClick={cancelButton.handleClick}
             disabled={cancelButton.disabled}
           />
-          <Button variant="primary" label={nextButton.label} disabled={!isValid} onClick={onSave} />
+          <Button
+            variant="primary"
+            size="md"
+            label={nextButton.label}
+            disabled={!isValid}
+            onClick={onSave}
+          />
         </Stack>
       </Stack>
     </form>

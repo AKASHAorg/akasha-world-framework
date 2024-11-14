@@ -39,12 +39,6 @@ export const Default: Story = {
     active: true,
     activeVariant: 'secondary',
     inactiveVariant: 'secondary',
-    hoverColors: {
-      background: { light: 'transparent', dark: 'transparent' },
-      border: { light: 'errorLight', dark: 'errorDark' },
-      text: { light: 'errorLight', dark: 'errorDark' },
-      icon: { light: 'errorLight', dark: 'errorDark' },
-    },
   },
 };
 
@@ -56,12 +50,6 @@ export const InactiveButton: Story = {
     active: false,
     activeVariant: 'secondary',
     inactiveVariant: 'secondary',
-    hoverColors: {
-      background: { light: 'transparent', dark: 'transparent' },
-      border: { light: 'errorLight', dark: 'errorDark' },
-      text: { light: 'errorLight', dark: 'errorDark' },
-      icon: { light: 'errorLight', dark: 'errorDark' },
-    },
   },
 };
 
@@ -73,11 +61,6 @@ export const PrimaryDuplexButtonWithIcon: Story = {
     active: true,
     activeVariant: 'primary',
     inactiveVariant: 'primary',
-    hoverColors: {
-      background: { light: 'transparent', dark: 'transparent' },
-      border: { light: 'errorLight', dark: 'errorDark' },
-      text: { light: 'errorLight', dark: 'errorDark' },
-    },
     iconDirection: 'left',
     activeIcon: <CheckIcon />,
     activeHoverIcon: <XMarkIcon />,
@@ -92,12 +75,6 @@ export const SecondaryDuplexButtonWithIcon: Story = {
     active: true,
     activeVariant: 'secondary',
     inactiveVariant: 'secondary',
-    hoverColors: {
-      background: { light: 'transparent', dark: 'transparent' },
-      border: { light: 'errorLight', dark: 'errorDark' },
-      text: { light: 'errorLight', dark: 'errorDark' },
-      icon: { light: 'errorLight', dark: 'errorDark' },
-    },
     iconDirection: 'left',
     activeIcon: <CheckIcon />,
     activeHoverIcon: <XMarkIcon />,
