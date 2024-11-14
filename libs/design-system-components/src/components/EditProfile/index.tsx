@@ -29,7 +29,11 @@ type GeneralFormProps = Pick<GeneralProps, 'header' | 'name' | 'bio'>;
 
 export type EditProfileProps = {
   defaultValues?: PublishProfileData;
-  cancelButton: ButtonType;
+  /**
+   * modifying the handleClick to have an optional 'canSave' param.
+   * This determines when the cancel button click handler should show the unsaved changes modal.
+   */
+  cancelButton: Omit<ButtonType, 'handleClick'> & { handleClick: (canSave?: boolean) => void };
   saveButton: {
     label: string;
     loading?: boolean;
@@ -96,6 +100,8 @@ const EditProfile: React.FC<EditProfileProps> = ({
     }
   };
 
+  const isDisabled = isValid ? !isFormDirty : true;
+
   return (
     <form data-testid="edit-profile" onSubmit={onSave} className={tw(apply`h-full ${customStyle}`)}>
       <Stack direction="column" spacing="gap-y-6">
@@ -129,14 +135,14 @@ const EditProfile: React.FC<EditProfileProps> = ({
           <Button
             variant="text"
             label={cancelButton.label}
-            onClick={cancelButton.handleClick}
+            onClick={() => cancelButton.handleClick(!isDisabled)}
             disabled={cancelButton.disabled}
           />
           <Button
             variant="primary"
             label={saveButton.label}
             loading={saveButton.loading}
-            disabled={isValid ? !isFormDirty : true}
+            disabled={isDisabled}
             onClick={onSave}
             type="submit"
           />
