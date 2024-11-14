@@ -19,6 +19,7 @@ import Following from './following';
 import Github from './github';
 import IntegrationAppCTA from './integration-app-cta';
 import Italic from './italic';
+import ImageCrossed from './image-crossed';
 import LicenseAllRights from './license-all-rights';
 import LicenseAttribution from './license-attribution';
 import LicenseNoDerivatives from './license-no-derivatives';
@@ -67,6 +68,7 @@ export type CustomIconTypes = Extract<
   | 'Github'
   | 'IntegrationAppCTA'
   | 'Italic'
+  | 'ImageCrossed'
   | 'LicenseAllRights'
   | 'LicenseAttribution'
   | 'LicenseNoDerivatives'
@@ -112,6 +114,7 @@ export {
   Github,
   IntegrationAppCTA,
   Italic,
+  ImageCrossed,
   LicenseAllRights,
   LicenseAttribution,
   LicenseNoDerivatives,

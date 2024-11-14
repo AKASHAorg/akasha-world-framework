@@ -31,6 +31,7 @@ export type ExtensionReviewAndPublishProps = {
   descriptionLabel: string;
   galleryLabel: string;
   imageUploadedLabel: string;
+  imageNotLoadedLabel: string;
   viewAllLabel: string;
   usefulLinksLabel: string;
   licenseLabel: string;
@@ -62,6 +63,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
     descriptionLabel,
     galleryLabel,
     imageUploadedLabel,
+    imageNotLoadedLabel,
     viewAllLabel,
     usefulLinksLabel,
     licenseLabel,
@@ -216,6 +218,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
             contentNode={
               <Stack spacing="gap-y-3">
                 <ExtensionImageGallery
+                  imageNotLoadedLabel={imageNotLoadedLabel}
                   images={galleryImagesWithSource?.slice(0, 3).map((image, idx) => ({
                     src: image?.src,
                     size: { width: image?.width, height: image?.height },
