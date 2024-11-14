@@ -69,7 +69,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
               onClick={() => {
                 uploadInputRef.current.click();
               }}
-              disabled={uploading}
+              disabled={uploading || images.length === maxGalleryImages}
             />
           </Stack>
           <Text variant="body2" color={{ light: 'grey4', dark: 'grey6' }} weight="light">
