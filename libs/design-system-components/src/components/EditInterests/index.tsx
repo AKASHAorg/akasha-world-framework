@@ -23,7 +23,7 @@ export type EditInterestsProps = {
   interests: ProfileLabeled[];
   labelType: string;
   maxInterestsErrorMessage: string;
-  cancelButton: ButtonType;
+  cancelButton: Omit<ButtonType, 'handleClick'> & { handleClick: (canSave?: boolean) => void };
   saveButton: {
     label: string;
     loading?: boolean;
@@ -190,7 +190,7 @@ const EditInterests: React.FC<EditInterestsProps> = ({
           <Button
             variant="text"
             label={cancelButton.label}
-            onClick={cancelButton.handleClick}
+            onClick={() => cancelButton.handleClick(isFormDirty)}
             disabled={cancelButton.disabled}
           />
           <Button
