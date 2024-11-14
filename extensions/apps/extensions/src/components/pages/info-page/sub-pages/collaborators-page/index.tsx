@@ -1,19 +1,22 @@
-import * as React from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import { transformSource } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import { ChevronRightIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import ExtensionSubRouteHeader from '../InfoSubroutePageHeader';
+import ExtensionSubRouteHeader from '../../InfoSubroutePageHeader';
 import {
   AkashaAppApplicationType,
   AppImageSource,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { selectExtensionCollaborators } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
+import { useContributors } from './use-contributors';
 
 type CollaboratorsPageProps = {
   appId: string;
@@ -35,8 +38,11 @@ export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
   } = props;
   const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
-
-  const developers = [];
+  const { decodeAppName } = useRootComponentProps();
+  const { localExtensionData, contributors, loading, error } = useContributors({
+    appName: decodeAppName(appId),
+    publishedAppContributorsProfile: collaborators?.map(collaborator => collaborator.akashaProfile),
+  });
 
   return (
     <>
@@ -44,22 +50,36 @@ export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
         <Stack spacing="gap-y-4">
           <ExtensionSubRouteHeader
             pageTitle={t('Collaborators')}
-            appName={extensionDisplayName}
-            packageName={extensionName}
-            appType={extensionType}
-            appLogo={extensionLogo}
+            appName={extensionDisplayName ?? localExtensionData?.displayName}
+            packageName={extensionName ?? localExtensionData?.name}
+            appType={extensionType ?? localExtensionData?.applicationType}
+            appLogo={extensionLogo ?? localExtensionData?.logoImage}
           />
           <Divider />
           <Stack direction="column" spacing="gap-y-4">
-            {collaborators?.map((collab, idx) => (
-              <Stack direction="column" spacing="gap-y-4" key={`${collab.akashaProfile?.id}-idx`}>
+            {loading && (
+              <Stack align="center" justify="center">
+                <Spinner />
+              </Stack>
+            )}
+            {error && (
+              <Stack>
+                <ErrorLoader
+                  type="script-error"
+                  title={t('There was an error loading the contributors')}
+                  details={error.message}
+                />
+              </Stack>
+            )}
+            {contributors?.map((contributor, idx) => (
+              <Stack key={contributor.id} direction="column" spacing="gap-y-4">
                 <Card
                   onClick={() => {
                     navigate({
                       to: '/info/$appId/developer/$devDid',
                       params: {
                         appId,
-                        devDid: collab.akashaProfile?.did.id,
+                        devDid: contributor?.did.id,
                       },
                     });
                   }}
@@ -67,11 +87,11 @@ export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
                 >
                   <Stack direction="row" align="center">
                     <ProfileAvatarButton
-                      profileId={collab.akashaProfile?.did.id}
-                      label={collab.akashaProfile?.name}
-                      avatar={transformSource(collab?.akashaProfile?.avatar?.default)}
-                      alternativeAvatars={collab.akashaProfile?.avatar?.alternatives?.map(
-                        alternative => transformSource(alternative),
+                      profileId={contributor?.did.id}
+                      label={contributor?.name}
+                      avatar={transformSource(contributor?.avatar?.default)}
+                      alternativeAvatars={contributor?.avatar?.alternatives?.map(alternative =>
+                        transformSource(alternative),
                       )}
                     />
                     <Icon
@@ -82,7 +102,7 @@ export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
                     />
                   </Stack>
                 </Card>
-                {idx < developers.length - 1 && <Divider />}
+                {idx < contributors.length - 1 && <Divider />}
               </Stack>
             ))}
           </Stack>
