@@ -1,4 +1,12 @@
-import { boolean, z } from 'zod';
+import { z, boolean } from 'zod';
+import {
+  ChannelOptionIndexes,
+  type FollowNotificationMetaData,
+  type MentionNotificationMetaData,
+  type NotificationMetaTypes,
+  type NotificationParsedMetaData,
+  type ReflectionNotificationMetaData,
+} from '@akashaorg/typings/lib/sdk/notification';
 
 export const setNewSettingsSchema = z.array(
   z.object({
@@ -79,22 +87,18 @@ export const ChannelUserSettingsSchema = z
   });
 export type ChannelUserSettingsType = z.infer<typeof NotificationSettingTypeSchema>;
 
-export const Notification = z.object({
-  epoch: z.string(),
-  payload_id: z.number(),
-  data: z.object({
-    app: z.string(),
-    additionalMeta: z.object({
-      data: z.string(),
-      type: z.string(),
-    }),
-    icon: z.string(),
-    amsg: z.string(),
-    asub: z.string(),
-  }),
+export const MetaDataSchema = z.object({
+  data: z.string(),
+  type: z.string(),
 });
 
-export interface PushOrgNotification {
+export type AdditionalMetadata = {
+  data: string;
+  type: string;
+  domain: string;
+};
+
+export type PushOrgNotification = {
   payload_id: number;
   sender: string;
   epoch: string;
@@ -114,11 +118,8 @@ export interface PushOrgNotification {
       hidden: string;
       silent: string;
       sectype: string | null;
-      additionalMeta: {
-        data: string;
-        type: string;
-        domain: string;
-      };
+      additionalMeta?: AdditionalMetadata;
+      parsedMetaData?: NotificationParsedMetaData;
     };
     recipients: {
       [key: string]: string | null;
@@ -132,9 +133,26 @@ export interface PushOrgNotification {
   source: string;
   etime: string;
   sid: string | null;
+  timestamp?: Date;
+  isUnread?: boolean;
+};
+
+export const ChannelOptionIndexSchema = z.nativeEnum(ChannelOptionIndexes);
+
+export function isFollowNotification(
+  data: NotificationMetaTypes,
+): data is FollowNotificationMetaData {
+  return data.type === 'follow';
 }
 
-export interface AddedNotificationProps {
-  timestamp: Date;
-  isUnread: boolean;
+export function isMentionNotification(
+  data: NotificationMetaTypes,
+): data is MentionNotificationMetaData {
+  return data.type === 'mention';
+}
+
+export function isReflectionNotification(
+  data: NotificationMetaTypes,
+): data is ReflectionNotificationMetaData {
+  return data.type === 'reflection';
 }
