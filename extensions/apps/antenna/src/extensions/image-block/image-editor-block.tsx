@@ -55,7 +55,7 @@ export const ImageEditorBlock = (
 ) => {
   const { t } = useTranslation('app-antenna');
   const sdk = useRef(getSDK());
-  //
+
   const indexingDid = sdk.current.services.common.misc.getIndexingDID();
 
   const appReq = useGetAppsByPublisherDidQuery({
@@ -479,6 +479,7 @@ export const ImageEditorBlock = (
         <Stack spacing="gap-1">
           <Stack alignSelf={alignState}>
             <ImageBlockGallery
+              imageNotLoadedLabel={t('Cannot load image')}
               images={imageGalleryImages}
               uploading={uploading && !showEditModal}
             />
