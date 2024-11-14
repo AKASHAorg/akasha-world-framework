@@ -29,7 +29,7 @@ type ExtensionGalleryManagerProps = {
   cancelButton: ActionButton;
   saveButton: ActionButton;
   maxGalleryImages: number;
-  onImageClick?: (image: Image) => void;
+  handleClickImage?: (image: Image) => void;
   onDelete: (image: Image) => void;
   onUploadImagesClick: (fileList: FileList) => void;
 } & Pick<GalleryImageProps, 'uploadingLabel' | 'uploadingErrorLabel'>;
@@ -50,7 +50,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
     uploadingLabel,
     uploadingErrorLabel,
     maxGalleryImages,
-    onImageClick,
+    handleClickImage,
     onDelete,
     onUploadImagesClick,
   } = props;
@@ -64,6 +64,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
             <Text variant="h6">{galleryManagerTitle}</Text>
             <Button
               variant="text"
+              size="md"
               label={uploadImagesLabel}
               onClick={() => {
                 uploadInputRef.current.click();
@@ -89,7 +90,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
                   uploading: uploading ? image.src.startsWith('blob:') : false,
                   imageIdsWithError,
                 })}
-                onImageClick={() => onImageClick(image)}
+                handleClickImage={() => handleClickImage(image)}
                 onDelete={() => onDelete(image)}
               />
             ))}
@@ -137,6 +138,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
           </Text>
           <Button
             variant="text"
+            size="md"
             label={cancelButton.label}
             disabled={cancelButton.disabled}
             onClick={cancelButton.handleClick}
@@ -144,6 +146,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
           />
           <Button
             variant="primary"
+            size="md"
             loading={uploading}
             label={saveButton.label}
             disabled={saveButton.disabled}

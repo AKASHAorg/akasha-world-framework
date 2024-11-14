@@ -9,7 +9,7 @@ import Text from '../../Text';
 import Stack from '../../Stack';
 import { Color, Status } from '../../types/common.types';
 import { CaptionProps } from '../types';
-import { getIconClasses } from '../Input/getIconClasses';
+import { getIconClasses } from '../utils/get-icon-classes';
 
 const Caption: React.FC<PropsWithChildren<CaptionProps>> = ({
   justifyContents = 'start',

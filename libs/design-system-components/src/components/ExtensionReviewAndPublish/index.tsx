@@ -1,19 +1,14 @@
 import React, { useMemo } from 'react';
 import { tw } from '@twind/core';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import Accordion from '@akashaorg/design-system-core/lib/components/Accordion';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
+import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Label from '@akashaorg/design-system-core/lib/components/Label';
 import Link from '@akashaorg/design-system-core/lib/components/Link';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
-import {
-  Plugin,
-  App,
-  Widget,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
@@ -36,6 +31,7 @@ export type ExtensionReviewAndPublishProps = {
   descriptionLabel: string;
   galleryLabel: string;
   imageUploadedLabel: string;
+  imageNotLoadedLabel: string;
   viewAllLabel: string;
   usefulLinksLabel: string;
   licenseLabel: string;
@@ -43,8 +39,10 @@ export type ExtensionReviewAndPublishProps = {
   tagsLabel: string;
   backButtonLabel: string;
   publishButtonLabel: string;
+  duplicateExtNameErrLabel?: string;
   publicImagePath?: string;
   loading?: boolean;
+  isDuplicateExtName?: boolean;
   onViewGalleryClick?: () => void;
   onClickCancel: () => void;
   onClickSubmit: () => void;
@@ -62,6 +60,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
     descriptionLabel,
     galleryLabel,
     imageUploadedLabel,
+    imageNotLoadedLabel,
     viewAllLabel,
     usefulLinksLabel,
     licenseLabel,
@@ -69,8 +68,10 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
     tagsLabel,
     backButtonLabel,
     publishButtonLabel,
+    duplicateExtNameErrLabel,
     publicImagePath = '/images',
     loading,
+    isDuplicateExtName,
     onViewGalleryClick,
     onClickCancel,
     onClickSubmit,
@@ -91,8 +92,9 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
       !extensionData?.name ||
       !extensionData?.license ||
       !extensionData?.description ||
-      extensionData?.keywords?.length === 0,
-    [extensionData],
+      extensionData?.keywords?.length === 0 ||
+      isDuplicateExtName,
+    [extensionData, isDuplicateExtName],
   );
 
   const onAccordionClick = accordionId => {
@@ -114,19 +116,6 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
         <Label required={isRequired}>{title}</Label>
       </Stack>
     );
-  };
-
-  const getApplicationIconByType = (type: AkashaAppApplicationType) => {
-    switch (type) {
-      case AkashaAppApplicationType.App:
-        return <App />;
-      case AkashaAppApplicationType.Plugin:
-        return <Plugin />;
-      case AkashaAppApplicationType.Widget:
-        return <Widget />;
-      default:
-        return <App />;
-    }
   };
 
   const galleryImagesWithSource = useMemo(
@@ -162,7 +151,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
           >
             <Icon
               size="sm"
-              icon={getApplicationIconByType(extensionData?.applicationType)}
+              icon={<ExtensionIcon type={extensionData?.applicationType} />}
               color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
               solid={true}
             />
@@ -176,6 +165,11 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
           <Text variant="body2" truncate>
             {extensionData?.name}
           </Text>
+          {isDuplicateExtName && (
+            <Text variant="body2" color={{ light: 'errorLight', dark: 'errorDark' }}>
+              {duplicateExtNameErrLabel}
+            </Text>
+          )}
         </Section>
 
         <Section title={extensionDisplayNameLabel} required>
@@ -218,6 +212,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
             contentNode={
               <Stack spacing="gap-y-3">
                 <ExtensionImageGallery
+                  imageNotLoadedLabel={imageNotLoadedLabel}
                   images={galleryImagesWithSource?.slice(0, 3).map((image, idx) => ({
                     src: image?.src,
                     size: { width: image?.width, height: image?.height },
@@ -331,7 +326,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
         <Button
           variant="primary"
           loading={loading}
-          disabled={disablePublish}
+          disabled={disablePublish || loading}
           label={publishButtonLabel}
           onClick={onClickSubmit}
           customStyle="w-36"

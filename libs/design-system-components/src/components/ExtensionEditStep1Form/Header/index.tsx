@@ -16,7 +16,7 @@ import {
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import { ExtensionImageType, type Image } from '@akashaorg/typings/lib/ui';
 import Modal, { ModalProps } from '@akashaorg/design-system-core/lib/components/Modal';
-import { getColorClasses } from '@akashaorg/design-system-core/lib/utils/getColorClasses';
+import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
 import { useCloseActions } from '@akashaorg/design-system-core/lib/utils/useCloseActions';
 import { DeleteImageModal } from './DeleteImageModal';
 import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
@@ -257,6 +257,10 @@ export const Header: React.FC<HeaderProps> = ({
             <AppAvatar
               appType={extensionType}
               avatar={logoImageUrl}
+              onClick={() => {
+                setShowLogoImageActions(!showLogoImageActions);
+                setAppImageType('logo-image');
+              }}
               customStyle={`border-2 ${getColorClasses(
                 {
                   light: 'white',

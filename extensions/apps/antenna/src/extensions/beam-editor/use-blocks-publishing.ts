@@ -37,6 +37,7 @@ export const useBlocksPublishing = (props: UseBlocksPublishingProps) => {
   const sdk = React.useRef(getSDK());
   const [isNsfw, setIsNsfw] = React.useState(false);
   const [editorTags, setEditorTags] = React.useState([]);
+  const [editorMentions, setEditorMentions] = React.useState([]);
   const { getCorePlugins } = useRootComponentProps();
   const [appInfo, setAppInfo] = React.useState<{
     appID: string;
@@ -117,6 +118,7 @@ export const useBlocksPublishing = (props: UseBlocksPublishingProps) => {
         active: true,
         nsfw: isNsfw,
         tags: tags,
+        mentions: editorMentions,
         content: blocksInUse.map(blockData => ({
           blockID: blockData.response?.blockID,
           order: blockData.order,
@@ -145,7 +147,16 @@ export const useBlocksPublishing = (props: UseBlocksPublishingProps) => {
           setErrors(prev => [...prev, new Error(`failed to create beam: ${err.message}`)]);
         });
     }
-  }, [blocksInUse, createBeam, createBeamQuery, isNsfw, editorTags, onComplete, appInfo]);
+  }, [
+    blocksInUse,
+    createBeam,
+    createBeamQuery,
+    isNsfw,
+    editorTags,
+    editorMentions,
+    onComplete,
+    appInfo,
+  ]);
 
   const createContentBlocks = React.useCallback(
     async (nsfw: boolean, editorTags: string[], blocksWithActiveNsfw: Map<number, boolean>) => {
@@ -168,6 +179,9 @@ export const useBlocksPublishing = (props: UseBlocksPublishingProps) => {
             const data = await block.blockRef.current.createBlock({
               nsfw: !!blocksWithActiveNsfw.get(idx),
             });
+            if (data.editorMentions) {
+              setEditorMentions(prev => [...prev, ...data.editorMentions]);
+            }
             if (data.response && data.response.blockID) {
               setBlocksInUse(prev => [
                 ...prev.slice(0, idx),

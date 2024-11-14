@@ -30,7 +30,7 @@ export const NotFoundComponent = (props: { error?: Error; reset?: (key: string) 
         { worldTitle: worldConfig.title },
       )}
     >
-      <Button label={t('Home')} variant="primary" onClick={navigateHome} />
+      <Button label={t('Home')} variant="primary" size="md" onClick={navigateHome} />
     </ErrorLoader>
   );
 };

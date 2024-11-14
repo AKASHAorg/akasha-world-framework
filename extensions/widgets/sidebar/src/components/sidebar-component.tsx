@@ -198,6 +198,8 @@ const SidebarComponent: React.FC<unknown> = () => {
         >
           <SidebarHeader
             authenticatedDID={authenticatedDID}
+            connectLabel={t('Connect')}
+            cancelLabel={t('Cancel')}
             isLoggedIn={isLoggedIn}
             logoutClickHandler={handleLogoutClick}
             loginClickHandler={handleLoginClick}

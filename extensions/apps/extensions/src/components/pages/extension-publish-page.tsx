@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import appRoutes, { SUBMIT_EXTENSION } from '../../routes';
@@ -12,8 +12,12 @@ import { transformSource, useAkashaStore, useRootComponentProps } from '@akashao
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../constants';
 import getSDK from '@akashaorg/core-sdk';
-import { useCreateAppMutation } from '@akashaorg/ui-awf-hooks/lib/generated';
+import {
+  useCreateAppMutation,
+  useGetAppsByPublisherDidQuery,
+} from '@akashaorg/ui-awf-hooks/lib/generated';
 import { SubmitType } from '../app-routes';
+import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
 
 type ExtensionPublishPageProps = {
   extensionId: string;
@@ -29,12 +33,13 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
   const navigateTo = getCorePlugins().routing.navigateTo;
   const sdk = useRef(getSDK());
 
-  const showErrorNotification = React.useCallback((title: string) => {
+  const showErrorNotification = React.useCallback((title: string, description?: string) => {
     uiEventsRef.current.next({
       event: NotificationEvents.ShowNotification,
       data: {
         type: NotificationTypes.Error,
         title,
+        description,
       },
     });
   }, []);
@@ -66,7 +71,7 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
     draftRelease => draftRelease.applicationID === extensionId,
   );
 
-  const [createAppMutation, { loading }] = useCreateAppMutation({
+  const [createAppMutation, { loading: loadingAppMutation }] = useCreateAppMutation({
     context: { source: sdk.current.services.gql.contextSources.composeDB },
     onCompleted: data => {
       // after the extension has been published to the ceramic model
@@ -97,8 +102,11 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
         params: { extensionId },
       });
     },
-    onError: () => {
-      showErrorNotification(`${t(`Something went wrong when publishing the extension`)}.`);
+    onError: error => {
+      showErrorNotification(
+        `${t(`Something went wrong when publishing the extension`)}.`,
+        error.message,
+      );
     },
   });
 
@@ -113,29 +121,55 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
     });
   };
 
+  const {
+    data: appInfoName,
+    loading: loadingAppInfoName,
+    error: appInfoQueryErrorName,
+    called: calledAppInfoName,
+  } = useGetAppsByPublisherDidQuery({
+    variables: {
+      id: authenticatedDID,
+      first: 1,
+      filters: { where: { name: { equalTo: extensionData?.name } } },
+    },
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
+    skip: !extensionData?.name || !authenticatedDID,
+  });
+
+  const isDuplicatePublishedExtName = useMemo(() => !!selectAkashaApp(appInfoName), [appInfoName]);
+
+  useEffect(() => {
+    if (appInfoQueryErrorName) {
+      showErrorNotification(appInfoQueryErrorName.message);
+    }
+  }, [appInfoQueryErrorName, showErrorNotification]);
+
   const handleClickPublish = () => {
-    const extData = {
-      applicationType: extensionData?.applicationType,
-      contributors: extensionData?.contributors,
-      coverImage: extensionData?.coverImage,
-      createdAt: new Date().toISOString(),
-      description: extensionData?.description,
-      displayName: extensionData?.displayName,
-      gallery: extensionData?.gallery,
-      keywords: extensionData?.keywords,
-      license: extensionData?.license,
-      links: extensionData?.links,
-      logoImage: extensionData?.logoImage,
-      name: extensionData?.name,
-      nsfw: extensionData?.nsfw,
-    };
-    createAppMutation({
-      variables: {
-        i: {
-          content: extData,
+    if (calledAppInfoName && !loadingAppInfoName && !isDuplicatePublishedExtName) {
+      const extData = {
+        applicationType: extensionData?.applicationType,
+        contributors: extensionData?.contributors,
+        coverImage: extensionData?.coverImage,
+        createdAt: new Date().toISOString(),
+        description: extensionData?.description,
+        displayName: extensionData?.displayName,
+        gallery: extensionData?.gallery,
+        keywords: extensionData?.keywords,
+        license: extensionData?.license,
+        links: extensionData?.links,
+        logoImage: extensionData?.logoImage,
+        name: extensionData?.name,
+        nsfw: extensionData?.nsfw,
+      };
+      createAppMutation({
+        variables: {
+          i: {
+            content: extData,
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   const handleClickCancel = () => {
@@ -151,7 +185,12 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To check your extensions you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
   }
@@ -180,6 +219,7 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
           descriptionLabel={t('Description')}
           galleryLabel={t('Gallery')}
           imageUploadedLabel={t('images uploaded')}
+          imageNotLoadedLabel={t(`Cannot load image`)}
           viewAllLabel={t('View All')}
           usefulLinksLabel={t('Useful Links')}
           licenseLabel={t('License')}
@@ -187,7 +227,9 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
           tagsLabel={t('Tags')}
           backButtonLabel={t('Cancel')}
           publishButtonLabel={t('Publish')}
-          loading={loading}
+          duplicateExtNameErrLabel={t('An extension with this name has already been published')}
+          loading={loadingAppMutation || loadingAppInfoName}
+          isDuplicateExtName={isDuplicatePublishedExtName}
           transformSource={transformSource}
           onClickCancel={handleClickCancel}
           onClickSubmit={handleClickPublish}

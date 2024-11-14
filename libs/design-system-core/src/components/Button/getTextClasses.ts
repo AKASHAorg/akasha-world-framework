@@ -1,6 +1,6 @@
 import { ButtonProps } from './types';
 
-import { getColorClasses } from '../../utils/getColorClasses';
+import { getColorClasses } from '../../utils/get-color-classes';
 interface ITextClasses {
   variant: ButtonProps['variant'];
   loading: ButtonProps['loading'];

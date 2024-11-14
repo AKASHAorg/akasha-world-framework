@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { capitalize } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
@@ -21,9 +21,7 @@ import {
 import { SortOrder, AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
-import DropDownFilter, {
-  DropdownMenuItemGroupType,
-} from '@akashaorg/design-system-components/lib/components/BaseDropdownFilter';
+import Dropdown from '@akashaorg/design-system-core/lib/components/Dropdown';
 import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
 import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
@@ -64,72 +62,31 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     navigate({ to: '/create-extension' });
   };
 
-  const typeDropDownMenuItems: DropdownMenuItemGroupType[] = [
-    {
-      id: '0',
-      title: t('All'),
-      type: 'opt',
-    },
-    {
-      id: '1',
-      title: capitalize(AkashaAppApplicationType.App),
-      type: 'opt',
-    },
-    {
-      id: '2',
-      title: capitalize(AkashaAppApplicationType.Widget),
-      type: 'opt',
-    },
-    {
-      id: '3',
-      title: capitalize(AkashaAppApplicationType.Plugin),
-      type: 'opt',
-    },
-    {
-      id: '4',
-      title: capitalize(AkashaAppApplicationType.Other),
-      type: 'opt',
-    },
-  ];
-  const [selectedType, setSelectedType] = React.useState<DropdownMenuItemGroupType | null>(
-    typeDropDownMenuItems[0],
+  const extensionTypeMenuItems = useMemo(
+    () => [
+      t('Type'),
+      capitalize(AkashaAppApplicationType.App),
+      capitalize(AkashaAppApplicationType.Widget),
+      capitalize(AkashaAppApplicationType.Plugin),
+      capitalize(AkashaAppApplicationType.Other),
+    ],
+    [t],
   );
 
-  const statusDropDownMenuItems: DropdownMenuItemGroupType[] = [
-    {
-      id: '0',
-      title: t('All'),
-      type: 'opt',
-    },
-    {
-      id: '1',
-      title: ExtensionStatus.LocalDraft,
-      type: 'opt',
-    },
-    {
-      id: '2',
-      title: ExtensionStatus.Draft,
-      type: 'opt',
-    },
-    {
-      id: '3',
-      title: ExtensionStatus.InReview,
-      type: 'opt',
-    },
-    {
-      id: '4',
-      title: ExtensionStatus.Published,
-      type: 'opt',
-    },
+  const extensionStatusMenuItems = [
+    t('Status'),
+    ExtensionStatus.LocalDraft,
+    ExtensionStatus.Draft,
+    ExtensionStatus.InReview,
+    ExtensionStatus.Published,
   ];
 
-  const [selectedStatus, setSelectedStatus] = React.useState<DropdownMenuItemGroupType | null>(
-    statusDropDownMenuItems[0],
-  );
+  const [selectedType, setSelectedType] = React.useState<string>(extensionTypeMenuItems[0]);
+  const [selectedStatus, setSelectedStatus] = React.useState<string>(extensionStatusMenuItems[0]);
 
   const handleResetClick = () => {
-    setSelectedStatus(statusDropDownMenuItems[0]);
-    setSelectedType(typeDropDownMenuItems[0]);
+    setSelectedStatus(extensionStatusMenuItems[0]);
+    setSelectedType(extensionTypeMenuItems[0]);
   };
 
   const {
@@ -164,20 +121,17 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
 
   const appElements = useMemo(() => {
     return appsData?.filter(ext => {
-      if (selectedType.id === '0') {
+      if (selectedType === extensionTypeMenuItems[0]) {
         return true;
       }
-      return ext?.applicationType === selectedType.title?.toUpperCase();
+      return ext?.applicationType === selectedType.toUpperCase();
     });
-  }, [selectedType]);
+  }, [appsData, selectedType, extensionTypeMenuItems]);
 
   const [draftExtensions, setDraftExtensions] = useState([]);
 
   // fetch the draft extensions that are saved only on local storage
-
-  const allMyExtensions = [...draftExtensions, ...appElements];
-
-  const getDraftExtensions = () => {
+  const getDraftExtensions = useCallback(() => {
     try {
       const existingDraftExtensions =
         JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) ?? [];
@@ -186,7 +140,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       showErrorNotification(error);
       setDraftExtensions([]);
     }
-  };
+  }, [authenticatedDID, showErrorNotification]);
 
   useEffect(() => {
     getDraftExtensions();
@@ -209,7 +163,12 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         eventsSub.unsubscribe();
       }
     };
-  }, []);
+  }, [authenticatedDID, getDraftExtensions, refetch]);
+
+  const allMyExtensions = useMemo(
+    () => [...draftExtensions, ...appElements],
+    [draftExtensions, appElements],
+  );
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -229,7 +188,12 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To check your extensions you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
   }
@@ -253,20 +217,18 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         <Text variant="body1">{t('Create an extension ✨ 🚀')}</Text>
         <Button variant="primary" label={t('Create')} onClick={handleNavigateToCreateApp} />
       </Stack>
-      <Stack direction="row" justify="between" align="center" spacing="gap-2">
-        <DropDownFilter
-          menuItems={typeDropDownMenuItems}
+      <Stack direction="row" justify="between" align="center" spacing="gap-4">
+        <Dropdown
+          menuItems={extensionTypeMenuItems}
           selected={selectedType}
           setSelected={setSelectedType}
-          placeholderLabel={t('Type')}
-          padding={'p-2'}
+          customStyle="grow"
         />
-        <DropDownFilter
-          menuItems={statusDropDownMenuItems}
+        <Dropdown
+          menuItems={extensionStatusMenuItems}
           selected={selectedStatus}
           setSelected={setSelectedStatus}
-          placeholderLabel={t('Status')}
-          padding={'p-2'}
+          customStyle="grow"
         />
         <Button variant="text" onClick={handleResetClick} label={t('Reset')} />
       </Stack>
@@ -308,6 +270,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
                   extensionData={extensionData as Extension}
                   showDivider={itemIndex < allMyExtensions.length - 1}
                   filter={selectedStatus}
+                  filterShowAllOptionValue={extensionStatusMenuItems[0]}
                   showMenu
                 />
               );

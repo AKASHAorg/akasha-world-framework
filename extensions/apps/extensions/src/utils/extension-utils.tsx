@@ -1,25 +1,5 @@
-import * as React from 'react';
-import {
-  AkashaAppApplicationType,
-  AkashaAppsStreamModerationStatus,
-} from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import { AkashaAppsStreamModerationStatus } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { ExtensionStatus } from '@akashaorg/typings/lib/ui';
-import {
-  Plugin,
-  App,
-  Widget,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
-
-export const getIconByAppType = (applicationType: AkashaAppApplicationType) => {
-  switch (applicationType) {
-    case AkashaAppApplicationType.App:
-      return <App />;
-    case AkashaAppApplicationType.Plugin:
-      return <Plugin />;
-    case AkashaAppApplicationType.Widget:
-      return <Widget />;
-  }
-};
 
 export const getExtensionStatus = (
   isLocalDraft: boolean,

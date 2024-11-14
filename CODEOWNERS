@@ -2,7 +2,7 @@
 *.cjs @kenshyx @didd
 *.yml @kenshyx @didd
 *.toml @kenshyx @didd
-*.md @josenriagu @SeverS 
+*.md @josenriagu @SeverS
 *.config.js @kenshyx @didd
 *.conf.js @kenshyx @didd
 *.stories.tsx @josenriagu @didd
@@ -12,14 +12,14 @@
 .github/ @kenshyx @didd
 .circleci/ @kenshyx @didd
 
-/extensions/apps/antenna/ @SeverS @quininez @didd 
-/extensions/apps/auth-app/ @didd @josenriagu 
+/extensions/apps/antenna/ @SeverS @quininez @didd
+/extensions/apps/auth-app/ @didd @josenriagu
 /extensions/apps/extensions/ @SeverS @quininez @didd
 /extensions/apps/legal/ @quininez @josenriagu
-/extensions/apps/notifications/ @quininez 
+/extensions/apps/notifications/ @quininez
 /extensions/apps/profile/ @didd  @quininez
 /extensions/apps/routing/ @SeverS @didd
-/extensions/apps/search/ @quininez 
+/extensions/apps/search/ @quininez
 /extensions/apps/settings/  @josenriagu
 /extensions/apps/vibes/  @josenriagu
 /extensions/apps/vibes-console/  @josenriagu
@@ -27,7 +27,6 @@
 /extensions/widgets/analytics/ @SeverS @josenriagu
 /extensions/widgets/layout/ @SeverS @josenriagu @quininez
 /extensions/widgets/mini-profile/ @quininez @josenriagu
-/extensions/widgets/my-apps/ @quininez 
 /extensions/widgets/sidebar/ @josenriagu  @didd
 /extensions/widgets/top-bar/  @josenriagu
 /extensions/widgets/trending/  @josenriagu @didd

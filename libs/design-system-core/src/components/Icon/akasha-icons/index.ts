@@ -8,7 +8,6 @@ import AlignTextCenter from './align-text-center';
 import AlignTextLeft from './align-text-left';
 import AlignTextRight from './align-text-right';
 import Antenna from './antenna';
-import App from './app';
 import Blocks from './blocks';
 import Bold from './bold';
 import Caption from './caption';
@@ -20,6 +19,7 @@ import Following from './following';
 import Github from './github';
 import IntegrationAppCTA from './integration-app-cta';
 import Italic from './italic';
+import ImageCrossed from './image-crossed';
 import LicenseAllRights from './license-all-rights';
 import LicenseAttribution from './license-attribution';
 import LicenseNoDerivatives from './license-no-derivatives';
@@ -57,7 +57,6 @@ export type CustomIconTypes = Extract<
   | 'AlignTextLeft'
   | 'AlignTextRight'
   | 'Antenna'
-  | 'App'
   | 'Blocks'
   | 'Bold'
   | 'Caption'
@@ -69,6 +68,7 @@ export type CustomIconTypes = Extract<
   | 'Github'
   | 'IntegrationAppCTA'
   | 'Italic'
+  | 'ImageCrossed'
   | 'LicenseAllRights'
   | 'LicenseAttribution'
   | 'LicenseNoDerivatives'
@@ -103,7 +103,6 @@ export {
   AlignTextLeft,
   AlignTextRight,
   Antenna,
-  App,
   Blocks,
   Bold,
   Caption,
@@ -115,6 +114,7 @@ export {
   Github,
   IntegrationAppCTA,
   Italic,
+  ImageCrossed,
   LicenseAllRights,
   LicenseAttribution,
   LicenseNoDerivatives,

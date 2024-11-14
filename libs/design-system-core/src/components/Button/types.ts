@@ -15,11 +15,11 @@ export type ButtonProps = {
   solidIcon?: boolean;
   plain?: boolean;
   breakPointSize?: BreakPointSize;
-  customStyle?: string;
   active?: boolean;
   hover?: boolean;
   hoverColors?: { background?: Color; border?: Color; text?: Color; icon?: Color };
   ref?: LegacyRef<HTMLButtonElement>;
+  customStyle?: string;
 } & React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
 export type Variant = 'primary' | 'secondary' | 'text';

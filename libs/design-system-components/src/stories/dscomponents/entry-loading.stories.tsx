@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import EntryLoading from '../../components/ProfileEngagements/placeholders/entry-loading';
+import EntryLoading from '../../components/Profile/placeholders/entry-loading';
 
 EntryLoading.displayName = 'EntryLoading';
 

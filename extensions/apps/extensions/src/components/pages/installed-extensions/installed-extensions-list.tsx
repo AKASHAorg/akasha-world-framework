@@ -70,7 +70,12 @@ export const InstalledExtensionsList = () => {
         title={`${t('Uh-oh')}! ${t('You are not connected')}!`}
         details={`${t('To check installed extensions you must be connected')} ⚡️`}
       >
-        <Button variant="primary" label={t('Connect')} onClick={handleConnectButtonClick} />
+        <Button
+          variant="primary"
+          size="md"
+          label={t('Connect')}
+          onClick={handleConnectButtonClick}
+        />
       </ErrorLoader>
     );
 
@@ -124,6 +129,7 @@ export const InstalledExtensionsList = () => {
                       size="md"
                       label={t('Discover')}
                       onClick={handleDiscoverClick}
+                      customStyle="inline-block"
                     />{' '}
                     {t('cool extensions and install them')}
                   </Text>

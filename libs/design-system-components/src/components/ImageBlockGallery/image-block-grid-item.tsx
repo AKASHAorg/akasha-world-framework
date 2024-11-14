@@ -1,9 +1,14 @@
 import * as React from 'react';
 import { apply, tw, tx } from '@twind/core';
-import { DelayLoad } from '../../utils/delay-load';
+import { DelayLoad } from '@akashaorg/design-system-core/lib/utils/delay-load';
 import { type GalleryImage } from '@akashaorg/typings/lib/ui';
+import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import { ImageCrossed } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+import Icon from '@akashaorg/design-system-core/lib/components/Icon';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
 
 export interface IGridItemProps {
+  imageNotLoadedLabel: string;
   image: GalleryImage;
   images: GalleryImage[];
   gridStyle: {
@@ -15,11 +20,28 @@ export interface IGridItemProps {
 }
 
 export const ImageBlockGridItem: React.FC<IGridItemProps> = props => {
-  const { image, images, gridStyle, aspectRatio = 'aspect-square', handleClickImage } = props;
+  const {
+    imageNotLoadedLabel,
+    image,
+    images,
+    gridStyle,
+    aspectRatio = 'aspect-square',
+    handleClickImage,
+  } = props;
 
   const imageSrc = React.useMemo(() => image, [image]);
 
   const [imgLoaded, setImgLoaded] = React.useState(false);
+  const [showImgFailedToLoad, setShowImgFailedToLoad] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!imgLoaded) {
+        setShowImgFailedToLoad(true);
+      }
+    }, 60000);
+    return clearTimeout(timer);
+  }, [imgLoaded]);
 
   const multipleImageStyle = apply`${images.length > 1 && aspectRatio}`;
   const heightStyle = apply`${images.length === 1 && 'max-h-40 sm:max-h-60'}`;
@@ -53,7 +75,7 @@ export const ImageBlockGridItem: React.FC<IGridItemProps> = props => {
         />
       </picture>
 
-      {!imgLoaded && (
+      {!imgLoaded && !showImgFailedToLoad && (
         <DelayLoad>
           <div className={tw('flex')}>
             <img
@@ -66,6 +88,22 @@ export const ImageBlockGridItem: React.FC<IGridItemProps> = props => {
             />
           </div>
         </DelayLoad>
+      )}
+
+      {!imgLoaded && showImgFailedToLoad && (
+        <Stack
+          padding={16}
+          align="center"
+          justify="center"
+          background={{ light: 'grey9', dark: 'grey5' }}
+          spacing="gap-y-2"
+          customStyle={`rounded w-full h-[${imageSrc?.size?.height}] ${heightStyle} ${multipleImageStyle}`}
+        >
+          <Icon icon={<ImageCrossed />} color={{ light: 'grey5', dark: 'white' }} />
+          <Text variant="footnotes2" color={{ light: 'grey5', dark: 'white' }}>
+            {imageNotLoadedLabel}
+          </Text>
+        </Stack>
       )}
     </button>
   );
