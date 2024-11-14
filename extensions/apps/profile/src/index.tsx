@@ -41,6 +41,10 @@ export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
       mountsIn: 'profile_avatar_*',
       loadingFn: () => import('./extensions/profile-avatar'),
     },
+    {
+      mountsIn: 'unsaved-changes_edit-profile',
+      loadingFn: () => import('./extensions/unsaved-changes'),
+    },
   ],
   routes: {
     beams: routes[BEAMS],
