@@ -298,6 +298,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                     }}
                   >
                     <ExtensionImageGallery
+                      imageNotLoadedLabel={t(`Cannot load image`)}
                       images={appData.gallery?.map(gImage => ({
                         ...gImage,
                         src: transformSource(gImage)?.src,

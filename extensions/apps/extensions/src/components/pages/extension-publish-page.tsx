@@ -219,6 +219,7 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
           descriptionLabel={t('Description')}
           galleryLabel={t('Gallery')}
           imageUploadedLabel={t('images uploaded')}
+          imageNotLoadedLabel={t(`Cannot load image`)}
           viewAllLabel={t('View All')}
           usefulLinksLabel={t('Useful Links')}
           licenseLabel={t('License')}
