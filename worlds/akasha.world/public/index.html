@@ -92,7 +92,7 @@
           It may have been moved, deleted, or the URL might be incorrect.
         </p>
         <p class="mt-4">
-          If you installed this app, make sure you are connected. Otherwise, you might need to install it from the Extensions App.
+          You might need to install it from the Extensions App.
         </p>
       </div>
       <div class="flex flex-row gap-2">
@@ -105,14 +105,52 @@
   </div>
 </template>
 <template id="error-tpl">
-  <div id="error-root" class="text-black dark:text-white">
+  <div id="error-root" class="text-black dark:text-white mb-4">
     <div class="flex flex-col items-center bg-white dark:bg-grey2 p-4 rounded-2xl">
       <img src="/images/general-error.webp" alt="Error"
-           class="h-auto mx-auto my-0 px-0 py-8 max-w-[50%]" />
+           class="h-auto mx-auto my-0 px-0 py-8 max-w-[12rem]" />
       <h1 class="font-bold text-xl mt-2">This application has an error!</h1>
-      <div class="pt-3 text-center">
-        <p>Please try to refresh the page and if it still doesn't work, make sure you have the
+      <div class="pt-3 flex flex-col items-center">
+        <p class="text-center">Please try to refresh the page and if it still doesn't work, make sure you have the
           latest version of the app.</p>
+        <div id="error-actions" class="flex items-center hidden gap-2">
+          <button id="unload-button"
+                  class="hidden rounded-3xl px-4 mb-2 mt-8 font-bold py-2 text-xs hover:shadow-md border border-secondaryLight dark:border-secondaryDark text-secondaryLight dark:text-secondaryDark hover:text-white dark:hover:text-white hover:bg-secondaryLight/30 dark:hover:bg-secondaryDark">
+            Unload Extension
+          </button>
+          <button id="refresh-button"
+                  class="hidden bg-gradient-to-r from-primaryStart to-primaryStop rounded-3xl px-4 mb-2 mt-8 font-bold py-2 text-xs hover:shadow-md">
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<template id="application-loading-card-tpl" class="text-black dark:text-white">
+  <div id="application-loading-card-root">
+    <div class="flex flex-col items-center bg-white dark:bg-grey2 px-4 py-8 rounded-2xl">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+           class="stroke-black dark:stroke-white motion-safe:animate-spin w-8 h-8">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+      </svg>
+      <div class="text-grey4 dark:text-grey6 text-sm pt-4">Loading Application... Please wait...</div>
+    </div>
+  </div>
+</template>
+<template id="not-logged-in-tpl">
+  <div id="not-logged-in-root" class="text-black dark:text-white">
+    <div class="flex flex-col items-center bg-white dark:bg-grey2 px-4 py-8 rounded-2xl">
+      <img src="/images/not-authenticated.webp" alt="You are not connected" class="max-w-[12rem] px-0 py-8" />
+      <h1 class="font-bold text-xl mt-2">Uh-oh! You are not connected</h1>
+      <div class="pt-3 text-center">
+        <p>To load installed apps, you need to be connected.</p>
+        <button
+          id="connect-button"
+          class="bg-gradient-to-r from-primaryStart to-primaryStop rounded-3xl px-4 mb-2 mt-8 font-bold py-2 text-xs hover:shadow-md">
+          Connect
+        </button>
       </div>
     </div>
   </div>
