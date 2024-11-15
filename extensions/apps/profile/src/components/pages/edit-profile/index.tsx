@@ -30,7 +30,17 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
   const { profileDID } = props;
   const { t } = useTranslation('app-profile');
   const { getCorePlugins, logger, uiEvents } = useRootComponentProps();
-  const { avatarImage, coverImage, saveImage, loading: isSavingImage } = useSaveImage();
+  const {
+    image: avatarImage,
+    saveImage: saveAvatarImage,
+    loading: isSavingAvatarImage,
+  } = useSaveImage();
+  const {
+    image: coverImage,
+    saveImage: saveCoverImage,
+    loading: isSavingCoverImage,
+  } = useSaveImage();
+  const isSavingImage = isSavingAvatarImage || isSavingCoverImage;
   const [showNsfwModal, setShowNsfwModal] = useState(false);
   const [nsfwFormValues, setNsfwFormValues] = useState<PublishProfileData>();
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -231,7 +241,16 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
             },
             isSavingImage,
             publicImagePath: '/images',
-            onImageSave: (type, image) => saveImage({ type, image, onError: onSaveImageError }),
+            onImageSave: (type, image) => {
+              switch (type) {
+                case 'avatar':
+                  saveAvatarImage({ name: 'avatar', image, onError: onSaveImageError });
+                  break;
+                case 'cover-image':
+                  saveCoverImage({ name: 'cover-image', image, onError: onSaveImageError });
+                  break;
+              }
+            },
             transformSource,
           }}
           name={{ label: t('Name'), initialValue: profileData?.name }}

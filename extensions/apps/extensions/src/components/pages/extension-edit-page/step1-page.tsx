@@ -62,7 +62,15 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
 
   const extensionData = draftExtensions.find(draftExtension => draftExtension.id === extensionId);
 
-  const { avatarImage: logoImage, coverImage, saveImage, loading: isSavingImage } = useSaveImage();
+  const { image: logoImage, saveImage: saveLogoImage, loading: isSavingLogoImage } = useSaveImage();
+
+  const {
+    image: coverImage,
+    saveImage: saveCoverImage,
+    loading: isSavingCoverImage,
+  } = useSaveImage();
+
+  const isSavingImage = isSavingLogoImage || isSavingCoverImage;
 
   const defaultValues = useMemo(() => {
     return formValue.lastCompletedStep > 0 ? formValue : extensionData;
@@ -147,7 +155,16 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
               ],
               imageDescription: 'Recommended logo positioning',
             },
-            onImageSave: (type, image) => saveImage({ type, image, onError: onSaveImageError }),
+            onImageSave: (type, image) => {
+              switch (type) {
+                case 'logo-image':
+                  saveLogoImage({ name: 'logo-image', image, onError: onSaveImageError });
+                  break;
+                case 'cover-image':
+                  saveCoverImage({ name: 'cover-image', image, onError: onSaveImageError });
+                  break;
+              }
+            },
             onImageDelete: () => {},
           }}
           handleCheckExtProp={handleCheckExtProp}
