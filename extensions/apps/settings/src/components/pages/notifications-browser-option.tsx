@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Text from '@akashaorg/design-system-core/lib/components/Text';
 import PageLayout from './base-layout';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
@@ -10,15 +9,21 @@ import appRoutes, { BROWSER_NOTIFICATIONS } from '../../routes';
 import NotificationSettingsCard, {
   NotificationsImageSrc,
 } from '@akashaorg/design-system-components/lib/components/NotificationSettingsCard';
+import getSDK from '@akashaorg/core-sdk';
 
-type States = 'default' | 'enabled' | 'disabled';
-type StatesContent = {
-  [key in States]: { title: string; description: string; image: NotificationsImageSrc };
+type BrowserNotificationsState = 'default' | 'enabled' | 'disabled';
+type StatesContents = {
+  [key in BrowserNotificationsState]: {
+    title: string;
+    description: string;
+    image: NotificationsImageSrc;
+  };
 };
 
 const BrowserNotificationsOption: React.FC = () => {
+  const sdk = getSDK();
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState('disabled');
+  const [result, setResult] = useState<BrowserNotificationsState>('default');
 
   const { baseRouteName, getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -28,7 +33,7 @@ const BrowserNotificationsOption: React.FC = () => {
   } = useAkashaStore();
   const isLoggedIn = !!authenticatedDID;
 
-  const STATES_CONTENT: StatesContent = {
+  const STATES_CONTENT: StatesContents = {
     default: {
       title: t('Turn on browser notifications'),
       description: t('You will see a browser prompt to allow notifications'),
@@ -76,10 +81,11 @@ const BrowserNotificationsOption: React.FC = () => {
     );
   }
 
-  const handleEnableBrowserNotifications = () => {
+  const handleEnableBrowserNotifications = async () => {
     setLoading(true);
-    setResult('enabled');
-    // TODO - call SDK API
+    const initResult = await sdk.api.profile.enableBrowserNotifications();
+    setResult(initResult ? 'enabled' : 'disabled');
+    setLoading(false);
   };
 
   return (
