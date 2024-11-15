@@ -14,7 +14,7 @@ import {
   AkashaAppApplicationType,
   AppImageSource,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { selectExtensionCollaborators } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
+import { selectExtensionContributors } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
 import { useContributors } from './use-contributors';
 import { ChevronRightIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 
@@ -23,7 +23,7 @@ type ContributorsPageProps = {
   extensionLogo?: AppImageSource;
   extensionName?: string;
   extensionDisplayName?: string;
-  contributors?: ReturnType<typeof selectExtensionCollaborators>;
+  contributors?: ReturnType<typeof selectExtensionContributors>;
   extensionType?: AkashaAppApplicationType;
 };
 

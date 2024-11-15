@@ -10,7 +10,7 @@ import {
 import { getExtensionById } from '../../app-routes/data-loaders';
 import {
   selectAppId,
-  selectExtensionCollaborators,
+  selectExtensionContributors,
   selectExtensionDescription,
   selectExtensionDisplayName,
   selectExtensionLicense,
@@ -114,7 +114,7 @@ const contributorsInfoRoute = createRoute({
                 extensionLogo={selectExtensionLogo(data)}
                 extensionName={selectExtensionName(data)}
                 extensionDisplayName={selectExtensionDisplayName(data)}
-                contributors={selectExtensionCollaborators(data)}
+                contributors={selectExtensionContributors(data)}
                 extensionType={selectExtensionType(data)}
                 appId={appId}
               />
