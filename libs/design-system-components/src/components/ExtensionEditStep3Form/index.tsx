@@ -58,6 +58,7 @@ export type ExtensionEditStep3FormProps = {
   contributorsProfiles?: AkashaProfile[];
   errorProfilesData?: ApolloError;
   loadingProfilesData?: boolean;
+  maxContributorsDisplay: number;
   cancelButton: ButtonType;
   nextButton: {
     label: string;
@@ -94,6 +95,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     tagsDescriptionLabel,
     tagsAddedLabel,
     noteLabel,
+    maxContributorsDisplay,
     noteDescriptionLabel,
     errorProfilesDataLabel,
   } = props;
@@ -222,6 +224,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
                 <Text variant="h6">{collaboratorsFieldLabel}</Text>
                 <Button
                   variant="text"
+                  size="md"
                   icon={<PlusIcon />}
                   iconDirection="left"
                   label={contributorsProfiles.length > 0 ? addAndEditLabel : addLabel}
@@ -244,17 +247,21 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
             )}
             {contributorAvatars?.length > 0 && (
               <Stack direction="row" spacing="gap-2" align="center">
-                <StackedAvatar userData={contributorAvatars} maxAvatars={3} size="md" />
+                <StackedAvatar
+                  userData={contributorAvatars}
+                  maxAvatars={maxContributorsDisplay}
+                  size="md"
+                />
                 <Stack align="center" justify="center">
                   <Text variant="body2" weight="bold">
                     {contributorsProfiles[0]?.name}
                   </Text>
-                  {contributorsProfiles?.length > 1 && (
+                  {contributorsProfiles.length > 1 && (
                     <Text
                       variant="footnotes2"
                       color={{ light: 'grey4', dark: 'grey6' }}
                       weight="light"
-                    >{`+${contributorsProfiles?.length - 1} ${moreLabel}`}</Text>
+                    >{`and ${contributorsProfiles.length - 1} ${moreLabel}`}</Text>
                   )}
                 </Stack>
               </Stack>

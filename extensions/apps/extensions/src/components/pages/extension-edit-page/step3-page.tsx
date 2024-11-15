@@ -7,7 +7,7 @@ import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 import ExtensionEditStep3Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep3Form';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { transformSource, useProfilesList } from '@akashaorg/ui-awf-hooks';
-import { DRAFT_EXTENSIONS } from '../../../constants';
+import { DRAFT_EXTENSIONS, MAX_CONTRIBUTORS_DISPLAY } from '../../../constants';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { AtomContext } from './main-page';
 import { useAtom } from 'jotai';
@@ -162,6 +162,7 @@ export const ExtensionEditStep3Page: React.FC<ExtensionEditStep3PageProps> = ({ 
           errorProfilesData={errorProfilesData}
           loadingProfilesData={loadingProfilesData}
           errorProfilesDataLabel={t('There was an error loading the contributors')}
+          maxContributorsDisplay={MAX_CONTRIBUTORS_DISPLAY}
           transformSource={transformSource}
           handleNavigateToContributorsPage={handleNavigateToContributorsPage}
           cancelButton={{
