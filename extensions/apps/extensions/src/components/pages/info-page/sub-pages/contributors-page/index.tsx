@@ -1,7 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from '@tanstack/react-router';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
@@ -9,14 +6,17 @@ import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/Pr
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import { ChevronRightIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import ExtensionSubRouteHeader from '../../InfoSubroutePageHeader';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import {
   AkashaAppApplicationType,
   AppImageSource,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { selectExtensionCollaborators } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
 import { useContributors } from './use-contributors';
+import { ChevronRightIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 
 type ContributorsPageProps = {
   appId: string;
@@ -30,13 +30,13 @@ type ContributorsPageProps = {
 export const ContributorsPage = (props: ContributorsPageProps) => {
   const { appId, extensionLogo, extensionName, extensionDisplayName, extensionType, contributors } =
     props;
-  const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
   const { decodeAppName } = useRootComponentProps();
   const { localExtensionData, contributorsProfile, loading, error } = useContributors({
     appName: decodeAppName(appId),
-    publishedAppContributorsProfile: contributors?.map(collaborator => collaborator.akashaProfile),
+    publishedAppContributorsProfile: contributors?.map(contributor => contributor.akashaProfile),
   });
+  const navigate = useNavigate();
 
   return (
     <>
@@ -65,7 +65,7 @@ export const ContributorsPage = (props: ContributorsPageProps) => {
                 />
               </Stack>
             )}
-            {contributorsProfile?.map((contributor, idx) => (
+            {contributorsProfile?.map((contributor, index) => (
               <Stack key={contributor.id} direction="column" spacing="gap-y-4">
                 <Card
                   onClick={() => {
@@ -96,7 +96,7 @@ export const ContributorsPage = (props: ContributorsPageProps) => {
                     />
                   </Stack>
                 </Card>
-                {idx < contributorsProfile.length - 1 && <Divider />}
+                {index < contributorsProfile.length - 1 && <Divider />}
               </Stack>
             ))}
           </Stack>

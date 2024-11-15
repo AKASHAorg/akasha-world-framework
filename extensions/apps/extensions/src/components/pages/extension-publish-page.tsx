@@ -224,7 +224,7 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
   const onViewAllClick = () => {
     if (extensionData?.name) {
       navigate({
-        to: '/info/$appId/collaborators',
+        to: '/info/$appId/contributors',
         params: { appId: encodeAppName(extensionData.name) },
       });
     }

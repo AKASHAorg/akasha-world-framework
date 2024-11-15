@@ -92,7 +92,7 @@ const devInfoRoute = createRoute({
 
 const contributorsInfoRoute = createRoute({
   getParentRoute: () => infoRootRoute,
-  path: '/collaborators',
+  path: '/contributors',
   loader: ({ context, params }) => {
     const { appId } = params;
     if (!appId) {
