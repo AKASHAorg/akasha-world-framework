@@ -6,11 +6,11 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
 import ExtensionEditStep1Form from '@akashaorg/design-system-components/lib/components/ExtensionEditStep1Form';
-import { useSaveImage } from '../../../utils/use-save-image';
 import {
   transformSource,
   useAkashaStore,
   useRootComponentProps,
+  useSaveImage,
   useValidateUniqueExtensionProp,
 } from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
@@ -62,7 +62,7 @@ export const ExtensionEditStep1Page: React.FC<ExtensionEditStep1PageProps> = ({ 
 
   const extensionData = draftExtensions.find(draftExtension => draftExtension.id === extensionId);
 
-  const { logoImage, coverImage, saveImage, loading: isSavingImage } = useSaveImage();
+  const { avatarImage: logoImage, coverImage, saveImage, loading: isSavingImage } = useSaveImage();
 
   const defaultValues = useMemo(() => {
     return formValue.lastCompletedStep > 0 ? formValue : extensionData;

@@ -12,8 +12,7 @@ import {
   useGetProfileByDidSuspenseQuery,
   useUpdateProfileMutation,
 } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import { useSaveImage } from './use-save-image';
+import { transformSource, useRootComponentProps, useSaveImage } from '@akashaorg/ui-awf-hooks';
 import { PartialAkashaProfileInput } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import {
   NotificationEvents,
@@ -31,7 +30,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
   const { profileDID } = props;
   const { t } = useTranslation('app-profile');
   const { getCorePlugins, logger, uiEvents } = useRootComponentProps();
-  const { newAvatarImage, newCoverImage, saveImage, loading: isSavingImage } = useSaveImage();
+  const { avatarImage, coverImage, saveImage, loading: isSavingImage } = useSaveImage();
   const [showNsfwModal, setShowNsfwModal] = useState(false);
   const [nsfwFormValues, setNsfwFormValues] = useState<PublishProfileData>();
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -165,6 +164,24 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
 
   const onProfileSave = async (publishProfileData: PublishProfileData) => {
     const isNewProfile = !profileData?.id;
+    const newAvatarImage = avatarImage
+      ? {
+          default: {
+            src: avatarImage.src,
+            height: avatarImage.height,
+            width: avatarImage.width,
+          },
+        }
+      : null;
+    const newCoverImage = coverImage
+      ? {
+          default: {
+            src: coverImage.src,
+            height: coverImage.height,
+            width: coverImage.width,
+          },
+        }
+      : null;
     const profileImages = {
       ...getAvatarImage(newAvatarImage, isNewProfile ? false : !publishProfileData.avatar),
       ...getCoverImage(newCoverImage, isNewProfile ? false : !publishProfileData.coverImage),
