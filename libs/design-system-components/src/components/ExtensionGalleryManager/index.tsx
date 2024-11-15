@@ -67,7 +67,7 @@ export const ExtensionGalleryManager: React.FC<ExtensionGalleryManagerProps> = p
               size="md"
               label={uploadImagesLabel}
               onClick={() => {
-                uploadInputRef.current.click();
+                if (images.length !== maxGalleryImages) uploadInputRef.current.click();
               }}
               disabled={uploading}
             />

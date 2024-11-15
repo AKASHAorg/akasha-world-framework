@@ -122,11 +122,11 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
 
   const handleCollaboratorsClick = () => {
     navigate({
-      to: '/info/$appId/collaborators',
+      to: '/info/$appId/contributors',
       params: {
         appId,
       },
-    }).catch(err => logger.error('cannot navigate to /info/$appId/collaborators : %o', err));
+    }).catch(err => logger.error('cannot navigate to /info/$appId/contributors : %o', err));
   };
 
   const handleLicenseClick = () => {
