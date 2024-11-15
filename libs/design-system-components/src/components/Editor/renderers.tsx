@@ -119,6 +119,7 @@ const renderElement = (
       return (
         <p
           className={tw(`text-black dark:text-white break-words ${textAlignStyle}`)}
+          style={{ wordBreak: 'break-word' }}
           {...props.attributes}
         >
           {props.children}
