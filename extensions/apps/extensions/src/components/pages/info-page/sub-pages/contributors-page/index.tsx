@@ -18,30 +18,24 @@ import {
 import { selectExtensionCollaborators } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
 import { useContributors } from './use-contributors';
 
-type CollaboratorsPageProps = {
+type ContributorsPageProps = {
   appId: string;
   extensionLogo?: AppImageSource;
   extensionName?: string;
   extensionDisplayName?: string;
-  collaborators?: ReturnType<typeof selectExtensionCollaborators>;
+  contributors?: ReturnType<typeof selectExtensionCollaborators>;
   extensionType?: AkashaAppApplicationType;
 };
 
-export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
-  const {
-    appId,
-    extensionLogo,
-    extensionName,
-    extensionDisplayName,
-    extensionType,
-    collaborators,
-  } = props;
+export const ContributorsPage = (props: ContributorsPageProps) => {
+  const { appId, extensionLogo, extensionName, extensionDisplayName, extensionType, contributors } =
+    props;
   const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
   const { decodeAppName } = useRootComponentProps();
-  const { localExtensionData, contributors, loading, error } = useContributors({
+  const { localExtensionData, contributorsProfile, loading, error } = useContributors({
     appName: decodeAppName(appId),
-    publishedAppContributorsProfile: collaborators?.map(collaborator => collaborator.akashaProfile),
+    publishedAppContributorsProfile: contributors?.map(collaborator => collaborator.akashaProfile),
   });
 
   return (
@@ -49,7 +43,7 @@ export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
       <Card padding="p-4">
         <Stack spacing="gap-y-4">
           <ExtensionSubRouteHeader
-            pageTitle={t('Collaborators')}
+            pageTitle={t('Contributors')}
             appName={extensionDisplayName ?? localExtensionData?.displayName}
             packageName={extensionName ?? localExtensionData?.name}
             appType={extensionType ?? localExtensionData?.applicationType}
@@ -71,7 +65,7 @@ export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
                 />
               </Stack>
             )}
-            {contributors?.map((contributor, idx) => (
+            {contributorsProfile?.map((contributor, idx) => (
               <Stack key={contributor.id} direction="column" spacing="gap-y-4">
                 <Card
                   onClick={() => {
@@ -102,7 +96,7 @@ export const CollaboratorsPage = (props: CollaboratorsPageProps) => {
                     />
                   </Stack>
                 </Card>
-                {idx < contributors.length - 1 && <Divider />}
+                {idx < contributorsProfile.length - 1 && <Divider />}
               </Stack>
             ))}
           </Stack>

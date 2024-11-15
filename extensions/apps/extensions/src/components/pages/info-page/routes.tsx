@@ -2,7 +2,7 @@ import { NotFoundComponent } from '../../app-routes/not-found-component';
 import { InfoPage } from './info-page';
 import {
   AppDescriptionPage,
-  CollaboratorsPage,
+  ContributorsPage,
   DevInfoPage,
   LicensePage,
   ReleasesPage,
@@ -110,11 +110,11 @@ const collaboratorsInfoRoute = createRoute({
         <Suspense>
           <Await promise={extensionById}>
             {data => (
-              <CollaboratorsPage
+              <ContributorsPage
                 extensionLogo={selectExtensionLogo(data)}
                 extensionName={selectExtensionName(data)}
                 extensionDisplayName={selectExtensionDisplayName(data)}
-                collaborators={selectExtensionCollaborators(data)}
+                contributors={selectExtensionCollaborators(data)}
                 extensionType={selectExtensionType(data)}
                 appId={appId}
               />

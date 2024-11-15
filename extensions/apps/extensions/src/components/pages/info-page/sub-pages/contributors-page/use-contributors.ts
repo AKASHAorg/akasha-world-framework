@@ -1,5 +1,5 @@
 import { useAkashaStore, useProfilesList, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { DRAFT_EXTENSIONS } from '../../../../../constants';
 import {
   AkashaProfile,
@@ -14,9 +14,6 @@ interface IUseContributors {
 }
 
 export function useContributors({ appName, publishedAppContributorsProfile }: IUseContributors) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [contributors, setContributors] = useState<AkashaProfile[]>([]);
   const {
     data: { authenticatedDID },
   } = useAkashaStore();
@@ -42,34 +39,22 @@ export function useContributors({ appName, publishedAppContributorsProfile }: IU
       showErrorNotification(error);
     }
   }, [authenticatedDID, showErrorNotification]);
-  const extensionData = draftExtensions?.find(draftExtension => draftExtension.name === appName);
+
+  const extensionData = useMemo(
+    () => draftExtensions?.find(draftExtension => draftExtension.name === appName),
+    [appName, draftExtensions],
+  );
 
   const {
-    profilesData,
-    loading: loadingProfilesData,
-    error: errorProfilesData,
+    profilesData: localExtensionContributors,
+    loading,
+    error,
   } = useProfilesList(extensionData?.contributors);
 
-  useEffect(() => {
-    //the order of the conditionals is important
-    if (publishedAppContributorsProfile?.length > 0) {
-      setContributors(publishedAppContributorsProfile);
-      return;
-    }
-
-    if (loadingProfilesData) {
-      setLoading(true);
-      return;
-    }
-
-    if (errorProfilesData) {
-      setError(errorProfilesData);
-      return;
-    }
-
-    setContributors(profilesData);
-    setLoading(false);
-  }, [errorProfilesData, loadingProfilesData, profilesData, publishedAppContributorsProfile]);
-
-  return { localExtensionData: extensionData, contributors, error, loading };
+  return {
+    localExtensionData: extensionData,
+    contributorsProfile: publishedAppContributorsProfile ?? localExtensionContributors,
+    error: publishedAppContributorsProfile ? null : error,
+    loading: publishedAppContributorsProfile ? false : loading,
+  };
 }
