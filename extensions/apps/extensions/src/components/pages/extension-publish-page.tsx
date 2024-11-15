@@ -7,10 +7,17 @@ import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import StackedAvatar from '@akashaorg/design-system-core/lib/components/StackedAvatar';
 import ExtensionReviewAndPublish from '@akashaorg/design-system-components/lib/components/ExtensionReviewAndPublish';
-import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import {
+  transformSource,
+  useAkashaStore,
+  useProfilesList,
+  useRootComponentProps,
+} from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../constants';
+import { DRAFT_EXTENSIONS, DRAFT_RELEASES, MAX_CONTRIBUTORS_DISPLAY } from '../../constants';
 import getSDK from '@akashaorg/core-sdk';
 import {
   useCreateAppMutation,
@@ -27,7 +34,7 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
   const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
 
-  const { uiEvents, baseRouteName, getCorePlugins } = useRootComponentProps();
+  const { uiEvents, baseRouteName, getCorePlugins, encodeAppName } = useRootComponentProps();
   const uiEventsRef = React.useRef(uiEvents);
 
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -137,6 +144,12 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
     skip: !extensionData?.name || !authenticatedDID,
   });
 
+  const {
+    profilesData,
+    loading: loadingProfilesData,
+    error: errorProfilesData,
+  } = useProfilesList(extensionData?.contributors);
+
   const isDuplicatePublishedExtName = useMemo(() => !!selectAkashaApp(appInfoName), [appInfoName]);
 
   useEffect(() => {
@@ -144,6 +157,19 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
       showErrorNotification(appInfoQueryErrorName.message);
     }
   }, [appInfoQueryErrorName, showErrorNotification]);
+
+  const contributorAvatars = useMemo(() => {
+    if (profilesData?.length) {
+      return profilesData
+        .filter(contrib => !!contrib)
+        .map(contrib => {
+          return {
+            ...contrib,
+            avatar: transformSource(contrib.avatar?.default),
+          };
+        });
+    }
+  }, [profilesData]);
 
   const handleClickPublish = () => {
     if (calledAppInfoName && !loadingAppInfoName && !isDuplicatePublishedExtName) {
@@ -195,6 +221,19 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
     );
   }
 
+  const onViewAllClick = () => {
+    if (extensionData?.name) {
+      navigate({
+        to: '/info/$appId/collaborators',
+        params: { appId: encodeAppName(extensionData.name) },
+      });
+    }
+  };
+
+  const onEditExtensionClick = () => {
+    navigate({ to: '/edit-extension/$extensionId/step1', params: { extensionId } });
+  };
+
   return (
     <Card padding={0}>
       <Stack spacing="gap-y-2">
@@ -230,6 +269,51 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
           duplicateExtNameErrLabel={t('An extension with this name has already been published')}
           loading={loadingAppMutation || loadingAppInfoName}
           isDuplicateExtName={isDuplicatePublishedExtName}
+          contributorsUi={
+            <>
+              {loadingProfilesData && (
+                <Stack align="center" justify="center">
+                  <Spinner />
+                </Stack>
+              )}
+              {errorProfilesData && (
+                <Stack>
+                  <ErrorLoader
+                    type="script-error"
+                    title={t('There was an error loading the contributors')}
+                    details={errorProfilesData.message}
+                  />
+                </Stack>
+              )}
+              {profilesData?.length > 0 && (
+                <Stack direction="row" spacing="gap-2" align="center">
+                  <StackedAvatar
+                    userData={contributorAvatars}
+                    maxAvatars={MAX_CONTRIBUTORS_DISPLAY}
+                    size="md"
+                  />
+                  <Stack>
+                    <Text variant="button-sm">{profilesData[0]?.name}</Text>
+                    {profilesData.length > 1 && (
+                      <Text
+                        variant="footnotes2"
+                        color="grey7"
+                        weight="normal"
+                      >{`and ${profilesData.length - 1} ${t('more')}`}</Text>
+                    )}
+                  </Stack>
+                  <Button
+                    variant="text"
+                    label={t('View All')}
+                    onClick={onViewAllClick}
+                    customStyle="ml-auto"
+                  />
+                </Stack>
+              )}
+            </>
+          }
+          needToMakeChangesLabel={t('Need to make changes?')}
+          editExtension={{ handleClick: onEditExtensionClick, label: t('Edit extension') }}
           transformSource={transformSource}
           onClickCancel={handleClickCancel}
           onClickSubmit={handleClickPublish}
