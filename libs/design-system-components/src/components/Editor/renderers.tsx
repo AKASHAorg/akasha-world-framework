@@ -118,8 +118,8 @@ const renderElement = (
     default:
       return (
         <p
-          className={tw(`text-black dark:text-white break-words ${textAlignStyle}`)}
-          style={{ wordBreak: 'break-word' }}
+          className={tw(`text-black dark:text-white ${textAlignStyle}`)}
+          style={{ overflowWrap: 'anywhere' }}
           {...props.attributes}
         >
           {props.children}
