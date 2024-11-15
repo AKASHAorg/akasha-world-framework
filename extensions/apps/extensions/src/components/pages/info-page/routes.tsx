@@ -90,7 +90,7 @@ const devInfoRoute = createRoute({
   },
 });
 
-const collaboratorsInfoRoute = createRoute({
+const contributorsInfoRoute = createRoute({
   getParentRoute: () => infoRootRoute,
   path: '/collaborators',
   loader: ({ context, params }) => {
@@ -104,7 +104,7 @@ const collaboratorsInfoRoute = createRoute({
   },
   component: () => {
     const { appId } = infoRootRoute.useParams();
-    const { extensionById } = collaboratorsInfoRoute.useLoaderData();
+    const { extensionById } = contributorsInfoRoute.useLoaderData();
     return (
       <CatchBoundary getResetKey={() => 'collaborators_reset'} errorComponent={RouteErrorComponent}>
         <Suspense>
@@ -238,7 +238,7 @@ const appDescriptionRoute = createRoute({
 export default infoRootRoute.addChildren([
   infoIndexRoute,
   devInfoRoute,
-  collaboratorsInfoRoute,
+  contributorsInfoRoute,
   releasesRoute,
   appLicenseInfoRoute,
   appDescriptionRoute,
