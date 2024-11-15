@@ -87,12 +87,24 @@ class NotificationService {
       await this.initializeWritableClient();
     }
   }
-
+  /**
+   * Initializes and listens to notification events using PushProtocol.
+   *
+   * This method enables browser notifications, sets up a stream to receive
+   * notifications, and displays the notifications
+   * to the user. Additionally, it allows users to interact with notifications
+   * through click events.
+   * The `notificationsClient` must be initialized in read mode before invoking this method
+   * @throws {Error} If the user refuses to accept browser notifications.
+   * @throws {Error} If `notificationsClient` is not initialized in read mode.
+   */
   async listenToNotificationEvents() {
+    // Prompt the user to enable browser notifications.
     const accepted = await this.enableBrowserNotifications();
     if (!accepted) throw new Error('The user has refused to receive notifications');
 
-    this._notificationsStream = await this.notificationsClient!.initStream(
+    // Initialize a notification stream using the notifications client.
+    this._notificationsStream = await this.notificationsClient.initStream(
       [CONSTANTS.STREAM.NOTIF],
       {
         filter: {
@@ -100,13 +112,15 @@ class NotificationService {
         },
       },
     );
+    // Listen for incoming notifications on the specified stream.
     this._notificationsStream.on(CONSTANTS.STREAM.NOTIF, (data: any) => {
+      // Extract notification data and create a browser Notification instance.
       const notification = new Notification(data?.message?.notification.body, {
         body: data?.message?.notification.body,
         icon: data?.channel?.icon,
         data: data?.message?.payload,
       });
-      // can assign event listeners to the notification
+      // Add a click event listener to the notification.
       notification.onclick = (event: any) => {
         event.preventDefault();
         window.open(data?.message?.payload?.cta || data?.channel?.url, '_blank');
@@ -115,7 +129,10 @@ class NotificationService {
 
     await this._notificationsStream.connect();
   }
-
+  /**
+   * Stops listening to notification events and disconnects the notification stream.
+   * @throws {Error} If there is an issue disconnecting the notification stream.
+   */
   async stopListeningToNotificationEvents() {
     if (this._notificationsStream) {
       await this._notificationsStream.disconnect();
@@ -123,7 +140,17 @@ class NotificationService {
       this._notificationsStream = undefined;
     }
   }
-
+  /**
+   * Retrieves the settings of notification channel.
+   *
+   * This method fetches information about a notification channel
+   * validates the response against a predefined schema,
+   * and returns the parsed channel settings.
+   * The `notificationsClient` must be initialized in read mode before invoking this method
+   * @returns {Promise<ChannelSettings[]>}
+   * @throws {Error} If the `notificationsClient` is not initialized.
+   * @throws {Error} If the channel response fails to parse against the schema.
+   */
   async getSettingsOfChannel(): Promise<ChannelSettings[]> {
     const response = await this.notificationsClient.channel.info(this._notificationChannelId);
     const parseResponse = ChannelInfoResponseSchema.safeParse(response);
@@ -132,7 +159,19 @@ class NotificationService {
     return parseResponse.data;
   }
 
+  /**
+   * Retrieves the user-specific settings for channel.
+   *
+   * This method fetches the user's subscription details validates the data against a predefined schema
+   * and returns the parsed user settings.
+   * The `notificationsClient` must be initialized in read mode before invoking this method
+   * @returns {Promise<UserSettingType[]>}
+   * @throws {Error} If the `notificationsClient` is not initialized.
+   * @throws {Error} If no subscription information is found for the channel.
+   * @throws {Error} If the subscription data fails to parse against the schema.
+   */
   async getSettingsOfUser(): Promise<UserSettingType[]> {
+    // Fetch Subscription of user
     const subscriptions: ApiSubscriptionType[] =
       await this.notificationsClient.notification.subscriptions({
         channel: this._notificationChannelId,
@@ -142,12 +181,33 @@ class NotificationService {
     );
     if (!channelSubscriptionInfo) throw new Error('Settings not found');
 
+    // Parse the response
     const result = ChannelUserSettingsSchema.safeParse(channelSubscriptionInfo);
     if (!result.success) throw new Error('User Settings unable to parse');
 
     return result.data.userSettings;
   }
 
+  /**
+   * Updates the user's notification settings
+   *
+   * This method validates the new settings against the channel's available settings
+   * to ensure all opt-ins are provided in the correct order. If the validation passes,
+   * it updates the user's notification settings by subscribing with the new settings.
+   *
+   * **Important:**
+   * - The 'subscribe' method of notification will prompt the user with the signing dialog.
+   * - The `newSettings` array must contain all available opt-ins for the channel.
+   * - The order of the opt-ins in the `newSettings` array must match the channel's settings.
+   * - If either condition is not met, the PushProtocol will set all opt-ins to false.
+   *
+   * The `notificationsWriteClient` must be initialized before calling this method.
+   *
+   * @param {UserSetting[]} newSettings - An array of user settings to update. Each setting must align with the channel's available opt-ins and their order.
+   *
+   * @throws {Error} If the new settings do not match the length or order of the channel's settings.
+   * @throws {Error} If the `notificationsWriteClient` is not initialized.
+   */
   @validate(
     z.array(
       z.object({
@@ -168,13 +228,19 @@ class NotificationService {
   }
 
   /**
-   * Get notifications and filter them by channel option/app indexes
-   *
+   * Get notifications and filter(optionaly) them by channel option/app indexes.
+   * If there is no channel option/app index sent then it will return notificatons from all the options.
+   * 'notificationsClient' must be initialized
+   *  Efficiency Strategy:
+   * Since PushProtocol does not support filtering the notification based on given options/apps.
+   * For better performance, the method fetches notifications with a 100 limit per request and filters them locally.
+   * The `startIndex` and `endIndex` are calculated to return only the notifications relevant to the requested page and limit.
    * @example
-   * // Example usage: Fetch notifications on page 1 with a limit of 50 notifications
-   * // and filter them to include only the "Antenna" and "Profile" apps.
+   * Example usage: Fetch notifications on page 1 with a limit of 50 notifications
+   * and filter them to include only the "Antenna" and "Profile" apps.
    * const notifications = await getNotifications(1, 50, [ChannelOptionIndexes.ANTENNA, ChannelOptionIndexes.PROFILE]);
    * @returns {Promise<PushOrgNotification[]>} - Returns an array of filtered PushOrgNotifications based on the specified channel options.
+   * @throws {Error} If the `notificationsClient` is not initialized.
    */
   @validate(
     z.number().positive().optional(),
@@ -239,6 +305,7 @@ class NotificationService {
       notifications = notifications.slice(startIndex, endIndex);
     }
 
+    // Set latest seen Notification ID so we can know which notification marked as seen
     // Find the largest SID among fetched notifications
     const largestFetchedNotificationID = Math.max(
       ...notifications.map(n => n.payload_id),
@@ -266,7 +333,20 @@ class NotificationService {
 
     return false;
   }
-
+  /**
+   * This method processes a notification object to add parsed metadata, convert
+   * its epoch timestamp to a `Date` object, and determine whether the notification
+   * is unread based on the latest stored notification ID.
+   *
+   * @param {PushOrgNotification} notification - The notification object to parse and .
+   * @param {number} latestStoredNotificationID - The ID of the most recently stored notification.
+   * Used to determine the unread status of the current notification.
+   *
+   * @returns PushOrgNotification - The enriched notification object with:
+   *   - `parsedMetaData`: Parsed metadata (if `additionalMeta` exists).
+   *   - `timestamp`: A `Date` object representing the notification's epoch time.
+   *   - `isUnread`: A boolean indicating whether the notification is unread.
+   */
   private parseNotificationData(
     notification: PushOrgNotification,
     latestStoredNotificationID: number,
@@ -285,6 +365,19 @@ class NotificationService {
     return notification;
   }
 
+  /**
+   * Parses meta data of the notification that we sent.
+   * This method extracts the channel index and parses the `data` field from the
+   * provided 'additionalMetaData' field of notification fetched. It handles potential parsing errors gracefully
+   * and logs warnings for invalid data.
+   * @param {AdditionalMetadata} metaData - The metadata object to parse. It contains:
+   *   - `type` (string): A string with a format like `type+index`, where `index` is the channel option index.
+   *   - `data` (string): A JSON-encoded string or raw string data.
+   *
+   * @returns {NotificationParsedMetaData} - A structured object containing:
+   *   - `channelIndex` (number | undefined): The parsed channel index, or `undefined` if parsing fails.
+   *   - `data` (NotificationMetaTypes | string): The parsed data, or the original string if parsing fails.
+   */
   private parseMetaData(metaData: AdditionalMetadata): NotificationParsedMetaData {
     let indexOfOption: number | undefined;
     let data: NotificationMetaTypes | string = '';
