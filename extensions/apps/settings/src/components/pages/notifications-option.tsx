@@ -26,7 +26,7 @@ const notificationsSettingsItems: ISettingsItem[] = [
 ];
 
 const NotificationsOption: React.FC = () => {
-  //const sdk = getSDK();
+  const sdk = getSDK();
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const { baseRouteName, uiEvents, getCorePlugins } = useRootComponentProps();
@@ -39,7 +39,7 @@ const NotificationsOption: React.FC = () => {
   } = useAkashaStore();
   const isLoggedIn = !!authenticatedDID;
 
-  const toastText = {
+  const TOAST_TEXTS = {
     success: {
       title: t('In-app notifications enabled'),
       description: t('Notifications for all default apps are enabled. Manage them in preferences.'),
@@ -87,18 +87,19 @@ const NotificationsOption: React.FC = () => {
     );
   }
 
-  const handleEnableNotifications = () => {
+  const handleEnableNotifications = async () => {
     setLoading(true);
-    // TODO - call SDK API
-    setNotificationsEnabled(true);
+    const initResult = await sdk.api.profile.initNotificationsStream();
+    setNotificationsEnabled(initResult);
+    setLoading(false);
 
-    const result = true ? 'success' : 'error';
+    const result: keyof typeof TOAST_TEXTS = initResult ? 'success' : 'error';
     _uiEvents.current.next({
       event: NotificationEvents.ShowNotification,
       data: {
-        type: NotificationTypes.Success,
-        title: toastText[result].title, // Couldn’t enable notifications
-        description: toastText[result].description,
+        type: result == 'success' ? NotificationTypes.Success : NotificationTypes.Error,
+        title: TOAST_TEXTS[result].title,
+        description: TOAST_TEXTS[result].description,
       },
     });
   };
