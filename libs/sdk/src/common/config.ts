@@ -12,6 +12,7 @@ export const SDKConfigOptions = [
   'wallet_connect_project_id',
   'log_level',
   'api_status_path',
+  'push_protocol_channel_id',
 ] as const;
 
 @injectable()
@@ -30,6 +31,7 @@ class AWF_Config {
       ipfs_origin_gateway: 'ipfs.w3s.link',
       ipfs_fallback_gateway: 'ipfs.cf-ipfs.com',
       api_status_path: env.PUBLIC_API_STATUS_PATH || '',
+      push_protocol_channel_id: env.PUBLIC_PUSH_PROTOCOL_CHANNEL_ID,
     };
   }
 
