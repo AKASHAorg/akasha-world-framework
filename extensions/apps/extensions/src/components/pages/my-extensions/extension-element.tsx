@@ -25,14 +25,16 @@ import { getExtensionStatus, getStatusIndicatorStyle } from '../../../utils/exte
 type ExtensionElement = {
   extensionData: Extension;
   showDivider?: boolean;
-  filters?: string[];
+  filter?: string;
+  filterShowAllOptionValue?: string;
   showMenu?: boolean;
 };
 
 export const ExtensionElement: React.FC<ExtensionElement> = ({
   extensionData,
   showDivider = false,
-  filters,
+  filter,
+  filterShowAllOptionValue,
   showMenu = false,
 }) => {
   const { t } = useTranslation('app-extensions');
@@ -172,19 +174,17 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
   };
 
   const showElement = () => {
-    /**
-     * show element if;
-     * no filter, or
-     * filters are both in 'All' state
-     */
-    if (filters.length === 0 || (filters.length && filters[0] === 'All' && filters[1] === 'All')) {
+    if (!filter) {
       return true;
-    }
-    return (
-      filters[0] === extensionData.applicationType &&
-      filters[1] ===
+    } else if (filter) {
+      if (filter === filterShowAllOptionValue) {
+        return true;
+      }
+      return (
+        filter ===
         getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)
-    );
+      );
+    }
   };
 
   const iconType = useMemo(() => extensionData?.applicationType, [extensionData]);

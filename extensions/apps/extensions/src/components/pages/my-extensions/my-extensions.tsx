@@ -61,16 +61,19 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     navigate({ to: '/create-extension' });
   };
 
-  const extensionTypeMenuItems = [
-    'All',
-    capitalize(AkashaAppApplicationType.App),
-    capitalize(AkashaAppApplicationType.Widget),
-    capitalize(AkashaAppApplicationType.Plugin),
-    capitalize(AkashaAppApplicationType.Other),
-  ];
+  const extensionTypeMenuItems = useMemo(
+    () => [
+      t('Type'),
+      capitalize(AkashaAppApplicationType.App),
+      capitalize(AkashaAppApplicationType.Widget),
+      capitalize(AkashaAppApplicationType.Plugin),
+      capitalize(AkashaAppApplicationType.Other),
+    ],
+    [t],
+  );
 
   const extensionStatusMenuItems = [
-    'All',
+    t('Status'),
     ExtensionStatus.LocalDraft,
     ExtensionStatus.Draft,
     ExtensionStatus.InReview,
@@ -116,17 +119,16 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
 
   const appElements = useMemo(() => {
     return appsData?.filter(ext => {
-      if (selectedType === 'All') {
+      if (selectedType === extensionTypeMenuItems[0]) {
         return true;
       }
       return ext?.applicationType === selectedType.toUpperCase();
     });
-  }, [appsData, selectedType]);
+  }, [appsData, selectedType, extensionTypeMenuItems]);
 
   const [draftExtensions, setDraftExtensions] = useState([]);
 
   // fetch the draft extensions that are saved only on local storage
-
   const getDraftExtensions = useCallback(() => {
     try {
       const existingDraftExtensions =
@@ -169,7 +171,10 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     });
   };
 
-  const allMyExtensions = [...draftExtensions, ...appElements];
+  const allMyExtensions = useMemo(
+    () => [...draftExtensions, ...appElements],
+    [draftExtensions, appElements],
+  );
 
   if (!authenticatedDID) {
     return (
@@ -259,7 +264,8 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
                 <ExtensionElement
                   extensionData={extensionData}
                   showDivider={itemIndex < allMyExtensions.length - 1}
-                  filters={[selectedType, selectedStatus]}
+                  filter={selectedStatus}
+                  filterShowAllOptionValue={extensionStatusMenuItems[0]}
                   showMenu
                 />
               );

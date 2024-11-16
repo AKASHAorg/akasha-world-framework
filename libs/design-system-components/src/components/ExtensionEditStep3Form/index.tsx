@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useMemo, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import * as z from 'zod';
 import { Controller, useWatch } from 'react-hook-form';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -58,6 +58,7 @@ export type ExtensionEditStep3FormProps = {
   contributorsProfiles?: AkashaProfile[];
   errorProfilesData?: ApolloError;
   loadingProfilesData?: boolean;
+  maxContributorsDisplay: number;
   cancelButton: ButtonType;
   nextButton: {
     label: string;
@@ -94,6 +95,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     tagsDescriptionLabel,
     tagsAddedLabel,
     noteLabel,
+    maxContributorsDisplay,
     noteDescriptionLabel,
     errorProfilesDataLabel,
   } = props;
@@ -101,6 +103,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
   const {
     control,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm<Omit<ExtensionEditStep3FormValues, 'keywords'> & { keywords?: string | string[] }>({
     defaultValues,
@@ -108,18 +111,20 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
     mode: 'onChange',
   });
 
-  const licenses: Licenses | string[] = [
-    Licenses.MIT,
-    Licenses.GPL,
-    Licenses.APACHE,
-    Licenses.BSD,
-    Licenses.MPL,
-    Licenses.OTHER,
-  ];
+  const licenses: Licenses | string[] = useMemo(
+    () => [Licenses.MIT, Licenses.GPL, Licenses.APACHE, Licenses.BSD, Licenses.MPL, Licenses.OTHER],
+    [],
+  );
 
   const isValid = !Object.keys(errors).length;
 
   const licenseValue = useWatch({ control, name: FieldName.license });
+
+  useEffect(() => {
+    if (!licenses.includes(defaultValues.license)) {
+      setValue('license', Licenses.OTHER);
+    }
+  }, [licenses, defaultValues.license, setValue]);
 
   const [keywords, setKeywords] = useState(new Set(defaultValues.keywords));
 
@@ -189,9 +194,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
                 required={true}
               />
             )}
-            defaultValue={
-              licenses.includes(defaultValues.license) ? defaultValues.license : Licenses.OTHER
-            }
+            defaultValue={defaultValues.license}
           />
           {licenseValue === Licenses.OTHER && (
             <Controller
@@ -221,6 +224,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
                 <Text variant="h6">{collaboratorsFieldLabel}</Text>
                 <Button
                   variant="text"
+                  size="md"
                   icon={<PlusIcon />}
                   iconDirection="left"
                   label={contributorsProfiles.length > 0 ? addAndEditLabel : addLabel}
@@ -243,16 +247,22 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
             )}
             {contributorAvatars?.length > 0 && (
               <Stack direction="row" spacing="gap-2" align="center">
-                <StackedAvatar userData={contributorAvatars} maxAvatars={3} size="md" />
-                <Stack>
+                <StackedAvatar
+                  userData={contributorAvatars}
+                  maxAvatars={maxContributorsDisplay}
+                  size="md"
+                />
+                <Stack align="center" justify="center">
                   <Text variant="body2" weight="bold">
                     {contributorsProfiles[0]?.name}
                   </Text>
-                  <Text
-                    variant="footnotes2"
-                    color={{ light: 'grey4', dark: 'grey6' }}
-                    weight="light"
-                  >{`+${contributorsProfiles?.length - 1} ${moreLabel}`}</Text>
+                  {contributorsProfiles.length > 1 && (
+                    <Text
+                      variant="footnotes2"
+                      color={{ light: 'grey4', dark: 'grey6' }}
+                      weight="light"
+                    >{`and ${contributorsProfiles.length - 1} ${moreLabel}`}</Text>
+                  )}
                 </Stack>
               </Stack>
             )}

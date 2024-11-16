@@ -17,6 +17,9 @@ import {
 } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import { NetworkStatus } from '@apollo/client';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
+import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
 
 type DevInfoPageProps = {
   devDid: string;
@@ -114,10 +117,31 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
           <ProfileAvatarButton
             profileId={devDid}
             label={name}
-            avatar={transformSource(avatar.default)}
+            avatar={transformSource(avatar?.default)}
             alternativeAvatars={avatar?.alternatives?.map(alt => transformSource(alt))}
             onClick={handleProfileClick}
           />
+          {appsReq.error && (
+            <>
+              <Divider />
+              <ErrorLoader
+                noWrapperCard={true}
+                type="list-not-available"
+                title={`${t('Uh-oh')}!${t("We couldn't load the extension list")}!`}
+                details={`${t('It seems there is a problem retreving the list of extensions')}. ${t('Please try again later')}!`}
+              />
+            </>
+          )}
+          {appsReq.networkStatus === NetworkStatus.ready && !apps?.length && (
+            <>
+              <Divider />
+              <DefaultEmptyCard
+                noBorder={true}
+                assetName="longbeam-notfound"
+                infoText={t('There are no releases for this extension yet')}
+              />
+            </>
+          )}
           {apps && apps.length > 0 && (
             <>
               <Divider />

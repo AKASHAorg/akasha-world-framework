@@ -122,11 +122,11 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
 
   const handleCollaboratorsClick = () => {
     navigate({
-      to: '/info/$appId/collaborators',
+      to: '/info/$appId/contributors',
       params: {
         appId,
       },
-    }).catch(err => logger.error('cannot navigate to /info/$appId/collaborators : %o', err));
+    }).catch(err => logger.error('cannot navigate to /info/$appId/contributors : %o', err));
   };
 
   const handleLicenseClick = () => {
@@ -298,6 +298,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                     }}
                   >
                     <ExtensionImageGallery
+                      imageNotLoadedLabel={t(`Cannot load image`)}
                       images={appData.gallery?.map(gImage => ({
                         ...gImage,
                         src: transformSource(gImage)?.src,
@@ -314,14 +315,39 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                       <Text variant="body2" color={{ light: 'grey4', dark: 'grey7' }}>
                         {t('Package name')}
                       </Text>
-                      <Button variant="text" size="md" label={appData.name} />
+                      <CopyToClipboard
+                        stringToBeCopied={appData.name}
+                        copyText={t('Copy to clipboard')}
+                        copiedText={t('Copied')}
+                      >
+                        <Text
+                          variant="button-md"
+                          color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+                        >
+                          {appData.name}
+                        </Text>
+                      </CopyToClipboard>
                     </Stack>
                     <Divider />
                     <Stack direction="row" justify="between">
                       <Text variant="body2" color={{ light: 'grey4', dark: 'grey7' }}>
                         {t('Extension ID')}
                       </Text>
-                      <Button variant="text" size="md" label={truncateDid(appData.id)} />
+                      <CopyToClipboard
+                        copyText={t('Copy to clipboard')}
+                        copiedText={t('Copied')}
+                        stringToBeCopied={truncateDid(appData.id)}
+                      >
+                        <Text
+                          variant="button-md"
+                          color={{
+                            light: 'secondaryLight',
+                            dark: 'secondaryDark',
+                          }}
+                        >
+                          {truncateDid(appData.id)}
+                        </Text>
+                      </CopyToClipboard>
                     </Stack>
                     <Divider />
                     <Stack direction="row" justify="between">
