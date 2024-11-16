@@ -20,8 +20,10 @@ export type CopyToClipboardProps = PropsWithChildren<{
  * @param copiedText - (optional) text that will be displayed in the tooltip after copying
  * ```tsx
  *  <CopyToClipboard
- *    value='0x003410490050000320006570034567114572000'
- *   />
+ *    stringToBeCopied='0x003410490050000320006570034567114572000'
+ *   >
+ *    0x003410490050000320006570034567114572000
+ *   </CopyToClipboard>
  * ```
  **/
 const CopyToClipboard: React.FC<CopyToClipboardProps> = ({

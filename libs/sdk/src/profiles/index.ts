@@ -11,9 +11,7 @@ import { validate } from '../common/validator';
 import Gql from '../gql';
 import CeramicService from '../common/ceramic';
 import { hasOwn } from '../helpers/types';
-import { PushAPI, CONSTANTS } from '@pushprotocol/restapi';
 import Web3Connector from '../common/web3.connector';
-import type { PushStream } from '@pushprotocol/restapi/src/lib/pushstream/PushStream';
 
 @injectable()
 class AWF_Profile {
@@ -22,8 +20,6 @@ class AWF_Profile {
   private _ipfs: IpfsConnector;
   readonly _ceramic: CeramicService;
   private readonly _web3: Web3Connector;
-  private _pushClient?: PushAPI;
-  private _notificationsStream?: PushStream;
   constructor(
     @inject(TYPES.Gql) gql: Gql,
     @inject(TYPES.Auth) auth: AWF_Auth,
@@ -147,83 +143,6 @@ class AWF_Profile {
     }
     const cid: string = CID.toString();
     return { CID: cid, size: resized.size, blob: resized.image };
-  }
-
-  async initNotificationsStream() {
-    const signer = await this._web3.getSigner();
-    // @Todo: explore case with signer being null, no authenticated user
-    this._pushClient = await PushAPI.initialize(signer, {
-      env: CONSTANTS.ENV.STAGING,
-      // account: pushAccount,
-    });
-
-    this._notificationsStream = await this._pushClient.initStream([CONSTANTS.STREAM.NOTIF]);
-    this._notificationsStream.on(CONSTANTS.STREAM.NOTIF, (data: any) => {
-      const notification = new Notification(data?.message?.notification.body, {
-        body: data?.message?.notification.body,
-        icon: data?.channel?.icon,
-        data: data?.message?.payload,
-      });
-      // can assign event listeners to the notification
-      notification.onclick = (event: any) => {
-        event.preventDefault();
-        window.open(data?.message?.payload?.cta || data?.channel?.url, '_blank');
-      };
-    });
-
-    await this._notificationsStream.connect();
-  }
-
-  get notificationsClient() {
-    if (!this._pushClient) {
-      throw new Error('Notifications client not initialized');
-    }
-    return this._pushClient;
-  }
-
-  get notificationsStream() {
-    if (!this._notificationsStream) {
-      throw new Error('Notifications stream not initialized');
-    }
-    // this can be used for managing the event listeners
-    // for example, to unsubscribe from the stream
-    return this._notificationsStream;
-  }
-
-  async getSubscriptions() {
-    const subs = await this.notificationsClient.notification.subscriptions({ limit: 100 });
-    const info = await this.notificationsClient.channel.info();
-
-    return {
-      subscriptions: subs,
-      channelInfo: info,
-    };
-  }
-
-  async getNotifications() {
-    const inboxNotifications = await this.notificationsClient.notification.list('INBOX', {
-      account: this._web3.CAIP10.address,
-      limit: 125,
-    });
-    return inboxNotifications;
-  }
-
-  async enableBrowserNotifications() {
-    if (!this._pushClient) {
-      throw new Error('Notifications client not initialized');
-    }
-    if (!('Notification' in window)) {
-      // Check if the browser supports notifications
-      throw new Error('This browser does not support desktop notification');
-    } else if (Notification.permission === 'granted') {
-      return true;
-    } else if (Notification.permission !== 'denied') {
-      // We need to ask the user for permission
-      const perm = await Notification.requestPermission();
-      return perm === 'granted';
-    }
-
-    return false;
   }
 }
 

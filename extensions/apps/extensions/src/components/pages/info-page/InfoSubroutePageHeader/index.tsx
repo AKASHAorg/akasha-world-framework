@@ -39,11 +39,9 @@ const ExtensionHeader: React.FC<ExtensionHeaderProps> = ({
     <Stack spacing="gap-y-4">
       {pageTitle && <Text variant="h5">{pageTitle}</Text>}
       <Stack direction="row" align="center" spacing="gap-x-2">
-        <AppAvatar appType={appType} avatar={transformSource(appLogo)} />
-        <Stack direction="column" spacing="gap-y-1">
-          <Text variant="body1" weight="semibold">
-            {appName}
-          </Text>
+        <AppAvatar height={3} width={3} appType={appType} avatar={transformSource(appLogo)} />
+        <Stack direction="column" spacing="gap-y-0">
+          <Text variant="h6">{appName}</Text>
           <Text
             variant="footnotes2"
             weight="normal"

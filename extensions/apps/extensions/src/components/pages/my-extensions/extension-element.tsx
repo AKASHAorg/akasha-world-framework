@@ -27,6 +27,7 @@ type ExtensionElement = {
   extensionData: Extension;
   showDivider?: boolean;
   filter?: string;
+  filterShowAllOptionValue?: string;
   showMenu?: boolean;
 };
 
@@ -34,6 +35,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
   extensionData,
   showDivider = false,
   filter,
+  filterShowAllOptionValue,
   showMenu = false,
 }) => {
   const { t } = useTranslation('app-extensions');
@@ -176,7 +178,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
     if (!filter) {
       return true;
     } else if (filter) {
-      if (filter === 'All') {
+      if (filter === filterShowAllOptionValue) {
         return true;
       }
       return (

@@ -2,7 +2,7 @@ import { NotFoundComponent } from '../../app-routes/not-found-component';
 import { InfoPage } from './info-page';
 import {
   AppDescriptionPage,
-  CollaboratorsPage,
+  ContributorsPage,
   DevInfoPage,
   LicensePage,
   ReleasesPage,
@@ -10,7 +10,7 @@ import {
 import { getExtensionById } from '../../app-routes/data-loaders';
 import {
   selectAppId,
-  selectExtensionCollaborators,
+  selectExtensionContributors,
   selectExtensionDescription,
   selectExtensionDisplayName,
   selectExtensionLicense,
@@ -90,9 +90,9 @@ const devInfoRoute = createRoute({
   },
 });
 
-const collaboratorsInfoRoute = createRoute({
+const contributorsInfoRoute = createRoute({
   getParentRoute: () => infoRootRoute,
-  path: '/collaborators',
+  path: '/contributors',
   loader: ({ context, params }) => {
     const { appId } = params;
     if (!appId) {
@@ -104,17 +104,17 @@ const collaboratorsInfoRoute = createRoute({
   },
   component: () => {
     const { appId } = infoRootRoute.useParams();
-    const { extensionById } = collaboratorsInfoRoute.useLoaderData();
+    const { extensionById } = contributorsInfoRoute.useLoaderData();
     return (
       <CatchBoundary getResetKey={() => 'collaborators_reset'} errorComponent={RouteErrorComponent}>
         <Suspense>
           <Await promise={extensionById}>
             {data => (
-              <CollaboratorsPage
+              <ContributorsPage
                 extensionLogo={selectExtensionLogo(data)}
                 extensionName={selectExtensionName(data)}
                 extensionDisplayName={selectExtensionDisplayName(data)}
-                collaborators={selectExtensionCollaborators(data)}
+                contributors={selectExtensionContributors(data)}
                 extensionType={selectExtensionType(data)}
                 appId={appId}
               />
@@ -238,7 +238,7 @@ const appDescriptionRoute = createRoute({
 export default infoRootRoute.addChildren([
   infoIndexRoute,
   devInfoRoute,
-  collaboratorsInfoRoute,
+  contributorsInfoRoute,
   releasesRoute,
   appLicenseInfoRoute,
   appDescriptionRoute,
