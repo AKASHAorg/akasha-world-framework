@@ -38,4 +38,5 @@ export { useSaveSettings, useGetSettings } from './use-settings';
 export { useNsfwToggling } from './use-nsfw';
 export { useMentions } from './use-mentions';
 export { useProfilesList } from './use-profiles-list';
+export { useSaveImage } from './use-save-image';
 export { useValidateUniqueExtensionProp } from './use-validate-unique-extension-prop';
