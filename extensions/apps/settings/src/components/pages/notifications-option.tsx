@@ -27,7 +27,9 @@ const notificationsSettingsItems: ISettingsItem[] = [
 
 const NotificationsOption: React.FC = () => {
   const sdk = getSDK();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
+    sdk.services.common.notification.checkIfNotificationsEnabled(),
+  );
   const [loading, setLoading] = useState(false);
   const { baseRouteName, uiEvents, getCorePlugins } = useRootComponentProps();
   const { t } = useTranslation('app-settings-ewa');
