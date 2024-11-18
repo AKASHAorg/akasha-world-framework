@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageLayout from './base-layout';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
