@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageLayout from './base-layout';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
@@ -11,9 +11,8 @@ import NotificationSettingsCard, {
 } from '@akashaorg/design-system-components/lib/components/NotificationSettingsCard';
 import getSDK from '@akashaorg/core-sdk';
 
-type BrowserNotificationsState = 'default' | 'enabled' | 'disabled';
 type StatesContents = {
-  [key in BrowserNotificationsState]: {
+  [key in NotificationPermission]: {
     title: string;
     description: string;
     image: NotificationsImageSrc;
@@ -23,7 +22,9 @@ type StatesContents = {
 const BrowserNotificationsOption: React.FC = () => {
   const sdk = getSDK();
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<BrowserNotificationsState>('default');
+  const [permission, setPermission] = useState<NotificationPermission>(
+    'Notification' in window ? Notification.permission : 'default',
+  );
 
   const { baseRouteName, getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -39,12 +40,12 @@ const BrowserNotificationsOption: React.FC = () => {
       description: t('You will see a browser prompt to allow notifications'),
       image: 'browserDefault',
     },
-    enabled: {
+    granted: {
       title: t('Browser notifications Enabled'),
       description: t('You can disable them from your browser’s settings at any time.'),
       image: 'browserEnabled',
     },
-    disabled: {
+    denied: {
       title: t('Browser notifications disabled'),
       description: t('You can enable them from your browser’s settings at any time.'),
       image: 'browserDisabled',
@@ -83,8 +84,8 @@ const BrowserNotificationsOption: React.FC = () => {
 
   const handleEnableBrowserNotifications = async () => {
     setLoading(true);
-    const initResult = await sdk.api.profile.enableBrowserNotifications();
-    setResult(initResult ? 'enabled' : 'disabled');
+    const permissionResult = await sdk.services.common.notification.enableBrowserNotifications();
+    setPermission(permissionResult ? 'granted' : 'denied');
     setLoading(false);
   };
 
@@ -94,10 +95,10 @@ const BrowserNotificationsOption: React.FC = () => {
         <NotificationSettingsCard
           isLoading={loading}
           handleButtonClick={handleEnableBrowserNotifications}
-          text={STATES_CONTENT[result].description}
-          title={STATES_CONTENT[result].title}
-          image={STATES_CONTENT[result].image}
-          showButton={result === 'default'}
+          text={STATES_CONTENT[permission].description}
+          title={STATES_CONTENT[permission].title}
+          image={STATES_CONTENT[permission].image}
+          showButton={permission === 'default'}
           buttonLabel={t('Turn on')}
         />
       </Stack>

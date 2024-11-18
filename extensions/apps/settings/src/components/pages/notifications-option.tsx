@@ -89,11 +89,18 @@ const NotificationsOption: React.FC = () => {
 
   const handleEnableNotifications = async () => {
     setLoading(true);
-    const initResult = await sdk.api.profile.initNotificationsStream();
-    setNotificationsEnabled(initResult);
-    setLoading(false);
+    let result: keyof typeof TOAST_TEXTS;
+    try {
+      await sdk.services.common.notification.initialize({ readonly: false });
+      result = 'success';
+      setNotificationsEnabled(true);
+    } catch (error) {
+      result = 'error';
+      setNotificationsEnabled(false);
+    } finally {
+      setLoading(false);
+    }
 
-    const result: keyof typeof TOAST_TEXTS = initResult ? 'success' : 'error';
     _uiEvents.current.next({
       event: NotificationEvents.ShowNotification,
       data: {
