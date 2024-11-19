@@ -243,7 +243,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
 
               if (canSave) {
                 navigateToModal({
-                  name: `unsaved-changes_edit-profile`,
+                  name: 'unsaved-changes_edit-profile',
                   message: profileDID,
                 });
               } else navigateToProfileInfoPage();

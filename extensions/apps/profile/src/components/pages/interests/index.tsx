@@ -223,7 +223,7 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
 
                 if (canSave) {
                   navigateToModal({
-                    name: `unsaved-changes_edit-interests`,
+                    name: 'unsaved-changes_edit-interests',
                     message: profileDID,
                   });
                 } else {
