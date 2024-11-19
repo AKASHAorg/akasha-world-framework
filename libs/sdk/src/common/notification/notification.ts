@@ -162,7 +162,7 @@ class NotificationService {
   /**
    * Retrieves the user-specific settings for channel.
    *
-   * This method fetches the user's subscription details validates the data against a predefined schema
+   * This method fetches the user's subscription details, validates the data against a predefined schema
    * and returns the parsed user settings.
    * The `notificationsClient` must be initialized in read mode before invoking this method
    * @returns {Promise<UserSettingType[]>}

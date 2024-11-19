@@ -152,9 +152,9 @@ const NotificationsPage: React.FC = () => {
         setLoadingOptions(true);
         // by default we fetch 'All' notifications from each app
         fetchNotification();
-        // We fetch available options from sdk
-        const activeOptions = await getActiveOptions();
-        setSelectedOption(activeOptions);
+        // We fetch subscribed options/apps
+        const subscribedApps = await getSubscribedAppsOptions();
+        setSelectedOption(subscribedApps);
       } catch (error) {
         _uiEvents.current.next({
           event: NotificationEvents.ShowNotification,
@@ -188,8 +188,9 @@ const NotificationsPage: React.FC = () => {
    *  Get the apps that the user has subscribed to
    *  Insert in the active options the option 'All' notifications which will fetch notification from each app
    *  */
-  const getActiveOptions = async (): Promise<UserSettingType[]> => {
-    const activeOptions = await sdk.services.common.notification.getSettingsOfUser();
+  const getSubscribedAppsOptions = async (): Promise<UserSettingType[]> => {
+    const userSettings = await sdk.services.common.notification.getSettingsOfUser();
+    const activeOptions = userSettings.filter(appOption => appOption.enabled);
     activeOptions.unshift({
       index: 0,
       appName: t('All'),
