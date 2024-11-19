@@ -19,7 +19,6 @@ import { z } from 'zod';
 
 import {
   type AdditionalMetadata,
-  type UserSettingType,
   type PushOrgNotification,
   type InitializeOptions,
   type ChannelSettings,
@@ -34,6 +33,7 @@ import {
   type ChannelOptionIndex,
   type NotificationMetaTypes,
   type NotificationParsedMetaData,
+  type UserSettingType,
 } from '@akashaorg/typings/lib/sdk';
 
 @injectable()

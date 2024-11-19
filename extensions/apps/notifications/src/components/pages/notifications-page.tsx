@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useRootComponentProps,
@@ -19,7 +19,10 @@ import Text from '@akashaorg/design-system-core/lib/components/Text';
 import { EntityTypes, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import routes, { SETTINGS_PAGE, CUSTOMISE_NOTIFICATION_WELCOME_PAGE } from '../../routes';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import Button from '@akashaorg/design-system-core/lib/components/Button';
+import getSDK from '@akashaorg/core-sdk';
 import { useNavigate } from '@tanstack/react-router';
+import { ChannelOptionIndexes, UserSettingType } from '@akashaorg/typings/lib/sdk/notification';
 
 export type Notification = {
   id: string;
@@ -27,6 +30,7 @@ export type Notification = {
 };
 
 const NotificationsPage: React.FC = () => {
+  const sdk = getSDK();
   const [showMenu, setShowMenu] = useState(false);
 
   const {
@@ -139,17 +143,61 @@ const NotificationsPage: React.FC = () => {
       });
     }
   };
+  // Fetch the notification Apps/options that the user is subscribed
+  const [options, setSelectedOption] = React.useState([]);
+  const [loadingOptions, setLoadingOptions] = React.useState(false);
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        setLoadingOptions(true);
+        // by default we fetch 'All' notifications from each app
+        fetchNotification();
+        // We fetch available options from sdk
+        const activeOptions = await getActiveOptions();
+        setSelectedOption(activeOptions);
+      } catch (error) {
+        _uiEvents.current.next({
+          event: NotificationEvents.ShowNotification,
+          data: {
+            type: NotificationTypes.Error,
+            title: error.message,
+          },
+        });
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+    fetchOptions();
+  }, []);
 
-  const dropDownMenuItems = [
-    { id: '0', title: t('All') },
-    { id: '1', title: t('Unread') },
-    { id: '2', title: t('Read') },
-  ];
+  /**
+   * On option change we need to fetch the notifications from that app.
+   * If 'All' option is clicked then an empty array is sent.
+   * The index of 'All' option is 0
+   */
+  const handleOptionChange = index => {
+    const updatedOptions = options.map((option, i) => ({
+      ...option,
+      active: i === index, // Set active true for the clicked button, false for others
+    }));
+    setSelectedOption(updatedOptions);
+    fetchNotification(index ? [index] : []);
+  };
 
-  const [selectedOption, setSelectedOption] = React.useState(dropDownMenuItems[0]);
-
-  const handleResetClick = () => {
-    setSelectedOption(dropDownMenuItems[0]);
+  /**
+   *  Get the apps that the user has subscribed to
+   *  Insert in the active options the option 'All' notifications which will fetch notification from each app
+   *  */
+  const getActiveOptions = async (): Promise<UserSettingType[]> => {
+    await sdk.services.common.notification.initialize();
+    const activeOptions = await sdk.services.common.notification.getSettingsOfUser();
+    activeOptions.unshift({
+      index: 0,
+      appName: t('All'),
+      active: true,
+      enabled: false,
+    });
+    return activeOptions;
   };
 
   const markAllAsRead = () => {
@@ -165,6 +213,20 @@ const NotificationsPage: React.FC = () => {
         title: 'Marked all as read successfully.',
       },
     });
+  };
+
+  /**
+   * Fetch notification by specifying the array of ChannelOptionIndexes / Application indexes
+   * If no array or an empty array is sent then the get notification will return notifications from all apps
+   */
+  const fetchNotification = async (optionsIndexes?: ChannelOptionIndexes[]) => {
+    const notifications = await sdk.services.common.notification.getNotifications(
+      1,
+      10,
+      optionsIndexes ? optionsIndexes : [],
+    );
+    // TODO: update the notifications and rerender
+    return notifications || [];
   };
 
   const redirectToSettingsPage = () => {
@@ -203,7 +265,6 @@ const NotificationsPage: React.FC = () => {
         return null;
     }
   };
-
   return (
     <>
       <Stack direction="column" customStyle="pb-32 h-[calc(100vh-88px)]">
@@ -225,7 +286,25 @@ const NotificationsPage: React.FC = () => {
             />
           </Stack>
         </Stack>
-        <Stack direction="column">
+        <Stack direction="row" spacing="gap-x-2">
+          {options.map((option, index) => (
+            <Button
+              key={index}
+              variant="secondary"
+              size="sm"
+              active={option.active}
+              label={option.appName}
+              onClick={() => handleOptionChange(index)}
+            ></Button>
+          ))}
+          {loadingOptions && (
+            <Stack align="center" justify="center">
+              <Spinner />
+            </Stack>
+          )}
+        </Stack>
+        {/* Depricated */}
+        {/* <Stack direction="column">
           <DropDownFilter
             dropdownMenuItems={dropDownMenuItems}
             selected={selectedOption}
@@ -233,9 +312,9 @@ const NotificationsPage: React.FC = () => {
             resetLabel={t('Reset')}
             resetHandler={handleResetClick}
           />
-        </Stack>
+        </Stack> */}
         <NotificationsCard
-          notifications={filterShownNotifications(Number(selectedOption.id))}
+          notifications={allNotifications}
           followingLabel={'is now following you'}
           mentionedPostLabel={'mentioned you in a post'}
           mentionedCommentLabel={'mentioned you in a comment'}

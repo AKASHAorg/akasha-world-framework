@@ -32,6 +32,13 @@ export type NotificationBaseMetaData = {
   appId: string;
 };
 
+export type UserSettingType = {
+  index: number;
+  appName: string;
+  enabled: boolean;
+  active?: boolean;
+};
+
 export type NotificationMetaTypes =
   | UnknownMetaData
   | FollowNotificationMetaData

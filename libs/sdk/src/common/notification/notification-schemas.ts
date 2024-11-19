@@ -1,6 +1,7 @@
 import { z, boolean } from 'zod';
 import {
   ChannelOptionIndexes,
+  type UserSettingType,
   type FollowNotificationMetaData,
   type MentionNotificationMetaData,
   type NotificationMetaTypes,
@@ -50,11 +51,6 @@ export const ChannelInfoResponseSchema = z
 
 export type ChannelSettings = z.infer<typeof NotificationSettingTypeSchema>;
 
-export type UserSettingType = {
-  index: number;
-  appName: string;
-  enabled: boolean;
-};
 export const ChannelUserSettingsSchema = z
   .object({
     channel: z.string(),
