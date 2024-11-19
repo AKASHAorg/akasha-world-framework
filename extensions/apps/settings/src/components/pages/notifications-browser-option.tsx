@@ -1,14 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Text from '@akashaorg/design-system-core/lib/components/Text';
 import PageLayout from './base-layout';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import appRoutes, { BROWSER_NOTIFICATIONS } from '../../routes';
+import NotificationSettingsCard, {
+  NotificationsImageSrc,
+} from '@akashaorg/design-system-components/lib/components/NotificationSettingsCard';
+import getSDK from '@akashaorg/core-sdk';
+
+type StatesContents = {
+  [key in NotificationPermission]: {
+    title: string;
+    description: string;
+    image: NotificationsImageSrc;
+  };
+};
 
 const BrowserNotificationsOption: React.FC = () => {
+  const sdk = getSDK();
+  const [loading, setLoading] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>(
+    'Notification' in window ? Notification.permission : 'default',
+  );
+
   const { baseRouteName, getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
   const { t } = useTranslation('app-settings-ewa');
@@ -16,6 +33,24 @@ const BrowserNotificationsOption: React.FC = () => {
     data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
   const isLoggedIn = !!authenticatedDID;
+
+  const STATES_CONTENT: StatesContents = {
+    default: {
+      title: t('Turn on browser notifications'),
+      description: t('You will see a browser prompt to allow notifications'),
+      image: 'browserDefault',
+    },
+    granted: {
+      title: t('Browser notifications Enabled'),
+      description: t('You can disable them from your browser’s settings at any time.'),
+      image: 'browserEnabled',
+    },
+    denied: {
+      title: t('Browser notifications disabled'),
+      description: t('You can enable them from your browser’s settings at any time.'),
+      image: 'browserDisabled',
+    },
+  };
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -47,9 +82,32 @@ const BrowserNotificationsOption: React.FC = () => {
     );
   }
 
+  const handleEnableBrowserNotifications = async () => {
+    setLoading(true);
+    try {
+      await sdk.services.common.notification.listenToNotificationEvents();
+    } catch (error) {
+      console.warn('User rejected browser notifications');
+    } finally {
+      setPermission(Notification.permission);
+      setLoading(false);
+    }
+  };
+
   return (
     <PageLayout title={t('Browser notifications')}>
-      <Text>TODO - add content</Text>
+      <Stack padding="p-4">
+        <NotificationSettingsCard
+          noWrapperCard={true}
+          isLoading={loading}
+          handleButtonClick={handleEnableBrowserNotifications}
+          text={STATES_CONTENT[permission].description}
+          title={STATES_CONTENT[permission].title}
+          image={STATES_CONTENT[permission].image}
+          showButton={permission === 'default'}
+          buttonLabel={t('Turn on')}
+        />
+      </Stack>
     </PageLayout>
   );
 };
