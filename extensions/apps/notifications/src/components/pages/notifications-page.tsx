@@ -189,7 +189,6 @@ const NotificationsPage: React.FC = () => {
    *  Insert in the active options the option 'All' notifications which will fetch notification from each app
    *  */
   const getActiveOptions = async (): Promise<UserSettingType[]> => {
-    await sdk.services.common.notification.initialize();
     const activeOptions = await sdk.services.common.notification.getSettingsOfUser();
     activeOptions.unshift({
       index: 0,
