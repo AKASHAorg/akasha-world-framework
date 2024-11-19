@@ -336,7 +336,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                       <CopyToClipboard
                         copyText={t('Copy to clipboard')}
                         copiedText={t('Copied')}
-                        stringToBeCopied={truncateDid(appData.id)}
+                        stringToBeCopied={appData.id}
                       >
                         <Text
                           variant="button-md"
