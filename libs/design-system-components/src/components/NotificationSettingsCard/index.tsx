@@ -24,6 +24,7 @@ export type NotificationSettingsCardProps = {
   isLoading?: boolean;
   showButton?: boolean;
   buttonLabel?: string;
+  noWrapperCard?: boolean;
   // handlers
   handleButtonClick: () => void;
 };
@@ -34,35 +35,42 @@ const NotificationSettingsCard: React.FC<NotificationSettingsCardProps> = ({
   image = IMAGES.notificationsDefault,
   isLoading,
   buttonLabel,
+  noWrapperCard,
   showButton = true,
   handleButtonClick,
 }) => {
-  return (
-    <Card radius={16} customStyle="p-0 w-full grow flex-wrap">
-      <Stack padding="p-5" align="center">
-        <Image
-          customStyle="w-[180px] h-[180px] object-contain mb-4"
-          src={IMAGES[image]}
-          alt="Notification illustration"
-        />
-        <Text variant="h5" customStyle="mb-2 text-center">
-          {title}
-        </Text>
-        <Text variant="body2" customStyle="mb-4 text-center">
-          {text}
-        </Text>
+  const content = (
+    <Stack padding="p-5" align="center">
+      <Image
+        customStyle="w-[180px] h-[180px] object-contain mb-4"
+        src={IMAGES[image]}
+        alt="Notification illustration"
+      />
+      <Text variant="h5" customStyle="mb-2 text-center">
+        {title}
+      </Text>
+      <Text variant="body2" customStyle="mb-4 text-center">
+        {text}
+      </Text>
 
-        {showButton && (
-          <Button
-            label={buttonLabel}
-            variant="primary"
-            size="md"
-            customStyle="w-fit"
-            loading={isLoading}
-            onClick={handleButtonClick}
-          />
-        )}
-      </Stack>
+      {showButton && (
+        <Button
+          label={buttonLabel}
+          variant="primary"
+          size="md"
+          customStyle="w-fit"
+          loading={isLoading}
+          onClick={handleButtonClick}
+        />
+      )}
+    </Stack>
+  );
+
+  return noWrapperCard ? (
+    content
+  ) : (
+    <Card radius={16} customStyle="p-0 w-full grow flex-wrap">
+      {content}
     </Card>
   );
 };

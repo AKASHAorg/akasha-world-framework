@@ -98,6 +98,7 @@ const BrowserNotificationsOption: React.FC = () => {
     <PageLayout title={t('Browser notifications')}>
       <Stack padding="p-4">
         <NotificationSettingsCard
+          noWrapperCard={true}
           isLoading={loading}
           handleButtonClick={handleEnableBrowserNotifications}
           text={STATES_CONTENT[permission].description}

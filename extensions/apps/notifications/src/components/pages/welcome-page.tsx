@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootComponentProps, useAkashaStore } from '@akashaorg/ui-awf-hooks';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -14,8 +14,9 @@ export type WelcomePageProps = {
 
 const WelcomePage: React.FC<WelcomePageProps> = () => {
   const sdk = getSDK();
-  const [notificationsEnabled] = useState(() =>
-    sdk.services.common.notification.checkIfNotificationsEnabled(),
+  const notificationsEnabled = useMemo(
+    () => sdk.services.common.notification.checkIfNotificationsEnabled(),
+    [sdk.services.common.notification],
   );
   const { baseRouteName, getCorePlugins } = useRootComponentProps();
   const {

@@ -120,6 +120,7 @@ const NotificationsOption: React.FC = () => {
           <NotificationSettingsCard
             image={'notificationsDefault'}
             isLoading={loading}
+            noWrapperCard={true}
             handleButtonClick={handleEnableNotifications}
             text={t('You’ll be prompted with 1 signature')}
             title={t('Turn on in-app notifications')}
