@@ -118,7 +118,7 @@ export const ReleasesPage = (props: ReleasesPageProps) => {
               />
             </>
           )}
-          {releases && (
+          {releases && releases.length > 0 && (
             <DynamicInfiniteScroll
               count={releases.length}
               overScan={5}

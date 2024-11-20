@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react';
 import DynamicInfiniteScroll, { DynamicInfiniteScrollProps } from '../DynamicInfiniteScroll';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
-import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
@@ -73,12 +72,7 @@ const AppList: React.FC<AppListProps> = ({
                         justify="center"
                         align="center"
                       >
-                        <Icon
-                          color={{ light: 'secondaryLight', dark: 'white' }}
-                          size={'xs'}
-                          solid
-                          icon={<ExtensionIcon type={app.applicationType} />}
-                        />
+                        <ExtensionIcon type={app.applicationType} />
                       </Stack>
                     )}
                   </Stack>

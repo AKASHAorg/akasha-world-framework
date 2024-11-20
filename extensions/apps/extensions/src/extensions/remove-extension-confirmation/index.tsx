@@ -15,6 +15,7 @@ import { useUpdateAppMutation } from '@akashaorg/ui-awf-hooks/lib/generated/apol
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import getSDK from '@akashaorg/core-sdk';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../constants';
+import { updateAppMutationCache } from './update-app-mutation-cache';
 
 const Component: React.FC<IRootExtensionProps> = () => {
   const sdk = getSDK();
@@ -22,6 +23,18 @@ const Component: React.FC<IRootExtensionProps> = () => {
   const { modalData } = useModalData();
   const [updateApp, updateAppQuery] = useUpdateAppMutation({
     context: { source: sdk.services.gql.contextSources.composeDB },
+    update: (
+      cache,
+      {
+        data: {
+          updateAkashaApp: {
+            document: { id },
+          },
+        },
+      },
+    ) => {
+      updateAppMutationCache({ cache, authenticatedDID, removedAppId: id });
+    },
   });
   const { uiEvents } = useRootComponentProps();
   const {
