@@ -30,6 +30,8 @@ import LicenseSomeRights from './license-some-rights';
 import LicenseWtfpl from './license-wtfpl';
 import ListBulleted from './list-bulleted';
 import ListNumbered from './list-numbered';
+import LockDark from './lock-dark';
+import LockLight from './lock-light';
 import Metamask from './metamask';
 import NoEth from './no-eth';
 import Plugin from './plugin';
@@ -79,6 +81,8 @@ export type CustomIconTypes = Extract<
   | 'LicenseWtfpl'
   | 'ListNumbered'
   | 'ListBulleted'
+  | 'LockDark'
+  | 'LockLight'
   | 'Metamask'
   | 'NoEth'
   | 'Plugin'
@@ -125,6 +129,8 @@ export {
   LicenseWtfpl,
   ListBulleted,
   ListNumbered,
+  LockLight,
+  LockDark,
   Metamask,
   NoEth,
   Plugin,

@@ -91,6 +91,8 @@ export type IconType =
   | 'LicenseSomeRights'
   | 'ListNumbered'
   | 'ListBulleted'
+  | 'LockDark'
+  | 'LockLight'
   | 'Metamask'
   | 'NoEth'
   | 'Plugin'
