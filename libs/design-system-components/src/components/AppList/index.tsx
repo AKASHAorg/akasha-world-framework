@@ -1,28 +1,12 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import DynamicInfiniteScroll, { DynamicInfiniteScrollProps } from '../DynamicInfiniteScroll';
-import Divider from '@akashaorg/design-system-core/lib/components/Divider';
-import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
-import Stack from '@akashaorg/design-system-core/lib/components/Stack';
-import Text from '@akashaorg/design-system-core/lib/components/Text';
-import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
-import {
-  AkashaAppApplicationType,
-  AppImageSource,
-} from '@akashaorg/typings/lib/sdk/graphql-types-new';
-
-export type App = {
-  displayName?: string;
-  logoImage?: AppImageSource;
-  description?: string;
-  applicationType?: AkashaAppApplicationType;
-  action?: ReactNode;
-};
+import ExtensionCard, {
+  ExtensionCardProps,
+} from '@akashaorg/design-system-core/lib/components/ExtensionCard';
 
 export type AppListProps = {
-  apps: App[];
-  showAppTypeIndicator?: boolean;
-  overScan?: number;
-} & Pick<DynamicInfiniteScrollProps, 'hasNextPage' | 'loading' | 'onLoadMore'>;
+  apps: ExtensionCardProps[];
+} & Pick<DynamicInfiniteScrollProps, 'overScan' | 'hasNextPage' | 'loading' | 'onLoadMore'>;
 
 const ENTRY_HEIGHT = 92;
 
@@ -39,7 +23,6 @@ const ITEM_SPACING = 16;
  */
 const AppList: React.FC<AppListProps> = ({
   apps,
-  showAppTypeIndicator,
   loading,
   hasNextPage,
   onLoadMore,
@@ -51,46 +34,43 @@ const AppList: React.FC<AppListProps> = ({
       estimatedHeight={ENTRY_HEIGHT}
       overScan={overScan}
       itemSpacing={ITEM_SPACING}
+      lanes={2}
       hasNextPage={hasNextPage}
       loading={loading}
       onLoadMore={onLoadMore}
+      listWrapperStyle={
+        apps.length > 1
+          ? 'grid grid-cols-[repeat(auto-fit,_minmax(min(16rem,_100%),_1fr))] gap-4'
+          : 'flex'
+      }
     >
-      {({ index, itemIndex }) => {
-        const app = apps[itemIndex];
+      {({ itemIndex }) => {
+        const {
+          coverImageSrc,
+          displayName,
+          applicationType,
+          author,
+          description,
+          action,
+          defaultLabel,
+          isDefaultWorldExtension,
+          nsfw,
+          featured,
+        } = apps[itemIndex];
         return (
-          <Stack spacing="gap-y-4">
-            <Stack direction="row" justify="between" align="center" spacing="gap-x-8">
-              <Stack direction="row" spacing="gap-x-3">
-                <AppAvatar appType={app.applicationType} avatar={app.logoImage} />
-                <Stack direction="column" spacing="gap-y-1">
-                  <Stack direction="row" spacing="gap-2">
-                    <Text variant="button-sm">{app.displayName}</Text>
-                    {showAppTypeIndicator && (
-                      <Stack
-                        customStyle="w-[18px] h-[18px] rounded-full"
-                        background={{ light: 'secondaryLight', dark: 'secondaryDark' }}
-                        justify="center"
-                        align="center"
-                      >
-                        <ExtensionIcon type={app.applicationType} />
-                      </Stack>
-                    )}
-                  </Stack>
-                  <Text
-                    variant="footnotes2"
-                    weight="normal"
-                    color={{ light: 'grey4', dark: 'grey7' }}
-                    lineClamp={2}
-                  >
-                    {app.description || app.displayName}
-                  </Text>
-                </Stack>
-              </Stack>
-
-              {app.action}
-            </Stack>
-            {index < apps.length - 1 && <Divider />}
-          </Stack>
+          <ExtensionCard
+            coverImageSrc={coverImageSrc}
+            displayName={displayName}
+            applicationType={applicationType}
+            author={author}
+            description={description}
+            action={action}
+            nsfw={nsfw}
+            featured={featured || apps.length === 1}
+            defaultLabel={defaultLabel}
+            isDefaultWorldExtension={isDefaultWorldExtension}
+            customStyle="h-full"
+          />
         );
       }}
     </DynamicInfiniteScroll>

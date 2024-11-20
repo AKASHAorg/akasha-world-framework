@@ -52,7 +52,13 @@ const defaultRoute = createRoute({
 
 const profileInfoRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '$profileDID',
+  path: '/$profileDID',
+  component: Outlet,
+});
+
+const profileInfoIndexRoute = createRoute({
+  getParentRoute: () => profileInfoRoute,
+  path: '/',
   loader: ({ context, params }) => {
     context.apolloClient.query({
       query: GetProfileByDidDocument,
@@ -74,8 +80,8 @@ const profileInfoRoute = createRoute({
 });
 
 const profileEditRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: `$profileDID${menuRoute[EDIT]}`,
+  getParentRoute: () => profileInfoRoute,
+  path: `${menuRoute[EDIT]}`,
   component: () => {
     const { profileDID } = profileEditRoute.useParams();
     return (
@@ -91,8 +97,8 @@ const profileEditRoute = createRoute({
 });
 
 const followersRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: `$profileDID${menuRoute[FOLLOWERS]}`,
+  getParentRoute: () => profileInfoRoute,
+  path: `${menuRoute[FOLLOWERS]}`,
   loader: ({ context, params }) => {
     context.apolloClient.query({
       query: GetFollowersListByDidDocument,
@@ -118,8 +124,8 @@ const followersRoute = createRoute({
 });
 
 const followingRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: `$profileDID${menuRoute[FOLLOWING]}`,
+  getParentRoute: () => profileInfoRoute,
+  path: `${menuRoute[FOLLOWING]}`,
   loader: ({ context, params }) => {
     context.apolloClient.query({
       query: GetFollowingListByDidDocument,
@@ -145,8 +151,8 @@ const followingRoute = createRoute({
 });
 
 const interestsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: `$profileDID${menuRoute[INTERESTS]}`,
+  getParentRoute: () => profileInfoRoute,
+  path: `${menuRoute[INTERESTS]}`,
   component: () => {
     const { profileDID } = interestsRoute.useParams();
     return (
@@ -161,8 +167,8 @@ const interestsRoute = createRoute({
 });
 
 const beamsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: `$profileDID${menuRoute[BEAMS]}`,
+  getParentRoute: () => profileInfoRoute,
+  path: `${menuRoute[BEAMS]}`,
   component: () => {
     const { profileDID } = beamsRoute.useParams();
     return (
@@ -178,12 +184,14 @@ const beamsRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   defaultRoute,
-  profileInfoRoute,
-  profileEditRoute,
-  followersRoute,
-  followingRoute,
-  interestsRoute,
-  beamsRoute,
+  profileInfoRoute.addChildren([
+    profileInfoIndexRoute,
+    profileEditRoute,
+    followersRoute,
+    followingRoute,
+    interestsRoute,
+    beamsRoute,
+  ]),
 ]);
 
 export const router = ({ baseRouteName, apolloClient }: ICreateRouter) =>

@@ -21,6 +21,7 @@ import {
 } from '@akashaorg/typings/lib/ui';
 import { getAvatarImage, getCoverImage } from './get-profile-images';
 import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
+import { useNavigate } from '@tanstack/react-router';
 
 type EditProfilePageProps = {
   profileDID: string;
@@ -29,7 +30,7 @@ type EditProfilePageProps = {
 const EditProfilePage: React.FC<EditProfilePageProps> = props => {
   const { profileDID } = props;
   const { t } = useTranslation('app-profile');
-  const { getCorePlugins, logger, uiEvents } = useRootComponentProps();
+  const { logger, uiEvents } = useRootComponentProps();
   const {
     image: avatarImage,
     saveImage: saveAvatarImage,
@@ -43,7 +44,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
   const isSavingImage = isSavingAvatarImage || isSavingCoverImage;
   const [showNsfwModal, setShowNsfwModal] = useState(false);
   const [nsfwFormValues, setNsfwFormValues] = useState<PublishProfileData>();
-  const navigateTo = getCorePlugins().routing.navigateTo;
+  const navigate = useNavigate();
   const { data, error } = useGetProfileByDidSuspenseQuery({
     variables: { id: profileDID },
   });
@@ -87,9 +88,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
 
   const [createProfileMutation, { loading: createProfileProcessing }] = useCreateProfileMutation({
     context: { source: sdk.services.gql.contextSources.composeDB },
-    onCompleted: () => {
-      onSuccess();
-    },
+    onCompleted: onSuccess,
     onError: error => {
       onError();
       logger.error(`error in creating a profile: ${JSON.stringify(error)}`);
@@ -115,10 +114,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
     );
 
   const navigateToProfileInfoPage = () => {
-    navigateTo({
-      appName: '@akashaorg/app-profile',
-      getNavigationUrl: () => `/${profileDID}`,
-    });
+    navigate({ to: '/$profileDID', params: { profileDID } });
   };
 
   const createProfile = async (

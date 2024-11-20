@@ -27,13 +27,15 @@ export type DynamicInfiniteScrollProps = {
   enableScrollRestoration?: boolean;
   scrollRestorationStorageKey?: string;
   lastScrollRestorationKey?: string;
+  lanes?: number;
   overScan?: number;
   itemSpacing?: number;
   hasNextPage?: boolean;
   loading?: boolean;
-  customStyle?: string;
   header?: ReactElement;
   dataTestId?: string;
+  listWrapperStyle?: string;
+  customStyle?: string;
   onLoadMore: () => Promise<unknown> | void;
   children: (item: DynamicInfiniteScrollItem) => ReactElement;
 };
@@ -46,13 +48,15 @@ const DynamicInfiniteScroll: React.FC<DynamicInfiniteScrollProps> = props => {
     enableScrollRestoration = false,
     scrollRestorationStorageKey = 'storage-key',
     lastScrollRestorationKey,
+    lanes,
     overScan = 5,
     itemSpacing,
     hasNextPage,
     loading,
-    customStyle = '',
     header,
     dataTestId,
+    listWrapperStyle = '',
+    customStyle = '',
     onLoadMore,
     children,
   } = props;
@@ -97,7 +101,8 @@ const DynamicInfiniteScroll: React.FC<DynamicInfiniteScrollProps> = props => {
   }, [getHeaderHeight]);
 
   const virtualizer = useWindowVirtualizer({
-    count: count,
+    count,
+    lanes,
     overscan: overScan,
     gap: itemSpacing,
     initialMeasurementsCache: getInitialMeasurementsCache(),
@@ -149,7 +154,7 @@ const DynamicInfiniteScroll: React.FC<DynamicInfiniteScrollProps> = props => {
       >
         <Card
           data-offset={vListOffset}
-          customStyle={`flex flex-col absolute w-full top-0 left-0 translate-y-[${vListOffset}px] gap-y-[${itemSpacing}px]`}
+          customStyle={`flex flex-col absolute w-full top-0 left-0 translate-y-[${vListOffset}px] gap-y-[${itemSpacing}px] ${listWrapperStyle}`}
           type="plain"
         >
           {virtualItems.map((virtualItem, index, items) => (

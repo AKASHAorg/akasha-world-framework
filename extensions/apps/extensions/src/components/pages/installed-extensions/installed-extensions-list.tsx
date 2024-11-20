@@ -13,7 +13,7 @@ import {
   type InstalledExtension,
   useInstalledExtensions,
 } from '@akashaorg/ui-awf-hooks/lib/use-installed-extensions';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { useNavigate } from '@tanstack/react-router';
 
 const PUBLIC_IMAGE_PATH = '/images';
@@ -55,7 +55,21 @@ export const InstalledExtensionsList = () => {
   const { data, error, loading } = useInstalledExtensions();
 
   const addAction = (ext: InstalledExtension) => ({
-    ...ext,
+    coverImageSrc: ext?.coverImage?.src,
+    displayName: ext?.displayName,
+    applicationType: ext?.applicationType,
+    author: ext.author
+      ? {
+          profileDID: ext.author?.did?.id,
+          name: ext.author?.name,
+          avatar: transformSource(ext.author?.avatar?.default),
+          alternativeAvatars: ext.author?.avatar.alternatives?.map(alt => transformSource(alt)),
+          nsfw: ext.author?.nsfw,
+        }
+      : null,
+    description: ext?.description,
+    nsfw: ext?.nsfw,
+    default: t('Default'),
     action: (
       <Button variant="secondary" label={t('Open')} onClick={() => handleAppClick(ext.name)} />
     ),
@@ -111,43 +125,41 @@ export const InstalledExtensionsList = () => {
         />
       )}
       {installedExtensions && (
-        <Card padding="p-4">
-          <Stack spacing="gap-y-3" align="center">
-            {!installedExtensions.length && (
-              <>
-                <Stack customStyle="h-52 w-52">
-                  <Image
-                    customStyle="object-contain"
-                    src={`${PUBLIC_IMAGE_PATH}/longbeam-notfound.webp`}
-                  />
-                </Stack>
-                <Text variant="h6">{t('No extensions installed yet!')}</Text>
-                <Stack align="center">
-                  <Text as="span" variant="body2" color={{ light: 'grey5', dark: 'grey6' }}>
-                    <Button
-                      variant="text"
-                      size="md"
-                      label={t('Discover')}
-                      onClick={handleDiscoverClick}
-                      customStyle="inline-block"
-                    />{' '}
-                    {t('cool extensions and install them')}
-                  </Text>
-                  <Text variant="body2" color={{ light: 'grey5', dark: 'grey6' }}>
-                    {t('to customize your world')}
-                  </Text>
-                </Stack>
-              </>
-            )}
-            {!!installedExtensions.length && (
-              <AppList
-                apps={installedExtensions}
-                //implementation requires pagination support on installed extensions service on sdk
-                onLoadMore={() => null}
-              />
-            )}
-          </Stack>
-        </Card>
+        <Stack spacing="gap-y-3" align="center">
+          {!installedExtensions.length && (
+            <>
+              <Stack customStyle="h-52 w-52">
+                <Image
+                  customStyle="object-contain"
+                  src={`${PUBLIC_IMAGE_PATH}/longbeam-notfound.webp`}
+                />
+              </Stack>
+              <Text variant="h6">{t('No extensions installed yet!')}</Text>
+              <Stack align="center">
+                <Text as="span" variant="body2" color={{ light: 'grey5', dark: 'grey6' }}>
+                  <Button
+                    variant="text"
+                    size="md"
+                    label={t('Discover')}
+                    onClick={handleDiscoverClick}
+                    customStyle="inline-block"
+                  />{' '}
+                  {t('cool extensions and install them')}
+                </Text>
+                <Text variant="body2" color={{ light: 'grey5', dark: 'grey6' }}>
+                  {t('to customize your world')}
+                </Text>
+              </Stack>
+            </>
+          )}
+          {!!installedExtensions.length && (
+            <AppList
+              apps={installedExtensions}
+              //implementation requires pagination support on installed extensions service on sdk
+              onLoadMore={() => null}
+            />
+          )}
+        </Stack>
       )}
     </>
   );

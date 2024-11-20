@@ -102,8 +102,23 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
         // @todo: we'll need to show the curated apps only. filtering will be made here
         ?.filter(() => true)
         .map(app => ({
-          ...app,
-          logoImage: transformSource(app.logoImage),
+          coverImageSrc: app?.coverImage?.src,
+          displayName: app?.displayName,
+          applicationType: app?.applicationType,
+          author: app.author
+            ? {
+                profileDID: app.author?.akashaProfile?.did?.id,
+                name: app.author?.akashaProfile?.name,
+                avatar: transformSource(app.author?.akashaProfile?.avatar?.default),
+                alternativeAvatars: app.author?.akashaProfile?.avatar.alternatives?.map(alt =>
+                  transformSource(alt),
+                ),
+                nsfw: app.author?.akashaProfile?.nsfw,
+              }
+            : null,
+          description: app?.description,
+          default: t('Default'),
+          nsfw: app?.nsfw,
           action: <Button onClick={handleAppOpen(app.name)} label={t('Open')} />,
         })),
     [appsReq.data, handleAppOpen, t],
