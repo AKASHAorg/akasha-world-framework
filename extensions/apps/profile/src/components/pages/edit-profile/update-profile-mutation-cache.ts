@@ -14,15 +14,11 @@ export async function updateProfileMutationCache({ cache, profileDID, data }: IU
     id: profileDID,
   };
 
-  console.log(data, 'before cache update');
-
-  const result = cache.updateQuery<GetProfileByDidQuery>(
+  cache.updateQuery<GetProfileByDidQuery>(
     {
       query: GetProfileByDidDocument,
       variables,
     },
     profileQuery => ({ node: { ...profileQuery.node, akashaProfile: { ...data } } }),
   );
-
-  console.log(result.node, 'after cache update');
 }
