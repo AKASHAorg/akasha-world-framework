@@ -29,7 +29,7 @@ export { useAccordion } from './use-accordion';
 export { useModalData } from './use-modal-data';
 
 // the following hooks needs refactor/reimplementation
-export { useListenForMutationEvents } from './use-notifications';
+export { useListenForMutationEvents } from './use-mutation-events-listener';
 
 export { useShowFeedback } from './use-show-feedback';
 export { useTheme } from './use-theme';
