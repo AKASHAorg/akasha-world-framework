@@ -58,6 +58,7 @@ export const DefaultExtensionsList = () => {
     description: app?.description,
     nsfw: app?.nsfw,
     defaultLabel: t('Default'),
+    nsfwLabel: t('NSFW'),
     isDefaultWorldExtension: true,
     action: (
       <Button variant="secondary" label={t('Open')} onClick={() => handleAppClick(app.name)} />

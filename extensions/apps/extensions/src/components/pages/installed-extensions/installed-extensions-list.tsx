@@ -69,7 +69,8 @@ export const InstalledExtensionsList = () => {
       : null,
     description: ext?.description,
     nsfw: ext?.nsfw,
-    default: t('Default'),
+    defaultLabel: t('Default'),
+    nsfwLabel: t('NSFW'),
     action: (
       <Button variant="secondary" label={t('Open')} onClick={() => handleAppClick(ext.name)} />
     ),

@@ -78,8 +78,10 @@ const Pill: React.FC<PillProps> = props => {
     const borderStyle = borderColor ? `border ${getColorClasses(borderColor, 'border')}` : '';
     return (
       <Stack
+        direction="row"
         align="center"
         justify="center"
+        spacing="gap-x-1"
         background={background}
         customStyle={`${PILL_SIZE_MAP[size]} ${borderStyle} ${customStyle}`}
       >

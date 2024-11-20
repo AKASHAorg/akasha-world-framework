@@ -53,6 +53,7 @@ const AppList: React.FC<AppListProps> = ({
           description,
           action,
           defaultLabel,
+          nsfwLabel,
           isDefaultWorldExtension,
           nsfw,
           featured,
@@ -68,6 +69,7 @@ const AppList: React.FC<AppListProps> = ({
             nsfw={nsfw}
             featured={featured || apps.length === 1}
             defaultLabel={defaultLabel}
+            nsfwLabel={nsfwLabel}
             isDefaultWorldExtension={isDefaultWorldExtension}
             customStyle="h-full"
           />

@@ -23,6 +23,7 @@ export type ExtensionCardProps = {
   };
   description: string;
   defaultLabel?: string;
+  nsfwLabel?: string;
   isDefaultWorldExtension?: boolean;
   nsfw?: boolean;
   featured?: boolean;
@@ -38,6 +39,7 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
     author,
     description,
     defaultLabel,
+    nsfwLabel,
     isDefaultWorldExtension = false,
     nsfw,
     featured,
@@ -51,6 +53,7 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
         <AppCoverImage
           src={coverImageSrc}
           appType={applicationType}
+          isNSFW={nsfw}
           customStyle={`${featured ? 'h-[9.625rem]' : 'h-[6.25rem]'} object-cover rounded-[0.625rem]`}
         />
         <Stack spacing="gap-y-3">
@@ -62,12 +65,11 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
             <Pill
               color={{ light: 'secondaryLight', dark: 'white' }}
               background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
-              icon={<ExtensionIcon type={applicationType} />}
+              icon={<ExtensionIcon type={applicationType} size="xs" />}
               weight="normal"
               size="xs"
               label={applicationType}
               type="info"
-              customStyle="w-fit"
             />
             {isDefaultWorldExtension && (
               <Pill
@@ -77,7 +79,16 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
                 size="xs"
                 label={defaultLabel}
                 type="info"
-                customStyle="w-fit"
+              />
+            )}
+            {nsfw && (
+              <Pill
+                color={{ light: 'errorLight', dark: 'white' }}
+                background={{ light: 'errorFade', dark: 'errorDark' }}
+                weight="normal"
+                size="xs"
+                label={nsfwLabel}
+                type="info"
               />
             )}
           </Stack>

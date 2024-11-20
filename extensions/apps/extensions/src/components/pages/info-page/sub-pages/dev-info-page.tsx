@@ -117,7 +117,8 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
               }
             : null,
           description: app?.description,
-          default: t('Default'),
+          defaultLabel: t('Default'),
+          nsfwLabel: t('NSFW'),
           nsfw: app?.nsfw,
           action: <Button onClick={handleAppOpen(app.name)} label={t('Open')} />,
         })),
