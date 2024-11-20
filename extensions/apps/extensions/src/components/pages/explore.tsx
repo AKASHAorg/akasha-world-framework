@@ -3,7 +3,7 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import routes, { DEVELOPER_MODE, EXTENSIONS } from '../../routes';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { ArrowLongRightIcon } from '@heroicons/react/24/outline';
 import { Explore } from '../explore';
 import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
@@ -47,6 +47,17 @@ export const ExplorePage: React.FC<unknown> = () => {
     {
       id: '',
       coverImageSrc: null,
+      author: {
+        profileDID: 'k2t6wzhkhabz1ftv1zfwnlrzcz5yyg0fxyf580fkvzr22g8ra8fa8y7hpdz0jc',
+        name: 'AKASHA',
+        alternativeAvatars: null,
+        avatar: transformSource({
+          src: 'ipfs://bafkreidk5aoxy2bde5nc6w4l6slxos3lbj5n75y766irlrb7vnfxgv4hwu',
+          width: 192,
+          height: 192,
+        }),
+        nsfw: false,
+      },
       displayName: t('Vibes Console'),
       description: `${t("Dive into AKASHA WORLD's Vibes Console!")} 💫 ${t("Your spot to become a moderator, explore applicants, and curate content. Together, let's shape our vibrant community!")} 🌟🔍✨`,
       applicationType: AkashaAppApplicationType.App,

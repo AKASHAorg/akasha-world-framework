@@ -40,6 +40,7 @@ export const Explore: React.FC<TExploreProps> = props => {
           coverImageSrc={popularExtensions[0]?.coverImageSrc}
           displayName={popularExtensions[0]?.displayName}
           applicationType={popularExtensions[0]?.applicationType}
+          author={popularExtensions[0]?.author}
           description={popularExtensions[0]?.description}
           featured={true}
           action={popularExtensions[0]?.action}
