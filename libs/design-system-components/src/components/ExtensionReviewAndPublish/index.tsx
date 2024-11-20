@@ -155,12 +155,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
             background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
             customStyle="w-fit self-end"
           >
-            <Icon
-              size="sm"
-              icon={<ExtensionIcon type={extensionData?.applicationType} />}
-              color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
-              solid={true}
-            />
+            <ExtensionIcon type={extensionData?.applicationType} />
             <Text variant="footnotes2" color={{ light: 'secondaryLight', dark: 'white' }}>
               {extensionData?.applicationType}
             </Text>

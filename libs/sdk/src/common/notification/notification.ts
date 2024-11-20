@@ -87,6 +87,12 @@ class NotificationService {
       await this.initializeWritableClient();
     }
   }
+
+  checkIfNotificationsEnabled(): boolean {
+    const isWriteMode = this._pushClient && !this._pushClient.readmode();
+    return !!isWriteMode;
+  }
+
   /**
    * Initializes and listens to notification events using PushProtocol.
    *

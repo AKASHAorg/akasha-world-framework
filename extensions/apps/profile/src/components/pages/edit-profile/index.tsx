@@ -12,8 +12,7 @@ import {
   useGetProfileByDidSuspenseQuery,
   useUpdateProfileMutation,
 } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import { useSaveImage } from './use-save-image';
+import { transformSource, useRootComponentProps, useSaveImage } from '@akashaorg/ui-awf-hooks';
 import { PartialAkashaProfileInput } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import {
   NotificationEvents,
@@ -31,7 +30,17 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
   const { profileDID } = props;
   const { t } = useTranslation('app-profile');
   const { getCorePlugins, logger, uiEvents, navigateToModal } = useRootComponentProps();
-  const { newAvatarImage, newCoverImage, saveImage, loading: isSavingImage } = useSaveImage();
+  const {
+    image: avatarImage,
+    saveImage: saveAvatarImage,
+    loading: isSavingAvatarImage,
+  } = useSaveImage();
+  const {
+    image: coverImage,
+    saveImage: saveCoverImage,
+    loading: isSavingCoverImage,
+  } = useSaveImage();
+  const isSavingImage = isSavingAvatarImage || isSavingCoverImage;
   const [showNsfwModal, setShowNsfwModal] = useState(false);
   const [nsfwFormValues, setNsfwFormValues] = useState<PublishProfileData>();
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -165,6 +174,24 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
 
   const onProfileSave = async (publishProfileData: PublishProfileData) => {
     const isNewProfile = !profileData?.id;
+    const newAvatarImage = avatarImage
+      ? {
+          default: {
+            src: avatarImage.src,
+            height: avatarImage.height,
+            width: avatarImage.width,
+          },
+        }
+      : null;
+    const newCoverImage = coverImage
+      ? {
+          default: {
+            src: coverImage.src,
+            height: coverImage.height,
+            width: coverImage.width,
+          },
+        }
+      : null;
     const profileImages = {
       ...getAvatarImage(newAvatarImage, isNewProfile ? false : !publishProfileData.avatar),
       ...getCoverImage(newCoverImage, isNewProfile ? false : !publishProfileData.coverImage),
@@ -214,7 +241,16 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
             },
             isSavingImage,
             publicImagePath: '/images',
-            onImageSave: (type, image) => saveImage({ type, image, onError: onSaveImageError }),
+            onImageSave: (type, image) => {
+              switch (type) {
+                case 'avatar':
+                  saveAvatarImage({ name: 'avatar', image, onError: onSaveImageError });
+                  break;
+                case 'cover-image':
+                  saveCoverImage({ name: 'cover-image', image, onError: onSaveImageError });
+                  break;
+              }
+            },
             transformSource,
           }}
           name={{ label: t('Name'), initialValue: profileData?.name }}

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import appRoutes, { SUBMIT_EXTENSION } from '../../routes';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
@@ -17,14 +16,16 @@ import {
   useRootComponentProps,
 } from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import { DRAFT_EXTENSIONS, DRAFT_RELEASES, MAX_CONTRIBUTORS_DISPLAY } from '../../constants';
 import getSDK from '@akashaorg/core-sdk';
 import {
   useCreateAppMutation,
   useGetAppsByPublisherDidQuery,
 } from '@akashaorg/ui-awf-hooks/lib/generated';
-import { SubmitType } from '../app-routes';
 import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+import { SubmitType } from '../../app-routes';
+import appRoutes, { SUBMIT_EXTENSION } from '../../../routes';
+import { DRAFT_EXTENSIONS, DRAFT_RELEASES, MAX_CONTRIBUTORS_DISPLAY } from '../../../constants';
+import { createAppMutationCache } from './create-app-mutation-cache';
 
 type ExtensionPublishPageProps = {
   extensionId: string;
@@ -80,6 +81,16 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
 
   const [createAppMutation, { loading: loadingAppMutation }] = useCreateAppMutation({
     context: { source: sdk.current.services.gql.contextSources.composeDB },
+    update: (
+      cache,
+      {
+        data: {
+          setAkashaApp: { document },
+        },
+      },
+    ) => {
+      createAppMutationCache({ cache, authenticatedDID, document });
+    },
     onCompleted: data => {
       // after the extension has been published to the ceramic model
       // search for it in the list of local draft extensions and
