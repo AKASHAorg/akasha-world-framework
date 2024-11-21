@@ -65,6 +65,7 @@ export interface IRoutingPlugin {
   handleRedirect(options: { search: URLSearchParams; fallback: NavigateToParams }): void;
   subscribe(listener: () => void): () => void;
   getSnapshot(): RouteRepository;
+  cancelNavigation(shouldCancel: boolean, cb: (targetUrl: string) => void): () => void;
 }
 
 type InstallerErrorCodes =
