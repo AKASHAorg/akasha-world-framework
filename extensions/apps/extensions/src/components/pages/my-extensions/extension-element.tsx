@@ -86,7 +86,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
 
   const handleEditPublishedExtension = () => {
     navigate({
-      to: `/edit-published-extension/$extensionId`,
+      to: `/edit-published-extension/$extensionId/form`,
       params: { extensionId: extensionData?.id },
     });
   };

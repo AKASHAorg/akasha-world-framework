@@ -39,12 +39,13 @@ export type ExtensionEditPublishedFormValues = {
 
 export type ExtensionEditPublishedFormProps = {
   header: Omit<HeaderProps, 'onLogoImageChange' | 'onCoverImageChange'>;
-  extensionType: AkashaAppApplicationType;
   defaultValues?: ExtensionEditPublishedFormValues;
   displayOnlyValues?: {
     name: string;
     displayName: string;
     license: string;
+    applicationType: AkashaAppApplicationType;
+    nsfw: boolean;
   };
   cancelButton: ButtonType;
   nextButton: {
@@ -69,7 +70,6 @@ export type ExtensionEditPublishedFormProps = {
 const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = props => {
   const {
     header,
-    extensionType,
     defaultValues,
     displayOnlyValues,
     cancelButton,
@@ -140,10 +140,11 @@ const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = pr
   return (
     <form onSubmit={onSave} className={tw(apply`h-full`)}>
       <Stack direction="column" spacing="gap-y-4">
-        <Stack padding="px-4 pt-4">
+        <Stack padding="p-4">
           <Header
             {...header}
-            extensionType={extensionType}
+            extensionType={displayOnlyValues.applicationType}
+            nsfw={displayOnlyValues.nsfw}
             onLogoImageChange={logoImage => {
               setValue('logoImage', logoImage, { shouldDirty: true });
             }}
@@ -254,6 +255,7 @@ const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = pr
             variant="primary"
             size="md"
             label={nextButton.label}
+            loading={loading}
             disabled={!isValid || loading}
             onClick={onSave}
           />

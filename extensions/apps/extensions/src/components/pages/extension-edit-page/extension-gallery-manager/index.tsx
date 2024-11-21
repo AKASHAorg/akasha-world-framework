@@ -20,7 +20,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useGalleryImages } from './use-gallery-image';
 import { useAtom } from 'jotai';
 import { AtomContext as EditLocalAtomContext, FormData } from '../main-page';
-// import {AtomContext as EditPublishedAtomContext} from '../edit-published-extension-page'
+import { AtomContext as EditPublishedAtomContext } from '../../extension-edit-published-page/main-page';
 import { MAX_GALLERY_IMAGES, MAX_UPLOAD_RETRIES } from '../../../../constants';
 
 type ExtensionGalleryManagerPageProps = {
@@ -49,8 +49,8 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
 
   const { galleryImages, setGalleryImages } = useGalleryImages({ extensionId });
 
-  // const atomContext = type === 'local' ? EditLocalAtomContext : EditPublishedAtomContext;
-  const [, setForm] = useAtom<FormData>(useContext(EditLocalAtomContext));
+  const atomContext = type === 'local' ? EditLocalAtomContext : EditPublishedAtomContext;
+  const [, setForm] = useAtom<FormData>(useContext(atomContext));
 
   const showErrorNotification = useCallback((title: string, description?: string) => {
     uiEventsRef.current.next({
@@ -126,7 +126,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
     if (type === 'local') {
       navigate({ to: '/edit-extension/$extensionId/step2', params: { extensionId } });
     } else if (type === 'published') {
-      navigate({ to: '/edit-published-extension/$extensionId', params: { extensionId } });
+      navigate({ to: '/edit-published-extension/$extensionId/form', params: { extensionId } });
     }
   };
 
