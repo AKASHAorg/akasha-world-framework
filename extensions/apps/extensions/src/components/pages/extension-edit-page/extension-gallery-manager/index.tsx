@@ -19,14 +19,17 @@ import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui
 import { useNavigate } from '@tanstack/react-router';
 import { useGalleryImages } from './use-gallery-image';
 import { useAtom } from 'jotai';
-import { AtomContext, FormData } from '../main-page';
+import { AtomContext as EditLocalAtomContext, FormData } from '../main-page';
+// import {AtomContext as EditPublishedAtomContext} from '../edit-published-extension-page'
 import { MAX_GALLERY_IMAGES, MAX_UPLOAD_RETRIES } from '../../../../constants';
 
 type ExtensionGalleryManagerPageProps = {
+  type: 'local' | 'published';
   extensionId: string;
 };
 
 export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPageProps> = ({
+  type,
   extensionId,
 }) => {
   const { t } = useTranslation('app-extensions');
@@ -45,7 +48,9 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
   } = useAkashaStore();
 
   const { galleryImages, setGalleryImages } = useGalleryImages({ extensionId });
-  const [, setForm] = useAtom<FormData>(useContext(AtomContext));
+
+  // const atomContext = type === 'local' ? EditLocalAtomContext : EditPublishedAtomContext;
+  const [, setForm] = useAtom<FormData>(useContext(EditLocalAtomContext));
 
   const showErrorNotification = useCallback((title: string, description?: string) => {
     uiEventsRef.current.next({
@@ -114,6 +119,14 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
             height: 0,
           })),
       ]);
+    }
+  };
+
+  const handleNavigate = () => {
+    if (type === 'local') {
+      navigate({ to: '/edit-extension/$extensionId/step2', params: { extensionId } });
+    } else if (type === 'published') {
+      navigate({ to: '/edit-published-extension/$extensionId', params: { extensionId } });
     }
   };
 
@@ -208,12 +221,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
       return;
     }
 
-    navigate({
-      to: '/edit-extension/$extensionId/step2',
-      params: {
-        extensionId,
-      },
-    });
+    handleNavigate();
   };
 
   const onCloseOverlay = () => {
@@ -249,14 +257,7 @@ export const ExtensionGalleryManagerPage: React.FC<ExtensionGalleryManagerPagePr
             cancelButton={{
               label: t('Cancel'),
               disabled: !!uploading,
-              handleClick: () => {
-                navigate({
-                  to: '/edit-extension/$extensionId/step2',
-                  params: {
-                    extensionId,
-                  },
-                });
-              },
+              handleClick: handleNavigate,
             }}
             saveButton={{
               label: t('Save'),

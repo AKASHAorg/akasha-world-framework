@@ -114,11 +114,14 @@ export const useBlocksPublishing = (props: UseBlocksPublishingProps) => {
           value: tagName,
         };
       });
+
+      const uniqueEditorMentions = new Set(editorMentions);
+
       const beamContent: AkashaBeamInput = {
         active: true,
         nsfw: isNsfw,
         tags: tags,
-        mentions: editorMentions,
+        mentions: [...uniqueEditorMentions],
         content: blocksInUse.map(blockData => ({
           blockID: blockData.response?.blockID,
           order: blockData.order,

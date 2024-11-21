@@ -77,10 +77,24 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
     });
   };
 
-  const handleExtensionEdit = () => {
+  const handleEditLocalExtension = () => {
     navigate({
       to: `/edit-extension/$extensionId/step1`,
       params: { extensionId: extensionData?.id },
+    });
+  };
+
+  const handleEditPublishedExtension = () => {
+    navigate({
+      to: `/edit-published-extension/$extensionId`,
+      params: { extensionId: extensionData?.id },
+    });
+  };
+
+  const handleNavigateToExtensionInfoPage = () => {
+    navigate({
+      to: `/info/$appId`,
+      params: { appId: extensionData?.id },
     });
   };
 
@@ -105,7 +119,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           {
             label: t('Edit Extension'),
             icon: <PencilIcon />,
-            onClick: handleExtensionEdit,
+            onClick: handleEditPublishedExtension,
           },
           {
             label: t('Release Manager'),
@@ -124,13 +138,13 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           {
             label: t('View Extension'),
             icon: <EyeIcon />,
-            onClick: () => {},
+            onClick: handleNavigateToExtensionInfoPage,
           },
 
           {
             label: t('Edit Extension'),
             icon: <PencilIcon />,
-            onClick: handleExtensionEdit,
+            onClick: handleEditPublishedExtension,
           },
           {
             label: t('Release Manager'),
@@ -140,7 +154,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           {
             label: t('Delete Extension'),
             icon: <TrashIcon />,
-            onClick: () => {},
+            onClick: handleExtensionRemove,
             color: { light: 'errorLight', dark: 'errorDark' },
           },
         ];
@@ -154,7 +168,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           {
             label: t('Edit Extension'),
             icon: <PencilIcon />,
-            onClick: handleExtensionEdit,
+            onClick: handleEditLocalExtension,
           },
           {
             label: t('Release Manager'),

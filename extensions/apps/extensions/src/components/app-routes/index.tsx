@@ -1,5 +1,11 @@
 import React from 'react';
-import { createRoute, createRouter, redirect, CatchBoundary } from '@tanstack/react-router';
+import {
+  createRoute,
+  createRouter,
+  redirect,
+  CatchBoundary,
+  useSearch,
+} from '@tanstack/react-router';
 import { ICreateRouter, IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import {
   ExplorePage,
@@ -35,6 +41,7 @@ import { NotFoundComponent } from './not-found-component';
 import { RouteErrorComponent } from './error-component';
 import { rootRoute } from '../root-route';
 import infoRoutes from '../pages/info-page/routes';
+import { EditPublishedExtensionPage } from '../pages/extension-edit-page/edit-published-extension-page';
 
 const defaultRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -146,6 +153,23 @@ const postExtensionCreateRoute = createRoute({
   },
 });
 
+const editPublishedExtensionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: `/edit-published-extension/$extensionId`,
+  notFoundComponent: () => <NotFoundComponent />,
+  component: () => {
+    const { extensionId } = editPublishedExtensionRoute.useParams();
+    return (
+      <CatchBoundary
+        getResetKey={() => 'edit_published_extension_reset'}
+        errorComponent={RouteErrorComponent}
+      >
+        <EditPublishedExtensionPage extensionId={extensionId} />
+      </CatchBoundary>
+    );
+  },
+});
+
 const extensionEditMainRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/edit-extension/$extensionId`,
@@ -193,21 +217,34 @@ const extensionEditStep2Route = createRoute({
     );
   },
 });
+
+type ExtSearch = { type: ExtType };
+
+export enum ExtType {
+  LOCAL = 'local',
+  PUBLISHED = 'published',
+}
+
 const galleryManagerRoute = createRoute({
   getParentRoute: () => extensionEditMainRoute,
   path: '/gallery-manager',
+  validateSearch: (search: Record<string, unknown>): ExtSearch => {
+    return { type: search.type as ExtType };
+  },
   component: () => {
+    const from = galleryManagerRoute.useSearch();
     const { extensionId } = extensionEditMainRoute.useParams();
     return (
       <CatchBoundary
         getResetKey={() => 'edit_extension_gallery_manager_reset'}
         errorComponent={RouteErrorComponent}
       >
-        <ExtensionGalleryManagerPage extensionId={extensionId} />
+        <ExtensionGalleryManagerPage type={from.type} extensionId={extensionId} />
       </CatchBoundary>
     );
   },
 });
+
 const extensionEditStep3Route = createRoute({
   getParentRoute: () => extensionEditMainRoute,
   path: '/step3',
@@ -362,6 +399,7 @@ const routeTree = rootRoute.addChildren([
   ]),
   extensionCreateRoute,
   postExtensionCreateRoute,
+  editPublishedExtensionRoute,
   extensionEditMainRoute.addChildren([
     extensionEditStep1Route,
     extensionEditStep2Route,
