@@ -42,7 +42,7 @@ const preferencesObjectFactory = (val: boolean): UserSettingType[] => {
       index: 3,
       appName: 'Vibes App',
       enabled: val,
-    }, 
+    },
   ];
 };
 
