@@ -35,7 +35,7 @@ export const BeamEditor: React.FC = () => {
 
   const { t } = useTranslation('app-antenna');
 
-  const { getCorePlugins } = useRootComponentProps();
+  const { singleSpa, getCorePlugins } = useRootComponentProps();
 
   /*
    * get the logged-in user info and info about their profile's NSFW property
@@ -297,20 +297,11 @@ export const BeamEditor: React.FC = () => {
   }, [blocksInUse, focusedBlock]);
 
   const handleLeavePage = () => {
-    /**
-     * get the appName and navigationUrl from the newUrl state
-     */
-    const splitPathNames = new URL(newUrl).pathname.split('/');
-    const appName = splitPathNames.slice(1, 3).join('/');
-    const navigationUrl = `/${splitPathNames.slice(3, splitPathNames.length).join('/')}`;
     // reset states
     setDisablePublishing(true);
     setNewUrl(null);
-    // navigate away from editor to the desired url.
-    getCorePlugins().routing.navigateTo({
-      appName: appName,
-      getNavigationUrl: () => navigationUrl,
-    });
+    // navigate away from editor to the desired url using singleSpa.
+    singleSpa.navigateToUrl(newUrl);
   };
 
   const handleModalClose = () => setNewUrl(null);
