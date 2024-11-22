@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import PageLayout from './base-layout';
-import { useAkashaStore, useRootComponentProps, useTheme } from '@akashaorg/ui-awf-hooks';
+import {
+  useAkashaStore,
+  useNotifications,
+  useRootComponentProps,
+  useTheme,
+} from '@akashaorg/ui-awf-hooks';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -12,17 +16,20 @@ import {
   LockLight,
   LockDark,
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 
 const NotificationsPreferencesOption: React.FC = () => {
   const { theme } = useTheme();
-  const { baseRouteName, getCorePlugins } = useRootComponentProps();
+
+  const { notificationsEnabled, waitingForSignature, enableNotifications } = useNotifications();
+  const { baseRouteName, uiEvents, getCorePlugins } = useRootComponentProps();
+  const _uiEvents = React.useRef(uiEvents);
   const navigateTo = getCorePlugins().routing.navigateTo;
   const { t } = useTranslation('app-settings-ewa');
   const {
     data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
   const isLoggedIn = !!authenticatedDID;
-  const [loadingUnlock] = useState();
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -54,6 +61,18 @@ const NotificationsPreferencesOption: React.FC = () => {
     );
   }
 
+  const handleUnlockPreferences = async () => {
+    const enabled = await enableNotifications();
+    _uiEvents.current.next({
+      event: NotificationEvents.ShowNotification,
+      data: {
+        type: enabled ? NotificationTypes.Success : NotificationTypes.Error,
+        title: enabled ? t('Notification preferences saved') : t('Couldn’t save preferences'),
+        description: enabled ? undefined : t('Signature verification failed. Please try again.'),
+      },
+    });
+  };
+
   const unlockCard = (
     <Card background={{ light: 'grey9', dark: 'grey3' }} padding="p-3">
       <Stack direction="row" spacing="gap-x-3">
@@ -67,13 +86,13 @@ const NotificationsPreferencesOption: React.FC = () => {
           </Text>
           {
             <Button
-              onClick={() => {}}
+              onClick={handleUnlockPreferences}
               variant="text"
               size="md"
               color="dark:secondaryLight secondaryDark"
               label={t('Unlock')}
               customStyle="mr-auto"
-              loading={loadingUnlock}
+              loading={waitingForSignature}
             />
           }
         </Stack>
@@ -81,7 +100,15 @@ const NotificationsPreferencesOption: React.FC = () => {
     </Card>
   );
 
-  return <PageLayout title={t('Preferences')}>{unlockCard}</PageLayout>;
+  return (
+    <Stack spacing="gap-y-4" customStyle="mb-2">
+      <Text variant="h5">{t('Preferences')}</Text>
+      {!notificationsEnabled && unlockCard}
+      <Text variant="body2" color={{ dark: 'white', light: 'black' }}>
+        {t('Rest of settings ...')}
+      </Text>
+    </Stack>
+  );
 };
 
 export default NotificationsPreferencesOption;
