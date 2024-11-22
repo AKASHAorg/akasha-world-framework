@@ -40,3 +40,4 @@ export { useMentions } from './use-mentions';
 export { useProfilesList } from './use-profiles-list';
 export { useSaveImage } from './use-save-image';
 export { useValidateUniqueExtensionProp } from './use-validate-unique-extension-prop';
+export { useNotifications } from './use-notifications';
