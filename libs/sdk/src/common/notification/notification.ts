@@ -172,21 +172,21 @@ class NotificationService {
    * This method fetches the user's subscription details validates the data against a predefined schema
    * and returns the parsed user settings.
    * The `notificationsClient` must be initialized in read mode before invoking this method
-   * @returns {Promise<UserSettingType[]>}
+   * @returns {Promise<UserSettingType[] | null>} Null is resolved when user has not set any preferences yet
    * @throws {Error} If the `notificationsClient` is not initialized.
-   * @throws {Error} If no subscription information is found for the channel.
    * @throws {Error} If the subscription data fails to parse against the schema.
    */
-  async getSettingsOfUser(): Promise<UserSettingType[]> {
+  async getSettingsOfUser(): Promise<UserSettingType[] | null> {
     // Fetch Subscription of user
     const subscriptions: ApiSubscriptionType[] =
       await this.notificationsClient.notification.subscriptions({
         channel: this._notificationChannelId,
       });
+
     const channelSubscriptionInfo = subscriptions.find(
       subscription => subscription.channel === this._notificationChannelId,
     );
-    if (!channelSubscriptionInfo) throw new Error('Settings not found');
+    if (!channelSubscriptionInfo) return null;
 
     // Parse the response
     const result = ChannelUserSettingsSchema.safeParse(channelSubscriptionInfo);
