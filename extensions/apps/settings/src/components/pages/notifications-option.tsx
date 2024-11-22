@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import PageLayout from './base-layout';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps, useNotifications } from '@akashaorg/ui-awf-hooks';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -12,7 +12,6 @@ import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoade
 import NotificationSettingsCard from '@akashaorg/design-system-components/lib/components/NotificationSettingsCard';
 import appRoutes, { NOTIFICATIONS } from '../../routes';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import getSDK from '@akashaorg/core-sdk';
 
 const notificationsSettingsItems: ISettingsItem[] = [
   {
@@ -26,15 +25,11 @@ const notificationsSettingsItems: ISettingsItem[] = [
 ];
 
 const NotificationsOption: React.FC = () => {
-  const sdk = getSDK();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
-    sdk.services.common.notification.checkIfNotificationsEnabled(),
-  );
-  const [loading, setLoading] = useState(false);
   const { baseRouteName, uiEvents, getCorePlugins } = useRootComponentProps();
   const { t } = useTranslation('app-settings-ewa');
   const _uiEvents = React.useRef(uiEvents);
   const navigateTo = getCorePlugins().routing.navigateTo;
+  const { notificationsEnabled, waitingForSignature, enableNotifications } = useNotifications();
 
   const {
     data: { authenticatedDID, isAuthenticating },
@@ -90,18 +85,7 @@ const NotificationsOption: React.FC = () => {
   }
 
   const handleEnableNotifications = async () => {
-    setLoading(true);
-    let result: keyof typeof TOAST_TEXTS;
-    try {
-      await sdk.services.common.notification.initialize({ readonly: false });
-      result = 'success';
-      setNotificationsEnabled(true);
-    } catch (error) {
-      result = 'error';
-      setNotificationsEnabled(false);
-    } finally {
-      setLoading(false);
-    }
+    const result: keyof typeof TOAST_TEXTS = (await enableNotifications()) ? 'success' : 'error';
 
     _uiEvents.current.next({
       event: NotificationEvents.ShowNotification,
@@ -119,7 +103,7 @@ const NotificationsOption: React.FC = () => {
         <Stack padding="p-4">
           <NotificationSettingsCard
             image={'notificationsDefault'}
-            isLoading={loading}
+            isLoading={waitingForSignature}
             noWrapperCard={true}
             handleButtonClick={handleEnableNotifications}
             text={t('You’ll be prompted with 1 signature')}
