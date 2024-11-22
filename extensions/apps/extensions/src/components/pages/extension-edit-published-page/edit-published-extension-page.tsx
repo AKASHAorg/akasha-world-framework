@@ -1,11 +1,13 @@
 import React, { useContext, useMemo, useRef } from 'react';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
-import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
-import appRoutes, { MY_EXTENSIONS } from '../../../routes';
 import { useTranslation } from 'react-i18next';
 import { transformSource, useRootComponentProps, useSaveImage } from '@akashaorg/ui-awf-hooks';
 import { useGetAppsByIdQuery, useUpdateAppMutation } from '@akashaorg/ui-awf-hooks/lib/generated';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
+import Icon from '@akashaorg/design-system-core/lib/components/Icon';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import ExtensionEditPublishedForm, {
   ExtensionEditPublishedFormValues,
 } from '@akashaorg/design-system-components/lib/components/ExtensionEditPublishedForm';
@@ -17,9 +19,6 @@ import { selectAppData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by
 import { MAX_GALLERY_IMAGES } from '../../../constants';
 import { AtomContext, formDefaultData } from './main-page';
 import { useAtom } from 'jotai';
-import Text from '@akashaorg/design-system-core/lib/components/Text';
-import Icon from '@akashaorg/design-system-core/lib/components/Icon';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
 type EditPublishedExtensionPageProps = {
   extensionId: string;
@@ -121,12 +120,11 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
 
   const handleClickSubmit = formData => {
     const extData = {
+      logoImage: formData?.logoImage,
       coverImage: formData?.coverImage,
       description: formData?.description,
-      displayName: formData?.displayName,
       gallery: formData?.gallery,
       links: formData?.links,
-      logoImage: formData?.logoImage,
     };
     updateAppMutation({
       variables: {
@@ -173,6 +171,16 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
     showErrorNotification(t("The image wasn't uploaded correctly. Please try again!"));
   };
 
+  if (extensionDataError) {
+    return (
+      <ErrorLoader
+        type="script-error"
+        title={t('Error loading extension data')}
+        details={extensionDataError.message}
+      />
+    );
+  }
+
   if (extensionDataLoading) {
     return (
       <Card>
@@ -180,6 +188,7 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
           <Icon
             icon={<ArrowPathIcon />}
             color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+            size="lg"
           />
           <Text variant="body2" weight="bold">
             {t('Loading edit form')}
@@ -286,7 +295,7 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
         disabled: false,
         handleClick: () => {
           navigate({
-            to: appRoutes[MY_EXTENSIONS],
+            to: '/my-extensions',
           });
         },
       }}

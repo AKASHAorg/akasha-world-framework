@@ -8,6 +8,7 @@ import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoade
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import InfoCard from '@akashaorg/design-system-core/lib/components/InfoCard';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
 import { useAkashaStore, useDismissedCard, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
@@ -183,6 +184,26 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
     publishedAppData ? handlePublishReleaseNav() : setShowModal(true);
   };
 
+  if (appsByIdError) {
+    return (
+      <ErrorLoader
+        type="script-error"
+        title={t('Error loading extension data')}
+        details={appsByIdError.message}
+      />
+    );
+  }
+
+  if (appsReleasesError) {
+    return (
+      <ErrorLoader
+        type="script-error"
+        title={t('Error loading extension data')}
+        details={appsReleasesError.message}
+      />
+    );
+  }
+
   if (!authenticatedDID) {
     return (
       <ErrorLoader
@@ -227,9 +248,16 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
           {t('Release Manager')}
         </Text>
         <Card padding={8} background={{ light: 'grey9', dark: 'grey2' }}>
-          <Stack customStyle="w-0 min-w-full" padding={0}>
-            <ExtensionElement extensionData={extensionData as Extension} />
-          </Stack>
+          {loadingAppsByIdQuery && (
+            <Stack align="center" justify="center" fullWidth customStyle="h-full">
+              <Spinner />
+            </Stack>
+          )}
+          {!loadingAppsByIdQuery && (
+            <Stack customStyle="w-0 min-w-full" padding={0}>
+              <ExtensionElement extensionData={extensionData as Extension} />
+            </Stack>
+          )}
         </Card>
         <Stack direction="row" justify="between">
           <Text variant="h6" weight="semibold">

@@ -140,11 +140,12 @@ const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = pr
   return (
     <form onSubmit={onSave} className={tw(apply`h-full`)}>
       <Stack direction="column" spacing="gap-y-4">
-        <Stack padding="p-4">
+        <Stack padding="pt-4 px-4">
           <Header
             {...header}
             extensionType={displayOnlyValues.applicationType}
             nsfw={displayOnlyValues.nsfw}
+            showExtraInfo={true}
             onLogoImageChange={logoImage => {
               setValue('logoImage', logoImage, { shouldDirty: true });
             }}
@@ -152,10 +153,11 @@ const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = pr
               setValue('coverImage', coverImage, { shouldDirty: true });
             }}
           />
+        </Stack>
+        <Stack padding="px-4">
           <Divider />
         </Stack>
-
-        <Stack padding="px-4 pb-16" spacing="gap-y-4">
+        <Stack padding="px-4">
           <Accordion
             accordionId={extensionInformationLabel}
             open={showAccordion}
@@ -165,11 +167,11 @@ const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = pr
               </Text>
             }
             contentNode={
-              <Stack>
+              <Stack spacing="gap-y-4">
                 <Text variant="footnotes2" color={{ light: 'grey4', dark: 'grey6' }}>
                   {extensionInformationDescriptionLabel}
                 </Text>
-                <Stack spacing="gap-y-4" padding={'pt-4'}>
+                <Stack spacing="gap-y-4">
                   <Stack spacing="gap-y-2">
                     <Text variant="h6" weight="bold">
                       {extensionIdLabel}
@@ -195,6 +197,8 @@ const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = pr
             }
             handleClick={handleToggleAccordion}
           />
+        </Stack>
+        <Stack padding="px-4 pb-16" spacing="gap-y-4">
           <Divider />
           <Controller
             control={control}
@@ -240,9 +244,7 @@ const ExtensionEditPublishedForm: React.FC<ExtensionEditPublishedFormProps> = pr
             }}
           />
         </Stack>
-
         <Divider />
-
         <Stack direction="row" justify="end" spacing="gap-x-2" customStyle="px-4 pb-4">
           <Button
             variant="text"

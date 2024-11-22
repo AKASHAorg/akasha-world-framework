@@ -70,10 +70,12 @@ const Pill: React.FC<PillProps> = props => {
       <Stack
         align="center"
         justify="center"
+        direction="row"
+        spacing="gap-x-1"
         background={background}
         customStyle={`min-h-min min-w-min rounded-full py-1 px-2 ${borderStyle} ${customStyle}`}
       >
-        {icon && icon}
+        {icon}
         <Text
           variant="footnotes2"
           selectable={false}

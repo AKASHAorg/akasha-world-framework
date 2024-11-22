@@ -307,24 +307,35 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setShowLogoGuidelineModal(true)}
           />
         </Stack>
-      </Stack>
-      {showExtraInfo && (
-        <Stack direction="row" spacing="gap-2" justify="end" align="center">
-          <Pill
-            type="info"
-            label={capitalize(extensionType?.toLowerCase())}
-            icon={<ExtensionIcon type={extensionType} />}
-          />
-          {nsfw && (
+        {showExtraInfo && (
+          <Stack
+            direction="row"
+            spacing="gap-2"
+            justify="end"
+            align="center"
+            customStyle="absolute right-0 -bottom-8"
+          >
             <Pill
               type="info"
-              label={'NSFW'}
-              background={{ light: 'errorFade', dark: 'errorDark' }}
-              color={{ light: 'errorDark', dark: 'white' }}
+              label={capitalize(extensionType?.toLowerCase())}
+              icon={<ExtensionIcon size={'sm'} type={extensionType} />}
+              background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
+              color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+              customStyle="py-0.5"
             />
-          )}
-        </Stack>
-      )}
+            {nsfw && (
+              <Pill
+                type="info"
+                label={'NSFW'}
+                background={{ light: 'errorFade', dark: 'errorDark' }}
+                color={{ light: 'errorDark', dark: 'white' }}
+                customStyle="py-0.5"
+              />
+            )}
+          </Stack>
+        )}
+      </Stack>
+
       <ImageModal
         show={showEditImage}
         title={appImageType === 'logo-image' ? imageTitle.logoImage : imageTitle.coverImage}
