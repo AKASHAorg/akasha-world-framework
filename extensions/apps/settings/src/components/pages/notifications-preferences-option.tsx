@@ -97,14 +97,16 @@ const NotificationsPreferencesOption: React.FC = () => {
 
   const handleUnlockPreferences = async () => {
     const enabled = await enableNotifications();
-    _uiEvents.current.next({
-      event: NotificationEvents.ShowNotification,
-      data: {
-        type: enabled ? NotificationTypes.Success : NotificationTypes.Error,
-        title: enabled ? t('Notification preferences saved') : t('Couldn’t save preferences'),
-        description: enabled ? undefined : t('Signature verification failed. Please try again.'),
-      },
-    });
+    if (!enabled) {
+      _uiEvents.current.next({
+        event: NotificationEvents.ShowNotification,
+        data: {
+          type: NotificationTypes.Error,
+          title: t('Couldn’t unlock preferences'),
+          description: enabled ? undefined : t('Signature verification failed. Please try again.'),
+        },
+      });
+    }
   };
 
   const handleToggleAll = (val: boolean) => {
@@ -133,11 +135,22 @@ const NotificationsPreferencesOption: React.FC = () => {
   };
 
   const handleSave = async () => {
+    let success: boolean;
     setLoading(true);
     const preferencesPayload: UserSetting[] = preferences?.map(({ enabled }) => ({
       enabled,
     }));
-    await sdk.services.common.notification.setSettings(preferencesPayload);
+
+    success = await sdk.services.common.notification.setSettings(preferencesPayload);
+    
+    _uiEvents.current.next({
+      event: NotificationEvents.ShowNotification,
+      data: {
+        type: success ? NotificationTypes.Success : NotificationTypes.Error,
+        title: success ? t('Notification preferences saved') : t('Couldn’t save preferences'),
+        description: success ? undefined : t('Signature verification failed. Please try again.'),
+      },
+    });
     setLoading(false);
   };
 

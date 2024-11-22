@@ -214,6 +214,7 @@ class NotificationService {
    *
    * @throws {Error} If the new settings do not match the length or order of the channel's settings.
    * @throws {Error} If the `notificationsWriteClient` is not initialized.
+   * @returns {boolean} If true - success, false - error while setting settings 
    */
   @validate(
     z.array(
@@ -222,16 +223,18 @@ class NotificationService {
       }),
     ),
   )
-  async setSettings(newSettings: UserSetting[]): Promise<void> {
+  async setSettings(newSettings: UserSetting[]): Promise<boolean> {
     const settingsFromChannel = await this.getSettingsOfChannel();
     if (newSettings.length !== settingsFromChannel.length)
       // If the settings are sent without order or there are some opt-in missing PushProtocol sets all the opt-in to false
       throw new Error(
         'Settings must contain all the opt-ins available. Please be aware that the order of the opt-in sent matter',
       );
-    await this.notificationsWriteClient.notification.subscribe(this._notificationChannelId, {
+    const response = await this.notificationsWriteClient.notification.subscribe(this._notificationChannelId, {
       settings: newSettings,
     });
+
+    return response.status === 204 ? true : false
   }
 
   /**
