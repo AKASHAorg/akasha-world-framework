@@ -214,7 +214,7 @@ class NotificationService {
    *
    * @throws {Error} If the new settings do not match the length or order of the channel's settings.
    * @throws {Error} If the `notificationsWriteClient` is not initialized.
-   * @returns {boolean} If true - success, false - error while setting settings 
+   * @returns {boolean} If true - success, false - error while setting settings
    */
   @validate(
     z.array(
