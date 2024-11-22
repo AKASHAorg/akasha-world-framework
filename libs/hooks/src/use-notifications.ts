@@ -5,13 +5,16 @@ import getSDK from '@akashaorg/core-sdk';
  * Hook to enable notifications and observe signature propmpt result.
  * @example useNotifications hook
  * ```typescript
- * const { notificationsEnabled, loading, enableNotifications } = useNotifications();
+ * const { notificationsEnabled, previouslyEnabled, waitingForSignature, enableNotifications } = useNotifications();
  *
  * ```
  */
 export function useNotifications() {
   const sdk = getSDK();
 
+  const [previouslyEnabled, setPreviouslyEnabled] = useState(() => {
+    sdk.services.common.notification.getNotificationsEnabledStatus();
+  });
   const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
     sdk.services.common.notification.checkIfNotificationsEnabled(),
   );
@@ -25,7 +28,10 @@ export function useNotifications() {
       await sdk.services.common.notification.initialize({ readonly: false });
       enabled = true;
       setNotificationsEnabled(true);
+      setPreviouslyEnabled(true);
+      sdk.services.common.notification.setNotificationsEnabledStatus(true);
     } catch (error) {
+      console.error(error);
       enabled = false;
       setNotificationsEnabled(false);
     } finally {
@@ -34,5 +40,5 @@ export function useNotifications() {
     return enabled;
   };
 
-  return { notificationsEnabled, waitingForSignature, enableNotifications };
+  return { notificationsEnabled, previouslyEnabled, waitingForSignature, enableNotifications };
 }
