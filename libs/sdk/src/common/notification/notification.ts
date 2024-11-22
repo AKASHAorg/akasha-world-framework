@@ -161,7 +161,7 @@ class NotificationService {
   async getSettingsOfChannel(): Promise<ChannelSettings[]> {
     const response = await this.notificationsClient.channel.info(this._notificationChannelId);
     const parseResponse = ChannelInfoResponseSchema.safeParse(response);
-    if (!parseResponse.success) throw new Error('User Settings unable to parse');
+    if (!parseResponse.success) throw new Error('Channel Settings unable to parse');
 
     return parseResponse.data;
   }
