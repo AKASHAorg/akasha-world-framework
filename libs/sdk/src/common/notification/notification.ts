@@ -47,6 +47,7 @@ class NotificationService {
   private _notificationsStream?: PushStream;
   private _notificationChannelId: string;
   public readonly latestSeenNotificationIDKey = 'latestSeenNotificationIDKey';
+  public readonly notificationsEnabledStatusKey = 'notificationsEnabledStatusKey';
 
   constructor(
     @inject(TYPES.Log) logFactory: Logging,
@@ -444,8 +445,21 @@ class NotificationService {
     return localStorage.set(this.localStorageKeyOfLatestSeenNotification, val);
   }
 
+  getNotificationsEnabledStatus() {
+    const status = localStorage.getItem(this.localStorageKeyOfNotificationsEnabledStatus);
+    return status ? JSON.parse(status) : false;
+  }
+
+  setNotificationsEnabledStatus(val: boolean) {
+    return localStorage.setItem(this.localStorageKeyOfNotificationsEnabledStatus, val.toString());
+  }
+
   private get localStorageKeyOfLatestSeenNotification() {
     return `${this._web3.state.address}-${this.latestSeenNotificationIDKey}`;
+  }
+
+  private get localStorageKeyOfNotificationsEnabledStatus() {
+    return `${this._web3.state.address}-${this.notificationsEnabledStatusKey}`;
   }
 
   get notificationsClient() {

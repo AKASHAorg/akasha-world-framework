@@ -12,7 +12,7 @@ export type WelcomePageProps = {
 };
 
 const WelcomePage: React.FC<WelcomePageProps> = () => {
-  const { notificationsEnabled } = useNotifications();
+  const { notificationsEnabled, previouslyEnabled } = useNotifications();
   const { baseRouteName, getCorePlugins } = useRootComponentProps();
   const {
     data: { authenticatedProfile },
@@ -55,7 +55,8 @@ const WelcomePage: React.FC<WelcomePageProps> = () => {
       </ErrorLoader>
     );
 
-  return notificationsEnabled ? (
+  // notifications can be displayed even if user has not signed them in current session (readOnly mode)
+  return notificationsEnabled || previouslyEnabled ? (
     <Stack padding="p-4">
       <Text>TODO - Notifications show up here</Text>
     </Stack>
