@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/consistent-function-scoping */
 import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import { genWorldConfig } from './world-config';
 import { uiEventsMock } from '../mocks/uiEvents';
@@ -9,13 +10,13 @@ const corePluginsMock = {
     getUrlForApp: () => '',
     registerRoute: () => {},
     unregisterRoute: () => {},
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     subscribe: () => () => {},
     getSnapshot: () => ({
       all: {},
       activeExtensionsNames: {},
       byArea: {},
     }),
+    cancelNavigation: () => () => {},
   },
   contentBlockStore: {
     registerContentBlocks: () => {},
@@ -44,7 +45,6 @@ const corePluginsMock = {
     retryFromError: () => Promise.resolve(),
     // modify statusCodes as needed
     getStaticStatusCodes: () => ({ status: {} as any, error: {} as any }),
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     subscribe: () => () => {},
   },
   extensionUninstaller: {
