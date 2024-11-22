@@ -12,9 +12,9 @@ import getSDK from '@akashaorg/core-sdk';
 export function useNotifications() {
   const sdk = getSDK();
 
-  const [previouslyEnabled, setPreviouslyEnabled] = useState(() => {
-    sdk.services.common.notification.getNotificationsEnabledStatus();
-  });
+  const [previouslyEnabled, setPreviouslyEnabled] = useState(() =>
+    sdk.services.common.notification.getNotificationsEnabledStatus(),
+  );
   const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
     sdk.services.common.notification.checkIfNotificationsEnabled(),
   );
