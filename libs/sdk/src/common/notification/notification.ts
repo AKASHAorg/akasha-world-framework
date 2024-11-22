@@ -445,7 +445,7 @@ class NotificationService {
     return localStorage.set(this.localStorageKeyOfLatestSeenNotification, val);
   }
 
-  getNotificationsEnabledStatus() {
+  getNotificationsEnabledStatus(): boolean {
     const status = localStorage.getItem(this.localStorageKeyOfNotificationsEnabledStatus);
     return status ? JSON.parse(status) : false;
   }
