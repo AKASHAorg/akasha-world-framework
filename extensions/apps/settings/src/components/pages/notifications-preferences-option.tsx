@@ -16,13 +16,14 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import {
   LockLight,
   LockDark,
+  InfoLight,
+  InfoDark,
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import Checkbox from '@akashaorg/design-system-core/lib/components/Checkbox';
 
 const NotificationsPreferencesOption: React.FC = () => {
   const { theme } = useTheme();
-
   const { notificationsEnabled, waitingForSignature, enableNotifications } = useNotifications();
   const { baseRouteName, uiEvents, getCorePlugins } = useRootComponentProps();
   const _uiEvents = React.useRef(uiEvents);
@@ -75,10 +76,11 @@ const NotificationsPreferencesOption: React.FC = () => {
     });
   };
 
+  const isDarkTheme = theme === 'Dark-Theme';
   const unlockCard = (
     <Card background={{ light: 'grey9', dark: 'grey3' }} padding="p-3">
       <Stack direction="row" spacing="gap-x-3">
-        {theme === 'Dark-Theme' ? <LockLight /> : <LockDark />}
+        {isDarkTheme ? <LockLight /> : <LockDark />}
         <Stack direction="column" spacing="gap-y-1">
           <Text variant="button-md" color={{ dark: 'white', light: 'black' }}>
             {t('Unlock preferences')}
@@ -102,16 +104,15 @@ const NotificationsPreferencesOption: React.FC = () => {
     </Card>
   );
 
-  const notificationsEnabled2 = true;
 
   return (
     <Stack spacing="gap-y-4" customStyle="mb-2">
       <Text variant="h5">{t('Notification Preferences')}</Text>
-      {!notificationsEnabled2 && unlockCard}
+      {!notificationsEnabled && unlockCard}
 
       <Card
         padding="pb-3"
-        customStyle={tw(`${!notificationsEnabled2 && 'opacity-50 pointer-events-none'}`)}
+        customStyle={tw(`${!notificationsEnabled && 'opacity-50 pointer-events-none'}`)}
       >
         <Stack padding="px-3 pb-6">
           {/* Enable all */}
@@ -180,22 +181,12 @@ const NotificationsPreferencesOption: React.FC = () => {
             </Text>
             <Card padding="p-3" customStyle="mt-4" background={{ light: 'grey9', dark: 'grey3' }}>
               <Stack direction="row" spacing="gap-x-3">
-                <svg
-                  width="20"
-                  height="24"
-                  viewBox="0 0 20 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M1.875 12C1.875 7.51269 5.51269 3.875 10 3.875C14.4873 3.875 18.125 7.51269 18.125 12C18.125 16.4873 14.4873 20.125 10 20.125C5.51269 20.125 1.875 16.4873 1.875 12ZM9.1302 10.7987C10.0854 10.3211 11.1609 11.1839 10.9019 12.2199L10.3111 14.5833L10.3456 14.566C10.6544 14.4116 11.0298 14.5368 11.1842 14.8455C11.3385 15.1542 11.2134 15.5297 10.9046 15.684L10.8701 15.7013C9.91488 16.1789 8.83936 15.3162 9.09838 14.2801L9.68922 11.9167L9.65465 11.934C9.34591 12.0884 8.97049 11.9633 8.81612 11.6545C8.66175 11.3458 8.78689 10.9704 9.09563 10.816L9.1302 10.7987ZM10 9.5C10.3452 9.5 10.625 9.22018 10.625 8.875C10.625 8.52982 10.3452 8.25 10 8.25C9.65482 8.25 9.375 8.52982 9.375 8.875C9.375 9.22018 9.65482 9.5 10 9.5Z"
-                    fill="#BA9AE0"
-                  />
-                </svg>
-
-                <Text variant="body1" customStyle='text-sm'>
+                {isDarkTheme ? (
+                  <InfoLight className="shrink-0" />
+                ) : (
+                  <InfoDark className="shrink-0" />
+                )}
+                <Text variant="body1" customStyle="text-sm">
                   {t('Changing notifications preferences requires a signature')}
                 </Text>
               </Stack>
