@@ -17,6 +17,8 @@ import Eth from './eth';
 import Faq from './faq';
 import Following from './following';
 import Github from './github';
+import InfoLight from './info-light';
+import InfoDark from './info-dark';
 import IntegrationAppCTA from './integration-app-cta';
 import Italic from './italic';
 import ImageCrossed from './image-crossed';
@@ -68,6 +70,8 @@ export type CustomIconTypes = Extract<
   | 'Faq'
   | 'Following'
   | 'Github'
+  | 'InfoDark'
+  | 'InfoLight'
   | 'IntegrationAppCTA'
   | 'Italic'
   | 'ImageCrossed'
@@ -116,6 +120,8 @@ export {
   Faq,
   Following,
   Github,
+  InfoDark,
+  InfoLight,
   IntegrationAppCTA,
   Italic,
   ImageCrossed,

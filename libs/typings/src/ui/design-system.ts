@@ -79,6 +79,7 @@ export type IconType =
   | 'Faq'
   | 'Following'
   | 'Github'
+  | 'info-light'
   | 'IntegrationAppCTA'
   | 'Italic'
   | 'LicenseWtfpl'
