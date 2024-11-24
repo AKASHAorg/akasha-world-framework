@@ -1,18 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { apply, tw } from '@twind/core';
+import { ProfileLabeled } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import AutoComplete from '@akashaorg/design-system-core/lib/components/AutoComplete';
+import Button from '@akashaorg/design-system-core/lib/components/Button';
 import {
   CheckIcon,
   XMarkIcon,
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import { apply, tw } from '@twind/core';
-import { ButtonType } from '../types/common.types';
-import { ProfileLabeled } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import { ButtonType } from '@akashaorg/design-system-components/lib/components/types/common.types';
+import UnsavedChangesModal from '@akashaorg/design-system-components/lib/components/UnsavedChangesModal';
+import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 
 export type EditInterestsProps = {
+  cancelButtonLabel: string;
+  leavePageLabel: string;
+  modalTitle: string;
+  modalDescription: string;
   title: string;
   subTitle: string;
   description: string;
@@ -23,7 +29,7 @@ export type EditInterestsProps = {
   interests: ProfileLabeled[];
   labelType: string;
   maxInterestsErrorMessage: string;
-  cancelButton: Omit<ButtonType, 'handleClick'> & { handleClick: (canSave?: boolean) => void };
+  cancelButton: ButtonType;
   saveButton: {
     label: string;
     loading?: boolean;
@@ -42,6 +48,10 @@ export type EditInterestsProps = {
  * @param customStyle - the wrapper form can be customised through this
  */
 const EditInterests: React.FC<EditInterestsProps> = ({
+  cancelButtonLabel,
+  leavePageLabel,
+  modalTitle,
+  modalDescription,
   title,
   subTitle,
   description,
@@ -62,8 +72,11 @@ const EditInterests: React.FC<EditInterestsProps> = ({
   const [myActiveInterests, setMyActiveInterests] = useState(new Set(myInterests));
   const [allMyInterests, setAllMyInterests] = useState(new Set(myInterests));
   const [tags, setTags] = useState(new Set<string>());
+  const [newUrl, setNewUrl] = useState<string | null>(null);
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const { singleSpa, getCorePlugins } = useRootComponentProps();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMyActiveInterests(new Set(myInterests));
     setAllMyInterests(new Set(myInterests));
   }, [myInterests]);
@@ -97,6 +110,7 @@ const EditInterests: React.FC<EditInterestsProps> = ({
     !!query;
 
   useEffect(() => {
+    setIsDisabled(!isFormDirty);
     if (onFormDirty) onFormDirty(isFormDirty);
   }, [isFormDirty, onFormDirty]);
 
@@ -108,6 +122,7 @@ const EditInterests: React.FC<EditInterestsProps> = ({
     },
     [allMyInterests],
   );
+
   const getNewInterest = useCallback(() => {
     if (query) {
       const foundInterest = findInterest(query);
@@ -120,8 +135,44 @@ const EditInterests: React.FC<EditInterestsProps> = ({
 
   const maximumInterestsSelected = myActiveInterests.size + tagsSize >= maxInterests;
 
+  useEffect(() => {
+    let navigationSubscribe: () => void;
+    if (!isDisabled) {
+      navigationSubscribe = getCorePlugins().routing.cancelNavigation(!isDisabled, url => {
+        setNewUrl(url);
+      });
+    }
+
+    return () => {
+      if (typeof navigationSubscribe === 'function') {
+        navigationSubscribe();
+      }
+    };
+  }, [isDisabled]);
+
+  const handleLeavePage = () => {
+    // reset states
+    setIsDisabled(true);
+    setNewUrl(null);
+    // navigate away from editor to the desired url using singleSpa.
+    singleSpa.navigateToUrl(newUrl);
+  };
+
+  const handleModalClose = () => setNewUrl(null);
+
   return (
     <form className={tw(apply`h-full ${customStyle}`)}>
+      {!!newUrl && (
+        <UnsavedChangesModal
+          showModal={!!newUrl}
+          cancelButtonLabel={cancelButtonLabel}
+          leavePageButtonLabel={leavePageLabel}
+          title={modalTitle}
+          description={modalDescription}
+          handleModalClose={handleModalClose}
+          handleLeavePage={handleLeavePage}
+        />
+      )}
       <Stack direction="column" justify="between" spacing="gap-y-11" customStyle="h-full">
         <Stack direction="column">
           <Stack direction="row" align="center" spacing="gap-x-1">
@@ -190,7 +241,7 @@ const EditInterests: React.FC<EditInterestsProps> = ({
           <Button
             variant="text"
             label={cancelButton.label}
-            onClick={() => cancelButton.handleClick(isFormDirty)}
+            onClick={cancelButton.handleClick}
             disabled={cancelButton.disabled}
           />
           <Button

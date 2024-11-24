@@ -3,7 +3,7 @@ import TextField from '@akashaorg/design-system-core/lib/components/TextField';
 import { Controller, Control } from 'react-hook-form';
 import { Header, HeaderProps } from './Header';
 import { EditProfileFormValues } from '../types';
-import { ButtonType } from '../../types/common.types';
+import { ButtonType } from '@akashaorg/design-system-components/lib/components/types/common.types';
 
 const MAX_BIO_LENGTH = 200;
 

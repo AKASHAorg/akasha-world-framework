@@ -1,17 +1,5 @@
-import { Image } from '@akashaorg/typings/lib/ui';
+import { EditProfileFormValues } from './types';
 import { FormState } from 'react-hook-form';
-
-export type EditProfileFormValues = {
-  name?: string;
-  bio?: string;
-  nsfw?: boolean;
-  links: {
-    id: string;
-    href: string;
-  }[];
-  avatar?: Image | File;
-  coverImage?: Image | File;
-};
 
 export function isFormWithExceptionOfLinksDirty(
   dirtyFields: FormState<EditProfileFormValues>['dirtyFields'],

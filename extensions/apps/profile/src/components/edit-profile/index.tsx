@@ -1,20 +1,19 @@
-import React, { SyntheticEvent, useMemo } from 'react';
+import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import * as z from 'zod';
-import Button from '@akashaorg/design-system-core/lib/components/Button';
-import Stack from '@akashaorg/design-system-core/lib/components/Stack';
-import { SocialLinks, SocialLinksProps } from './SocialLinks';
 import { apply, tw } from '@twind/core';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { General, GeneralProps } from './General';
-import {
-  EditProfileFormValues,
-  isFormExcludingAllExceptLinksDirty,
-  isFormWithExceptionOfLinksDirty,
-} from './types';
-import { ButtonType } from '../types/common.types';
-import { InputType, NSFW } from '../NSFW';
 import { PublishProfileData } from '@akashaorg/typings/lib/ui';
+import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import Button from '@akashaorg/design-system-core/lib/components/Button';
+import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import { InputType, NSFW } from '@akashaorg/design-system-components/lib/components/NSFW';
+import UnsavedChangesModal from '@akashaorg/design-system-components/lib/components/UnsavedChangesModal';
+import { ButtonType } from '@akashaorg/design-system-components/lib/components/types/common.types';
+import { General, GeneralProps } from './General';
+import { SocialLinks, SocialLinksProps } from './SocialLinks';
+import { isFormExcludingAllExceptLinksDirty, isFormWithExceptionOfLinksDirty } from './utils';
+import { EditProfileFormValues } from './types';
 
 const MIN_NAME_CHARACTERS = 3;
 
@@ -28,12 +27,16 @@ type SocialLinkFormProps = Pick<
 type GeneralFormProps = Pick<GeneralProps, 'header' | 'name' | 'bio'>;
 
 export type EditProfileProps = {
+  cancelButtonLabel: string;
+  leavePageLabel: string;
+  modalTitle: string;
+  modalDescription: string;
   defaultValues?: PublishProfileData;
   /**
    * modifying the handleClick to have an optional 'canSave' param.
    * This determines when the cancel button click handler should show the unsaved changes modal.
    */
-  cancelButton: Omit<ButtonType, 'handleClick'> & { handleClick: (canSave?: boolean) => void };
+  cancelButton: ButtonType;
   saveButton: {
     label: string;
     loading?: boolean;
@@ -46,6 +49,10 @@ export type EditProfileProps = {
   SocialLinkFormProps;
 
 const EditProfile: React.FC<EditProfileProps> = ({
+  cancelButtonLabel,
+  leavePageLabel,
+  modalTitle,
+  modalDescription,
   defaultValues = {
     avatar: null,
     coverImage: null,
@@ -66,7 +73,16 @@ const EditProfile: React.FC<EditProfileProps> = ({
   linkLabel,
   addNewLinkButtonLabel,
 }) => {
-  const { control, setValue, getValues, formState } = useForm<EditProfileFormValues>({
+  const [newUrl, setNewUrl] = useState<string | null>(null);
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const { singleSpa, getCorePlugins } = useRootComponentProps();
+  const {
+    control,
+    setValue,
+    getValues,
+    formState: { dirtyFields, errors },
+  } = useForm<EditProfileFormValues>({
     defaultValues: {
       ...defaultValues,
       links: defaultValues.links.map(link => ({ id: crypto.randomUUID(), href: link })),
@@ -74,7 +90,6 @@ const EditProfile: React.FC<EditProfileProps> = ({
     resolver: zodResolver(schema),
     mode: 'onChange',
   });
-  const { dirtyFields, errors } = formState;
 
   const links = useWatch({ name: 'links', control });
 
@@ -86,24 +101,65 @@ const EditProfile: React.FC<EditProfileProps> = ({
   const isFormDirty =
     isFormWithExceptionOfLinksDirty(dirtyFields) || formExcludingAllExceptLinksDirty;
 
-  const isValid = !Object.keys(errors).length;
-
   const onSave = (event: SyntheticEvent) => {
     event.preventDefault();
     const formValues = getValues();
 
-    if (isValid && isFormDirty) {
+    if (isFormValid && isFormDirty) {
       saveButton.handleClick({
         ...formValues,
         links: formValues.links?.map(link => link.href?.trim())?.filter(link => link) || [],
       });
+      // reset state, to prevent re-triggering unsaved changes modal
+      setIsDisabled(true);
     }
   };
 
-  const isDisabled = isValid ? !isFormDirty : true;
+  useEffect(() => {
+    const isValid = !Object.keys(errors).length;
+    const buttonDisabled = isValid ? !isFormDirty : true;
+    setIsFormValid(isValid);
+    setIsDisabled(buttonDisabled);
+  }, [dirtyFields, errors, isFormDirty]);
+
+  useEffect(() => {
+    let navigationSubscribe: () => void;
+    if (!isDisabled) {
+      navigationSubscribe = getCorePlugins().routing.cancelNavigation(!isDisabled, url => {
+        setNewUrl(url);
+      });
+    }
+
+    return () => {
+      if (typeof navigationSubscribe === 'function') {
+        navigationSubscribe();
+      }
+    };
+  }, [isDisabled]);
+
+  const handleLeavePage = () => {
+    // reset states
+    setIsDisabled(true);
+    setNewUrl(null);
+    // navigate away from editor to the desired url using singleSpa.
+    singleSpa.navigateToUrl(newUrl);
+  };
+
+  const handleModalClose = () => setNewUrl(null);
 
   return (
     <form data-testid="edit-profile" onSubmit={onSave} className={tw(apply`h-full ${customStyle}`)}>
+      {!!newUrl && (
+        <UnsavedChangesModal
+          showModal={!!newUrl}
+          cancelButtonLabel={cancelButtonLabel}
+          leavePageButtonLabel={leavePageLabel}
+          title={modalTitle}
+          description={modalDescription}
+          handleModalClose={handleModalClose}
+          handleLeavePage={handleLeavePage}
+        />
+      )}
       <Stack direction="column" spacing="gap-y-6">
         <General
           header={header}
@@ -135,7 +191,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
           <Button
             variant="text"
             label={cancelButton.label}
-            onClick={() => cancelButton.handleClick(!isDisabled)}
+            onClick={cancelButton.handleClick}
             disabled={cancelButton.disabled}
           />
           <Button
