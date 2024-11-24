@@ -105,9 +105,8 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
         return { ...prev, ...formDefaultData };
       });
       navigate({
-        to: '/post-publish/$extensionId',
-        search: { type: SubmitType.EXTENSION },
-        params: { extensionId },
+        to: '/info/$appId',
+        params: { appId: extensionId },
       });
     },
     onError: error => {
