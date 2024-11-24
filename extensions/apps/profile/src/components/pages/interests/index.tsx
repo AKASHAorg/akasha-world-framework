@@ -5,7 +5,6 @@ import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import { ProfileInterestsLoading } from '@akashaorg/design-system-components/lib/components/Profile';
-import EditInterests from '@akashaorg/design-system-components/lib/components/EditInterests';
 import { useTranslation } from 'react-i18next';
 import {
   useGetInterestsByDidQuery,
@@ -17,6 +16,7 @@ import { hasOwn, useRootComponentProps, useAkashaStore } from '@akashaorg/ui-awf
 import getSDK from '@akashaorg/core-sdk';
 import { useApolloClient } from '@apollo/client';
 import { ProfileLabeled } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import EditInterests from '../../edit-interests';
 
 type InterestsPageProps = {
   profileDID: string;
@@ -33,7 +33,7 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
   const {
     data: { authenticatedDID, isAuthenticating: authenticating },
   } = useAkashaStore();
-  const { getCorePlugins, navigateToModal } = useRootComponentProps();
+  const { getCorePlugins } = useRootComponentProps();
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeInterests, setActiveInterests] = useState([]);
   const isLoggedIn = !!authenticatedDID;
@@ -107,6 +107,13 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
       appName: '@akashaorg/app-antenna',
       getNavigationUrl: (navRoutes: { [key: string]: string }) =>
         `${navRoutes.Tags}/${topic.value}`,
+    });
+  };
+
+  const navigateToProfileInfoPage = () => {
+    navigateTo({
+      appName: '@akashaorg/app-profile',
+      getNavigationUrl: () => `/${profileDID}`,
     });
   };
 
@@ -195,6 +202,12 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
         )}
         {profileDID === authenticatedDID && (
           <EditInterests
+            cancelButtonLabel={t('Cancel')}
+            leavePageLabel={t('Leave page')}
+            modalTitle={t('Unsaved changes')}
+            modalDescription={t(
+              "Are you sure you want to leave this page? The changes you've made will not be saved.",
+            )}
             title={t('Your interests')}
             subTitle={t('(10 topics max.)')}
             description={t(
@@ -213,26 +226,7 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
             cancelButton={{
               label: t('Cancel'),
               disabled: isProcessing,
-              handleClick: canSave => {
-                /**
-                 * if new interest(s) have been created,
-                 * - prompt user of unsaved changes
-                 * otherwise,
-                 * - exit page
-                 */
-
-                if (canSave) {
-                  navigateToModal({
-                    name: 'unsaved-changes_edit-interests',
-                    message: profileDID,
-                  });
-                } else {
-                  navigateTo({
-                    appName: '@akashaorg/app-profile',
-                    getNavigationUrl: () => `/${profileDID}`,
-                  });
-                }
-              },
+              handleClick: navigateToProfileInfoPage,
             }}
             saveButton={{
               label: t('Save'),

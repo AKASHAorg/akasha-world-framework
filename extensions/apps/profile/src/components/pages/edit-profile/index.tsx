@@ -4,7 +4,6 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import EditProfile from '@akashaorg/design-system-components/lib/components/EditProfile';
 import getSDK from '@akashaorg/core-sdk';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,6 +20,7 @@ import {
 } from '@akashaorg/typings/lib/ui';
 import { getAvatarImage, getCoverImage } from './get-profile-images';
 import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
+import EditProfile from '../../edit-profile';
 
 type EditProfilePageProps = {
   profileDID: string;
@@ -29,7 +29,7 @@ type EditProfilePageProps = {
 const EditProfilePage: React.FC<EditProfilePageProps> = props => {
   const { profileDID } = props;
   const { t } = useTranslation('app-profile');
-  const { getCorePlugins, logger, uiEvents, navigateToModal } = useRootComponentProps();
+  const { getCorePlugins, logger, uiEvents } = useRootComponentProps();
   const {
     image: avatarImage,
     saveImage: saveAvatarImage,
@@ -207,6 +207,12 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
     <Stack direction="column" spacing="gap-y-4" customStyle="h-full">
       <Card radius={20} customStyle="py-4 h-full">
         <EditProfile
+          cancelButtonLabel={t('Cancel')}
+          leavePageLabel={t('Leave page')}
+          modalTitle={t('Unsaved changes')}
+          modalDescription={t(
+            "Are you sure you want to leave this page? The changes you've made will not be saved.",
+          )}
           defaultValues={{
             avatar: profileData?.avatar ? transformSource(profileData.avatar?.default) : null,
             coverImage: profileData?.background
@@ -269,21 +275,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
           cancelButton={{
             label: t('Cancel'),
             disabled: isProcessing,
-            handleClick: canSave => {
-              /**
-               * if form is dirty and save button is enabled,
-               * - prompt user of unsaved changes
-               * otherwise,
-               * - exit page
-               */
-
-              if (canSave) {
-                navigateToModal({
-                  name: 'unsaved-changes_edit-profile',
-                  message: profileDID,
-                });
-              } else navigateToProfileInfoPage();
-            },
+            handleClick: navigateToProfileInfoPage,
           }}
           saveButton={{
             label: t('Save'),
