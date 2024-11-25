@@ -94,7 +94,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
   const handleNavigateToExtensionInfoPage = () => {
     navigate({
       to: `/info/$appId`,
-      params: { appId: extensionData?.id },
+      params: { appId: extensionData?.name },
     });
   };
 
@@ -116,6 +116,11 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
     switch (extensionStatus) {
       case ExtensionStatus.InReview:
         return [
+          {
+            label: t('View Extension'),
+            icon: <EyeIcon />,
+            onClick: handleNavigateToExtensionInfoPage,
+          },
           {
             label: t('Edit Extension'),
             icon: <PencilIcon />,
@@ -140,7 +145,6 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
             icon: <EyeIcon />,
             onClick: handleNavigateToExtensionInfoPage,
           },
-
           {
             label: t('Edit Extension'),
             icon: <PencilIcon />,

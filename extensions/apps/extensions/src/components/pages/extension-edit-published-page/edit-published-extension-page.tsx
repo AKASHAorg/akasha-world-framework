@@ -14,7 +14,7 @@ import ExtensionEditPublishedForm, {
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { useNavigate } from '@tanstack/react-router';
 import getSDK from '@akashaorg/core-sdk';
-import { ExtType, SubmitType } from '../../app-routes';
+import { ExtType } from '../../app-routes';
 import { selectAppData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
 import { MAX_GALLERY_IMAGES } from '../../../constants';
 import { AtomContext, formDefaultData } from './main-page';
@@ -100,13 +100,13 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
 
   const [updateAppMutation, { loading: loadingAppMutation }] = useUpdateAppMutation({
     context: { source: sdk.current.services.gql.contextSources.composeDB },
-    onCompleted: () => {
+    onCompleted: data => {
       setForm(prev => {
         return { ...prev, ...formDefaultData };
       });
       navigate({
         to: '/info/$appId',
-        params: { appId: extensionId },
+        params: { appId: data?.updateAkashaApp?.document?.name },
       });
     },
     onError: error => {
@@ -119,8 +119,8 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
 
   const handleClickSubmit = formData => {
     const extData = {
-      logoImage: formData?.logoImage,
-      coverImage: formData?.coverImage,
+      logoImage: logoImage || formDefault?.logoImage,
+      coverImage: coverImage || formDefault?.coverImage,
       description: formData?.description,
       gallery: formData?.gallery,
       links: formData?.links,
