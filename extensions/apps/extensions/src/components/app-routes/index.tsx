@@ -322,26 +322,14 @@ const releaseInfoRoute = createRoute({
   },
 });
 
-type SubmitSearch = { type: SubmitType };
-
-export enum SubmitType {
-  EXTENSION = 'extension',
-  RELEASE = 'release',
-}
-
 const postPublishRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/post-publish/$extensionId`,
   notFoundComponent: () => <NotFoundComponent />,
-  validateSearch: (search: Record<string, unknown>): SubmitSearch => {
-    return { type: search.type as SubmitType };
-  },
   component: () => {
-    const from = postPublishRoute.useSearch();
-    const { extensionId } = postPublishRoute.useParams();
     return (
       <CatchBoundary getResetKey={() => 'post_publish_reset'} errorComponent={RouteErrorComponent}>
-        <PostPublishPage type={from.type} extensionId={extensionId} />
+        <PostPublishPage />
       </CatchBoundary>
     );
   },
