@@ -44,6 +44,7 @@ export const ExplorePage: React.FC<unknown> = () => {
     });
   };
 
+  //TODO: mock data
   const popularExtensions = [
     {
       id: '',
