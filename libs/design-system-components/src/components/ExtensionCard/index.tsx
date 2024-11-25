@@ -1,24 +1,25 @@
 import React, { ReactNode } from 'react';
-import Stack from '../Stack';
-import Card from '../Card';
-import AppCoverImage from '../AppCoverImage';
-import Text from '../Text';
-import Pill from '../Pill';
-import DidField from '../DidField';
-import Avatar from '../Avatar';
-import ProfileNameField from '../ProfileNameField';
-import ExtensionIcon from '../ExtensionIcon';
+import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import Card from '@akashaorg/design-system-core/lib/components/Card';
+import AppCoverImage from '@akashaorg/design-system-core/lib/components/AppCoverImage';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
+import Pill from '@akashaorg/design-system-core/lib/components/Pill';
+import DidField from '@akashaorg/design-system-core/lib/components/DidField';
+import Avatar from '@akashaorg/design-system-core/lib/components/Avatar';
+import ProfileNameField from '@akashaorg/design-system-core/lib/components/ProfileNameField';
+import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import { Extension, Image } from '@akashaorg/typings/lib/ui';
 
 export type ExtensionCardProps = {
   coverImageSrc: string;
   displayName: string;
   applicationType: Extension['applicationType'];
+  extensionTypeLabel: string;
   author?: {
     profileDID: string;
     name: string;
-    alternativeAvatars: Image[];
-    avatar: Image;
+    avatar?: Image;
+    alternativeAvatars?: Image[];
     nsfw?: boolean;
   };
   description: string;
@@ -36,6 +37,7 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
     coverImageSrc,
     displayName,
     applicationType,
+    extensionTypeLabel,
     author,
     description,
     defaultLabel,
@@ -68,7 +70,7 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
               icon={<ExtensionIcon type={applicationType} size="xs" />}
               weight="normal"
               size="xs"
-              label={applicationType}
+              label={extensionTypeLabel}
               type="info"
             />
             {isDefaultWorldExtension && (
@@ -94,7 +96,6 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
           </Stack>
           <Stack direction="row" align="center" spacing="gap-x-1">
             <Avatar
-              size="xs"
               avatar={author?.avatar}
               alternativeAvatars={author?.alternativeAvatars}
               profileId={author?.profileDID}

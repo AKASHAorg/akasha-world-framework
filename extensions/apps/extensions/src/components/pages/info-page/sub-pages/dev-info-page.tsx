@@ -20,6 +20,7 @@ import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import { NetworkStatus } from '@apollo/client';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
+import { getExtensionTypeLabel } from '../../../../utils/extension-utils';
 
 type DevInfoPageProps = {
   devDid: string;
@@ -105,6 +106,9 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
           coverImageSrc: app?.coverImage?.src,
           displayName: app?.displayName,
           applicationType: app?.applicationType,
+          extensionTypeLabel: t('{{extensionTypeLabel}}', {
+            extensionTypeLabel: getExtensionTypeLabel(app?.applicationType),
+          }),
           author: app.author
             ? {
                 profileDID: app.author?.akashaProfile?.did?.id,

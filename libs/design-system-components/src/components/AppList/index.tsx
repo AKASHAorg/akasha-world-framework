@@ -1,8 +1,6 @@
 import React from 'react';
 import DynamicInfiniteScroll, { DynamicInfiniteScrollProps } from '../DynamicInfiniteScroll';
-import ExtensionCard, {
-  ExtensionCardProps,
-} from '@akashaorg/design-system-core/lib/components/ExtensionCard';
+import ExtensionCard, { ExtensionCardProps } from '../ExtensionCard';
 
 export type AppListProps = {
   apps: ExtensionCardProps[];
@@ -49,6 +47,7 @@ const AppList: React.FC<AppListProps> = ({
           coverImageSrc,
           displayName,
           applicationType,
+          extensionTypeLabel,
           author,
           description,
           action,
@@ -63,6 +62,7 @@ const AppList: React.FC<AppListProps> = ({
             coverImageSrc={coverImageSrc}
             displayName={displayName}
             applicationType={applicationType}
+            extensionTypeLabel={extensionTypeLabel}
             author={author}
             description={description}
             action={action}

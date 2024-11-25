@@ -12,6 +12,7 @@ import { selectApps } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-pu
 import { useTranslation } from 'react-i18next';
 import { SortOrder } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { useNavigate } from '@tanstack/react-router';
+import { getExtensionTypeLabel } from '../../../utils/extension-utils';
 
 export const DefaultExtensionsList = () => {
   const { t } = useTranslation('app-extensions');
@@ -44,6 +45,9 @@ export const DefaultExtensionsList = () => {
     coverImageSrc: app?.coverImage?.src,
     displayName: app?.displayName,
     applicationType: app?.applicationType,
+    extensionTypeLabel: t('{{extensionTypeLabel}}', {
+      extensionTypeLabel: getExtensionTypeLabel(app?.applicationType),
+    }),
     author: app.author
       ? {
           profileDID: app.author?.akashaProfile?.did?.id,

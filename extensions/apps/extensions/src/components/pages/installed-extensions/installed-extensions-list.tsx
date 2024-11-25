@@ -15,6 +15,7 @@ import {
 } from '@akashaorg/ui-awf-hooks/lib/use-installed-extensions';
 import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { useNavigate } from '@tanstack/react-router';
+import { getExtensionTypeLabel } from '../../../utils/extension-utils';
 
 const PUBLIC_IMAGE_PATH = '/images';
 
@@ -58,6 +59,9 @@ export const InstalledExtensionsList = () => {
     coverImageSrc: ext?.coverImage?.src,
     displayName: ext?.displayName,
     applicationType: ext?.applicationType,
+    extensionTypeLabel: t('{{extensionTypeLabel}}', {
+      extensionTypeLabel: getExtensionTypeLabel(ext?.applicationType),
+    }),
     author: ext.author
       ? {
           profileDID: ext.author?.did?.id,

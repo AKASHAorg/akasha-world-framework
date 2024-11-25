@@ -7,6 +7,7 @@ import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks'
 import { ArrowLongRightIcon } from '@heroicons/react/24/outline';
 import { Explore } from '../explore';
 import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import { getExtensionTypeLabel } from '../../utils/extension-utils';
 
 export const ExplorePage: React.FC<unknown> = () => {
   const navigate = useNavigate();
@@ -87,6 +88,9 @@ export const ExplorePage: React.FC<unknown> = () => {
       popularExtensionsLabel={t('Popular Extensions')}
       popularExtensions={popularExtensions.map(ext => ({
         ...ext,
+        extensionTypeLabel: t('{{extensionTypeLabel}}', {
+          extensionTypeLabel: getExtensionTypeLabel(ext?.applicationType),
+        }),
         action: (
           <Button
             variant={isInstalled ? 'secondary' : 'primary'}

@@ -6,8 +6,10 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ExtensionCard, {
   ExtensionCardProps,
-} from '@akashaorg/design-system-core/lib/components/ExtensionCard';
+} from '@akashaorg/design-system-components/lib/components/ExtensionCard';
 import { ReactNode } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
+import { getExtensionTypeLabel } from '../utils/extension-utils';
 
 export type TExploreProps = {
   titleLabel: string;
@@ -31,6 +33,7 @@ export const Explore: React.FC<TExploreProps> = props => {
     cta,
     onViewAllClick,
   } = props;
+  const { t } = useTranslation('app-extensions');
 
   return (
     <Stack spacing="gap-y-4" customStyle="mb-2">
@@ -40,6 +43,9 @@ export const Explore: React.FC<TExploreProps> = props => {
           coverImageSrc={popularExtensions[0]?.coverImageSrc}
           displayName={popularExtensions[0]?.displayName}
           applicationType={popularExtensions[0]?.applicationType}
+          extensionTypeLabel={t('{{extensionTypeLabel}}', {
+            extensionTypeLabel: getExtensionTypeLabel(popularExtensions[0]?.applicationType),
+          })}
           author={popularExtensions[0]?.author}
           description={popularExtensions[0]?.description}
           featured={true}
