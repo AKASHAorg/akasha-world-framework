@@ -1,4 +1,5 @@
 import React, { Suspense, useCallback, useMemo } from 'react';
+import routes, { EDIT } from '../../routes';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import FollowProfileButton from '../follow-profile-button';
 import {
@@ -24,7 +25,6 @@ import {
 } from '@akashaorg/ui-awf-hooks';
 import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
-import { useNavigate } from '@tanstack/react-router';
 
 type ProfileHeaderProps = {
   profileDID: string;
@@ -40,7 +40,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = props => {
     data: { authenticatedDID },
   } = useAkashaStore();
   const { uiEvents, navigateToModal, getCorePlugins } = useRootComponentProps();
-  const navigate = useNavigate();
 
   const { data, error } = useGetProfileByDidSuspenseQuery({
     fetchPolicy:
@@ -89,11 +88,17 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = props => {
   };
 
   const handleClickProfileName = () => {
-    navigate({ to: '/$profileDID', params: { profileDID } });
+    navigateTo({
+      appName: '@akashaorg/app-profile',
+      getNavigationUrl: () => `/${profileDID}`,
+    });
   };
 
   const handleEdit = () => {
-    navigate({ to: '/$profileDID/edit', params: { profileDID } });
+    navigateTo({
+      appName: '@akashaorg/app-profile',
+      getNavigationUrl: () => `/${profileDID}${routes[EDIT]}`,
+    });
   };
 
   const handleFlagProfile = () => {
