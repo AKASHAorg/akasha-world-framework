@@ -96,16 +96,17 @@ class Gql {
         CeramicAccount: {
           merge: true,
           fields: {
-            akashaProfile: {
-              merge(existing = {}, incoming) {
-                return { ...existing, ...incoming };
-              },
-            },
             akashaFollowList: relayStylePagination(['sorting', 'filters']),
             akashaBeamStreamList: relayStylePagination(['sorting', 'filters']),
             akashaReflectStreamList: relayStylePagination(['sorting', 'filters']),
             akashaBeamList: relayStylePagination(['sorting', 'filters']),
             akashaAppList: relayStylePagination(['sorting', 'filters']),
+          },
+        },
+        AkashaProfile: {
+          merge: true,
+          fields: {
+            followers: relayStylePagination(['sorting', 'filters']),
           },
         },
         Query: {
