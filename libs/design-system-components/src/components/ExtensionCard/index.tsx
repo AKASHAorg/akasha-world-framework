@@ -51,7 +51,7 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
 
   return (
     <Card elevation="1" padding={16} radius={20} customStyle={customStyle}>
-      <Stack spacing="gap-y-2">
+      <Stack spacing="gap-y-4">
         <AppCoverImage
           src={coverImageSrc}
           appType={applicationType}
@@ -94,7 +94,7 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
               />
             )}
           </Stack>
-          <Stack direction="row" align="center" spacing="gap-x-1">
+          <Stack direction="row" align="center" spacing="gap-x-2">
             <Avatar
               avatar={author?.avatar}
               alternativeAvatars={author?.alternativeAvatars}
