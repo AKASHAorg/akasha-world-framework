@@ -51,7 +51,7 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
 
   return (
     <Card elevation="1" padding={16} radius={20} customStyle={customStyle}>
-      <Stack spacing="gap-y-4">
+      <Stack spacing="gap-y-2">
         <AppCoverImage
           src={coverImageSrc}
           appType={applicationType}
@@ -113,7 +113,9 @@ const ExtensionCard: React.FC<ExtensionCardProps> = props => {
             />
             <DidField did={author?.profileDID} isValid={true} copiable={true} />
           </Stack>
-          <Text variant="body2">{description}</Text>
+          <Text variant="body2" {...(!featured && { lineClamp: 2 })}>
+            {description}
+          </Text>
         </Stack>
       </Stack>
     </Card>
