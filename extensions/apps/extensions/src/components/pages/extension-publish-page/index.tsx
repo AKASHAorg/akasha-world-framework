@@ -22,7 +22,6 @@ import {
   useGetAppsByPublisherDidQuery,
 } from '@akashaorg/ui-awf-hooks/lib/generated';
 import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
-import { SubmitType } from '../../app-routes';
 import appRoutes, { SUBMIT_EXTENSION } from '../../../routes';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES, MAX_CONTRIBUTORS_DISPLAY } from '../../../constants';
 import { createAppMutationCache } from './create-app-mutation-cache';
@@ -116,7 +115,6 @@ export const ExtensionPublishPage: React.FC<ExtensionPublishPageProps> = ({ exte
       );
       navigate({
         to: '/post-publish/$extensionId',
-        search: { type: SubmitType.EXTENSION },
         params: { extensionId },
       });
     },
