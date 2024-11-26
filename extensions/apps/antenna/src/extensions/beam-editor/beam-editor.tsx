@@ -35,7 +35,7 @@ export const BeamEditor: React.FC = () => {
 
   const { t } = useTranslation('app-antenna');
 
-  const { singleSpa, getCorePlugins } = useRootComponentProps();
+  const { singleSpa, cancelNavigation, getCorePlugins } = useRootComponentProps();
 
   /*
    * get the logged-in user info and info about their profile's NSFW property
@@ -116,26 +116,24 @@ export const BeamEditor: React.FC = () => {
   }, [blocksInUse]);
 
   useEffect(() => {
-    let navigationSubscribe: () => void;
+    let navigationUnsubscribe: () => void;
     /**
      * when beam publishing is not disabled;
      * 1. call cancel navigation method from routing plugin
      * 2. set the new url from the callback fn.
      */
     if (!disableBeamPublishing) {
-      navigationSubscribe = getCorePlugins().routing.cancelNavigation(
-        !disableBeamPublishing,
-        url => {
-          setNewUrl(url);
-        },
-      );
+      navigationUnsubscribe = cancelNavigation(!disableBeamPublishing, url => {
+        setNewUrl(url);
+      });
     }
 
     return () => {
-      if (typeof navigationSubscribe === 'function') {
-        navigationSubscribe();
+      if (typeof navigationUnsubscribe === 'function') {
+        navigationUnsubscribe();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disableBeamPublishing]);
 
   const onBlockSelectAfter = (newSelection: ContentBlock) => {

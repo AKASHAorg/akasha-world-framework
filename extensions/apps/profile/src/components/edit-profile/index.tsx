@@ -70,7 +70,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const { t } = useTranslation('app-profile');
-  const { singleSpa, getCorePlugins } = useRootComponentProps();
+  const { singleSpa, cancelNavigation } = useRootComponentProps();
   const {
     control,
     setValue,
@@ -117,18 +117,19 @@ const EditProfile: React.FC<EditProfileProps> = ({
   }, [dirtyFields, errors, isFormDirty]);
 
   useEffect(() => {
-    let navigationSubscribe: () => void;
+    let navigationUnsubscribe: () => void;
     if (!isDisabled) {
-      navigationSubscribe = getCorePlugins().routing.cancelNavigation(!isDisabled, url => {
+      navigationUnsubscribe = cancelNavigation(!isDisabled, url => {
         setNewUrl(url);
       });
     }
 
     return () => {
-      if (typeof navigationSubscribe === 'function') {
-        navigationSubscribe();
+      if (typeof navigationUnsubscribe === 'function') {
+        navigationUnsubscribe();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDisabled]);
 
   const handleLeavePage = () => {
