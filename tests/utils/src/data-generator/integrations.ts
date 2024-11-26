@@ -84,4 +84,5 @@ export const genAppProps = (): IRootComponentProps & {
   encodeAppName: name => name,
   decodeAppName: name => name,
   getModalFromParams: () => ({ name: 'test-modal' }),
+  cancelNavigation: () => () => {},
 });
