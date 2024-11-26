@@ -128,22 +128,19 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
   const [draftExtensions, setDraftExtensions] = useState([]);
 
   // fetch the draft extensions that are saved only on local storage
-
   const allMyExtensions = [...draftExtensions, ...appElements];
 
-  const getDraftExtensions = () => {
-    try {
-      const existingDraftExtensions =
-        JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) ?? [];
-      setDraftExtensions(existingDraftExtensions);
-    } catch (error) {
-      showErrorNotification(error);
-      setDraftExtensions([]);
-    }
-  };
-
   useEffect(() => {
-    getDraftExtensions();
+    const getDraftExtensions = () => {
+      try {
+        const existingDraftExtensions =
+          JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) ?? [];
+        setDraftExtensions(existingDraftExtensions);
+      } catch (error) {
+        showErrorNotification(error);
+        setDraftExtensions([]);
+      }
+    };
     // subscribe and listen to events
     const eventsSub = uiEventsRef.current
       .pipe(filterEvents([EventTypes.RefetchMyExtensions]))
@@ -157,13 +154,13 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
           }
         },
       });
-
+    getDraftExtensions();
     return () => {
       if (eventsSub) {
         eventsSub.unsubscribe();
       }
     };
-  }, []);
+  }, [authenticatedDID, refetch, showErrorNotification]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({

@@ -41,6 +41,7 @@ import { WidgetStore } from './plugins/widget-store';
 import { ExtensionInstaller } from './plugins/extension-installer';
 import { SystemModuleType } from './type-utils';
 import { RoutingPlugin } from './plugins/routing-plugin';
+import { TestModeLoader } from './plugins/test-mode-loader';
 
 const isWindow = window && typeof window !== 'undefined';
 const encodeAppName = (name: string) => (isWindow ? encodeURIComponent(name) : name);
@@ -99,7 +100,10 @@ export default class AppLoader {
       window.addEventListener('single-spa:first-mount', this.onFirstMount);
       window.addEventListener('single-spa:routing-event', this.onRouting);
       singleSpa.addErrorHandler(err => {
-        this.logger.error(`single-spa error: ${err}`);
+        this.logger.error('single-spa error: %o', err);
+        if (this.erroredApps.includes(err.appOrParcelName)) {
+          return;
+        }
         this.erroredApps.push(err.appOrParcelName);
         hideError(this.layoutConfig.extensionSlots.applicationSlotId);
         showError(this.layoutConfig.extensionSlots.applicationSlotId);
@@ -422,8 +426,17 @@ export default class AppLoader {
       finalizeInstall: this.finalizeExtensionInstallation,
       registerAdditionalResources: this.registerAdditionalResources,
     });
+    const testModeLoaderPlugin = new TestModeLoader({
+      importModule: this.importModule,
+      initializeExtension: this.initializeExtension,
+      registerExtension: this.registerExtension,
+      finalizeInstall: this.finalizeExtensionInstallation,
+      registerAdditionalResources: this.registerAdditionalResources,
+    });
 
     extensionInstaller.listenAuthEvents();
+    testModeLoaderPlugin.listenAuthEvents();
+
     // add it directly to the plugins map
     this.plugins = Object.assign({}, this.plugins, {
       core: {
@@ -434,6 +447,7 @@ export default class AppLoader {
         extensionUninstaller: {
           uninstallExtension: this.uninstallExtension,
         },
+        testModeLoader: testModeLoaderPlugin,
         routing: routingPlugin,
       },
     });
