@@ -1,6 +1,7 @@
 import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import * as z from 'zod';
 import { apply, tw } from '@twind/core';
+import { useTranslation } from 'react-i18next';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PublishProfileData } from '@akashaorg/typings/lib/ui';
@@ -27,10 +28,6 @@ type SocialLinkFormProps = Pick<
 type GeneralFormProps = Pick<GeneralProps, 'header' | 'name' | 'bio'>;
 
 export type EditProfileProps = {
-  cancelButtonLabel: string;
-  leavePageLabel: string;
-  modalTitle: string;
-  modalDescription: string;
   defaultValues?: PublishProfileData;
   /**
    * modifying the handleClick to have an optional 'canSave' param.
@@ -49,10 +46,6 @@ export type EditProfileProps = {
   SocialLinkFormProps;
 
 const EditProfile: React.FC<EditProfileProps> = ({
-  cancelButtonLabel,
-  leavePageLabel,
-  modalTitle,
-  modalDescription,
   defaultValues = {
     avatar: null,
     coverImage: null,
@@ -76,6 +69,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
   const [newUrl, setNewUrl] = useState<string | null>(null);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const { t } = useTranslation('app-profile');
   const { singleSpa, getCorePlugins } = useRootComponentProps();
   const {
     control,
@@ -152,10 +146,12 @@ const EditProfile: React.FC<EditProfileProps> = ({
       {!!newUrl && (
         <UnsavedChangesModal
           showModal={!!newUrl}
-          cancelButtonLabel={cancelButtonLabel}
-          leavePageButtonLabel={leavePageLabel}
-          title={modalTitle}
-          description={modalDescription}
+          cancelButtonLabel={t('Cancel')}
+          leavePageButtonLabel={t('Leave page')}
+          title={t('Unsaved changes')}
+          description={t(
+            "Are you sure you want to leave this page? The changes you've made will not be saved.",
+          )}
           handleModalClose={handleModalClose}
           handleLeavePage={handleLeavePage}
         />

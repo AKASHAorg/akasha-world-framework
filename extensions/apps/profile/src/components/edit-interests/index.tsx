@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { apply, tw } from '@twind/core';
+import { useTranslation } from 'react-i18next';
 import { ProfileLabeled } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import AutoComplete from '@akashaorg/design-system-core/lib/components/AutoComplete';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -15,10 +16,6 @@ import UnsavedChangesModal from '@akashaorg/design-system-components/lib/compone
 import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 
 export type EditInterestsProps = {
-  cancelButtonLabel: string;
-  leavePageLabel: string;
-  modalTitle: string;
-  modalDescription: string;
   title: string;
   subTitle: string;
   description: string;
@@ -48,10 +45,6 @@ export type EditInterestsProps = {
  * @param customStyle - the wrapper form can be customised through this
  */
 const EditInterests: React.FC<EditInterestsProps> = ({
-  cancelButtonLabel,
-  leavePageLabel,
-  modalTitle,
-  modalDescription,
   title,
   subTitle,
   description,
@@ -74,6 +67,7 @@ const EditInterests: React.FC<EditInterestsProps> = ({
   const [tags, setTags] = useState(new Set<string>());
   const [newUrl, setNewUrl] = useState<string | null>(null);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const { t } = useTranslation('app-profile');
   const { singleSpa, getCorePlugins } = useRootComponentProps();
 
   useEffect(() => {
@@ -165,10 +159,12 @@ const EditInterests: React.FC<EditInterestsProps> = ({
       {!!newUrl && (
         <UnsavedChangesModal
           showModal={!!newUrl}
-          cancelButtonLabel={cancelButtonLabel}
-          leavePageButtonLabel={leavePageLabel}
-          title={modalTitle}
-          description={modalDescription}
+          cancelButtonLabel={t('Cancel')}
+          leavePageButtonLabel={t('Leave page')}
+          title={t('Unsaved changes')}
+          description={t(
+            "Are you sure you want to leave this page? The changes you've made will not be saved.",
+          )}
           handleModalClose={handleModalClose}
           handleLeavePage={handleLeavePage}
         />

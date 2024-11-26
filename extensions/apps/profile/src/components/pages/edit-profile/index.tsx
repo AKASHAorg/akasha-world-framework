@@ -207,12 +207,6 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
     <Stack direction="column" spacing="gap-y-4" customStyle="h-full">
       <Card radius={20} customStyle="py-4 h-full">
         <EditProfile
-          cancelButtonLabel={t('Cancel')}
-          leavePageLabel={t('Leave page')}
-          modalTitle={t('Unsaved changes')}
-          modalDescription={t(
-            "Are you sure you want to leave this page? The changes you've made will not be saved.",
-          )}
           defaultValues={{
             avatar: profileData?.avatar ? transformSource(profileData.avatar?.default) : null,
             coverImage: profileData?.background

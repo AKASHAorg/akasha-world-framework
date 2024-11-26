@@ -202,12 +202,6 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
         )}
         {profileDID === authenticatedDID && (
           <EditInterests
-            cancelButtonLabel={t('Cancel')}
-            leavePageLabel={t('Leave page')}
-            modalTitle={t('Unsaved changes')}
-            modalDescription={t(
-              "Are you sure you want to leave this page? The changes you've made will not be saved.",
-            )}
             title={t('Your interests')}
             subTitle={t('(10 topics max.)')}
             description={t(
