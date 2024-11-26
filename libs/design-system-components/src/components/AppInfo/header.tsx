@@ -109,12 +109,7 @@ export const AppInfoHeader: React.FC<AppInfoHeaderProps> = props => {
                 </AppInfoPill>
               )}
               <AppInfoPill background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}>
-                <Icon
-                  size="sm"
-                  icon={<ExtensionIcon type={extensionType} />}
-                  color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
-                  solid={true}
-                />
+                <ExtensionIcon type={extensionType} />
                 <Text variant="footnotes2" color={{ light: 'secondaryLight', dark: 'white' }}>
                   {extensionTypeLabel}
                 </Text>

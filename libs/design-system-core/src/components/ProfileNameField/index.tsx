@@ -1,18 +1,21 @@
 import React from 'react';
-import Text from '../Text';
+import Text, { FontWeight } from '../Text';
 import Tooltip from '../Tooltip';
 import Stack from '../Stack';
 import Icon from '../Icon';
 import { ExclamationTriangleIcon } from '../Icon/hero-icons-outline';
 import { getDidNetworkType, truncateDid } from '../../utils/did-utils';
 import { getColorClasses } from '../../utils';
+import { Color } from '../types/common.types';
 
 export type ProfileNameFieldProps = {
   did: string;
   profileName?: string;
   nsfwLabel?: string;
   truncateText?: boolean;
+  weight?: FontWeight;
   size?: 'sm' | 'md' | 'lg';
+  color?: Color;
   showMissingNameWarning?: boolean;
   missingNameWarningLabel?: string;
   hover?: boolean;
@@ -48,6 +51,8 @@ const ProfileNameField: React.FC<ProfileNameFieldProps> = ({
   nsfwLabel = '',
   truncateText,
   size = 'sm',
+  weight = 'bold',
+  color,
   showMissingNameWarning,
   missingNameWarningLabel,
   hover = false,
@@ -71,7 +76,8 @@ const ProfileNameField: React.FC<ProfileNameFieldProps> = ({
       <Stack direction="row" spacing="gap-x-1">
         <Text
           variant={`button-${size}`}
-          weight="bold"
+          weight={weight}
+          color={color}
           truncate={true}
           customStyle={`${textTruncateStyle} ${textHoverStyle}`}
         >

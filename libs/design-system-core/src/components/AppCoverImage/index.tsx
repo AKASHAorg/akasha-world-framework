@@ -1,9 +1,13 @@
 import React, { useMemo } from 'react';
+import Stack from '../Stack';
+import Icon from '../Icon';
 import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import { EyeSlashIcon } from '../Icon/hero-icons-outline';
 
 export type AppCoverImageProps = {
   src?: string;
   appType?: string;
+  isNSFW?: boolean;
   publicImgPath?: string;
   customStyle?: string;
 };
@@ -11,6 +15,7 @@ export type AppCoverImageProps = {
 const AppCoverImage = (props: AppCoverImageProps) => {
   const {
     src,
+    isNSFW,
     publicImgPath = '/images',
     appType = AkashaAppApplicationType.App,
     customStyle,
@@ -40,6 +45,22 @@ const AppCoverImage = (props: AppCoverImageProps) => {
         };
     }
   }, [appType]);
+
+  if (isNSFW) {
+    return (
+      <Stack
+        align="center"
+        justify="center"
+        background={{ light: 'grey9', dark: 'grey5' }}
+        customStyle={customStyle}
+        fullWidth
+      >
+        {isNSFW && (
+          <Icon icon={<EyeSlashIcon />} color={{ light: 'errorLight', dark: 'errorDark' }} />
+        )}
+      </Stack>
+    );
+  }
 
   return (
     <picture className={`w-full overflow-hidden ${customStyle}`}>

@@ -20,9 +20,14 @@ import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
 import { useCloseActions } from '@akashaorg/design-system-core/lib/utils/useCloseActions';
 import { DeleteImageModal } from './DeleteImageModal';
 import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import Pill from '@akashaorg/design-system-core/lib/components/Pill';
+import { capitalize } from 'lodash';
+import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 
 export type HeaderProps = {
   extensionType?: AkashaAppApplicationType;
+  nsfw?: boolean;
+  showExtraInfo?: boolean;
   coverImage: Image;
   logoImage: Image;
   cancelLabel: string;
@@ -49,6 +54,8 @@ export type HeaderProps = {
 
 export const Header: React.FC<HeaderProps> = ({
   extensionType,
+  nsfw,
+  showExtraInfo,
   coverImage,
   logoImage,
   cancelLabel,
@@ -300,7 +307,35 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setShowLogoGuidelineModal(true)}
           />
         </Stack>
+        {showExtraInfo && (
+          <Stack
+            direction="row"
+            spacing="gap-2"
+            justify="end"
+            align="center"
+            customStyle="absolute right-0 -bottom-8"
+          >
+            <Pill
+              type="info"
+              label={capitalize(extensionType?.toLowerCase())}
+              icon={<ExtensionIcon size={'sm'} type={extensionType} />}
+              background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
+              color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+              customStyle="py-0.5"
+            />
+            {nsfw && (
+              <Pill
+                type="info"
+                label={'NSFW'}
+                background={{ light: 'errorFade', dark: 'errorDark' }}
+                color={{ light: 'errorDark', dark: 'white' }}
+                customStyle="py-0.5"
+              />
+            )}
+          </Stack>
+        )}
       </Stack>
+
       <ImageModal
         show={showEditImage}
         title={appImageType === 'logo-image' ? imageTitle.logoImage : imageTitle.coverImage}

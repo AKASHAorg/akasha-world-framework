@@ -24,3 +24,9 @@ export const selectAppId = (data: GetAppsByIdQuery) => {
     return data.node.id;
   }
 };
+
+export const selectAppData = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node;
+  }
+};

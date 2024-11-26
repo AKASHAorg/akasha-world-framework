@@ -153,12 +153,12 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
   };
 
   return (
-    <Card padding={0} customStyle="max-h-100vh min-h-100vh md:min-h-[566px]">
+    <Stack padding={0} customStyle="max-h-100vh min-h-100vh md:min-h-[566px]">
       <Stack padding={16} direction="row" spacing="gap-x-2" justify="center" align="center">
         <Text variant="h6">{t('Add Contributors')}</Text>
       </Stack>
       <Divider />
-      <Stack padding={16} direction="column" spacing="gap-y-4" customStyle="overflow-auto grow">
+      <Stack padding={16} direction="column" spacing="gap-y-6" customStyle="overflow-auto grow">
         <Stack spacing="gap-y-1" direction="column">
           <Text variant="body2" color={{ light: 'grey4', dark: 'grey6' }} weight="light">
             {t('Add anyone who contributed to the creation of this extension.')}
@@ -188,7 +188,7 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
               </Text>
             </Stack>
           )}
-          {showSuggestions && contributors?.length > 0 && searchValue?.length > 1 && (
+          {showSuggestions && searchValue?.length > 1 && (
             <Stack direction="row" customStyle={'relative z-10'}>
               <Card
                 padding={0}
@@ -196,31 +196,43 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
                 elevation="2"
                 customStyle="absolute max-h-96 w-full overflow-y-auto scrollbar"
               >
-                <Stack direction="column" spacing="gap-2">
-                  {contributors?.map((profile, index) => (
-                    <Button key={index} plain onClick={() => handleAddContributor(profile)}>
-                      <Stack
-                        padding={16}
-                        direction="row"
-                        justify="between"
-                        align="center"
-                        customStyle="dark:hover:bg-tertiaryDark light:hover:bg-tertiaryLight"
-                      >
-                        <ProfileAvatarButton
-                          profileId={profile?.did?.id}
-                          label={profile?.name}
-                          avatar={transformSource(profile?.avatar?.default)}
-                          alternativeAvatars={profile?.avatar?.alternatives?.map(alternative =>
-                            transformSource(alternative),
-                          )}
-                        />
-                        {addedContributors?.some(
-                          contrib => contrib?.did?.id === profile?.did?.id,
-                        ) && <Icon icon={<CheckIcon />} accentColor />}
-                      </Stack>
-                    </Button>
-                  ))}
-                </Stack>
+                {contributors?.length === 0 && (
+                  <Stack padding={16} spacing="gap-y-2">
+                    <Text variant="body2" weight="bold" color={{ light: 'grey4', dark: 'grey6' }}>
+                      {t('No matches found.')}
+                    </Text>
+                    <Text variant="body2" color={{ light: 'grey4', dark: 'grey6' }}>
+                      {t('To add a user as a contributor, you should follow each other.')}
+                    </Text>
+                  </Stack>
+                )}
+                {contributors?.length > 0 && (
+                  <Stack direction="column" spacing="gap-2">
+                    {contributors?.map((profile, index) => (
+                      <Button key={index} plain onClick={() => handleAddContributor(profile)}>
+                        <Stack
+                          padding={16}
+                          direction="row"
+                          justify="between"
+                          align="center"
+                          customStyle="dark:hover:bg-tertiaryDark light:hover:bg-tertiaryLight"
+                        >
+                          <ProfileAvatarButton
+                            profileId={profile?.did?.id}
+                            label={profile?.name}
+                            avatar={transformSource(profile?.avatar?.default)}
+                            alternativeAvatars={profile?.avatar?.alternatives?.map(alternative =>
+                              transformSource(alternative),
+                            )}
+                          />
+                          {addedContributors?.some(
+                            contrib => contrib?.did?.id === profile?.did?.id,
+                          ) && <Icon icon={<CheckIcon />} accentColor />}
+                        </Stack>
+                      </Button>
+                    ))}
+                  </Stack>
+                )}
               </Card>
             </Stack>
           )}
@@ -300,6 +312,6 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
           disabled={addedContributors?.length === 0}
         />
       </Stack>
-    </Card>
+    </Stack>
   );
 };

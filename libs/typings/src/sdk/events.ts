@@ -24,6 +24,10 @@ export enum WEB3_EVENTS {
   WC_MODAL_CLOSED = '#web3#modalClosed',
 }
 
+export enum NOTIFICATION_EVENTS {
+  SUBSCRIPTION_NOT_ACCEPTED = '#notification#subscriptionNotAccepted',
+}
+
 export enum PROFILE_EVENTS {
   FOLLOW = '#profile#Follow',
   UNFOLLOW = '#profile#UnFollow',
@@ -64,5 +68,5 @@ export enum EXTENSION_EVENTS {
 }
 
 export enum GQL_EVENTS {
-  MUTATION = 'gql#mutation#event'
+  MUTATION = 'gql#mutation#event',
 }

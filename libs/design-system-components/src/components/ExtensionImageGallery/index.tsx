@@ -4,6 +4,7 @@ import { ImageBlockGridItem } from '../ImageBlockGallery/image-block-grid-item';
 import ImageOverlay from '../ImageOverlay';
 
 export type ExtensionImageGalleryProps = {
+  imageNotLoadedLabel: string;
   images: { height?: number; width?: number; src: string }[];
   showOverlay: boolean;
   toggleOverlay: () => void;
@@ -16,7 +17,7 @@ export type ExtensionImageGalleryProps = {
  * @param showOverlay - conditional rendering for the zooming overlay
  */
 const ExtensionImageGallery: React.FC<ExtensionImageGalleryProps> = props => {
-  const { images = [], showOverlay, toggleOverlay } = props;
+  const { imageNotLoadedLabel, images = [], showOverlay, toggleOverlay } = props;
   const [clickedImg, setClickedImg] = React.useState(null);
 
   const handleClickImage = (img: { src: string; size: { height: number; width: number } }) => {
@@ -36,6 +37,7 @@ const ExtensionImageGallery: React.FC<ExtensionImageGalleryProps> = props => {
       <div className={images?.length === 1 ? tw('flex') : tw(`${gridStyle}`)}>
         {images?.map((image, index) => (
           <ImageBlockGridItem
+            imageNotLoadedLabel={imageNotLoadedLabel}
             image={{ src: image.src, size: { width: image.width, height: image.height } }}
             key={index}
             handleClickImage={handleClickImage}

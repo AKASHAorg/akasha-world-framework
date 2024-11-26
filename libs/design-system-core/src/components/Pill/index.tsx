@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import Button from '../Button';
 import Stack from '../Stack';
 import Text, { TextProps } from '../Text';
@@ -20,6 +20,8 @@ type ActionPillProps = Pick<
 
 export type InfoPillProps = Pick<TextProps, 'weight' | 'color' | 'customStyle'> & {
   label: string;
+  size?: PillSize;
+  icon?: ReactElement;
   borderColor?: Color;
   background?: Color;
   customTextStyle?: string;
@@ -61,16 +63,29 @@ export type PillProps =
  **/
 const Pill: React.FC<PillProps> = props => {
   if (props.type === 'info') {
-    const { borderColor, background, color, label, weight, customStyle, customTextStyle } = props;
+    const {
+      borderColor,
+      background,
+      color,
+      label,
+      size = 'sm',
+      weight,
+      customStyle,
+      icon,
+      customTextStyle,
+    } = props;
 
     const borderStyle = borderColor ? `border ${getColorClasses(borderColor, 'border')}` : '';
     return (
       <Stack
+        direction="row"
         align="center"
         justify="center"
+        spacing="gap-x-1"
         background={background}
-        customStyle={`min-h-min min-w-min rounded-full py-1 px-2 ${borderStyle} ${customStyle}`}
+        customStyle={`${PILL_SIZE_MAP[size]} ${borderStyle} ${customStyle}`}
       >
+        {icon}
         <Text
           variant="footnotes2"
           selectable={false}

@@ -415,6 +415,7 @@ export const AkashaAppFragmentDoc = /*#__PURE__*/ gql`
   name
   displayName
   keywords
+  nsfw
   createdAt
   releases(first: 5, sorting: {createdAt: DESC}) {
     edges {

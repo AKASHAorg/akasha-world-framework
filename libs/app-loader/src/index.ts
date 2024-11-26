@@ -2,9 +2,13 @@ import { Subject, Subscription } from 'rxjs';
 import {
   hide404,
   hideError,
+  hideLoadingCard,
+  hideNotLoggedIn,
   hidePageSplash,
   show404,
   showError,
+  showLoadingCard,
+  showNotLoggedIn,
   showPageSplash,
 } from './html-template-handlers';
 import * as singleSpa from 'single-spa';
@@ -33,7 +37,7 @@ import {
   navigateToModal,
   parseQueryString,
 } from './utils';
-import { AUTH_EVENTS, EXTENSION_EVENTS } from '@akashaorg/typings/lib/sdk';
+import { AUTH_EVENTS } from '@akashaorg/typings/lib/sdk';
 import { AkashaApp, AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { ContentBlockStore } from './plugins/content-block-store';
 import { ExtensionPointStore } from './plugins/extension-point-store';
@@ -76,6 +80,7 @@ export default class AppLoader {
   userExtensions: InstalledExtensionSchema[];
   appNotFound: boolean;
   erroredApps: string[];
+  isLoadingUserExtensions: boolean;
   constructor(worldConfig: WorldConfig) {
     this.worldConfig = worldConfig;
     this.uiEvents = new Subject<UIEventData>();
@@ -91,6 +96,7 @@ export default class AppLoader {
     this.userExtensions = [];
     this.appNotFound = false;
     this.erroredApps = [];
+    this.isLoadingUserExtensions = false;
   }
 
   start = async () => {
@@ -99,14 +105,40 @@ export default class AppLoader {
       window.addEventListener('single-spa:before-first-mount', this.onBeforeFirstMount);
       window.addEventListener('single-spa:first-mount', this.onFirstMount);
       window.addEventListener('single-spa:routing-event', this.onRouting);
+      window.addEventListener('single-spa:before-mount-routing-event', this.beforeMountRouting);
+      window.addEventListener('single-spa:app-change', this.onAppChange);
+      window.addEventListener('single-spa:before-app-change', this.beforeAppChange);
+      window.addEventListener('unhandledrejection', err => {
+        this.logger.warn('unhandledrejection %o', err);
+        hidePageSplash();
+        if (this.layoutConfig) {
+          showError({
+            slot: this.layoutConfig?.extensionSlots.applicationSlotId,
+            onRefresh: () => {
+              window.location.reload();
+            },
+          });
+        }
+      });
       singleSpa.addErrorHandler(err => {
-        this.logger.error('single-spa error: %o', err);
         if (this.erroredApps.includes(err.appOrParcelName)) {
           return;
         }
+        this.logger.error('singleSpa error handler: %o', err);
+
+        if (singleSpa.getAppStatus(err.appOrParcelName) === singleSpa.LOAD_ERROR) {
+          this.logger.error('extension %s errored', err);
+        }
         this.erroredApps.push(err.appOrParcelName);
         hideError(this.layoutConfig.extensionSlots.applicationSlotId);
-        showError(this.layoutConfig.extensionSlots.applicationSlotId);
+        showError({
+          slot: this.layoutConfig.extensionSlots.applicationSlotId,
+          onRefresh: () => window.location.reload(),
+          onUnload: () => {
+            singleSpa.unloadApplication(err.appOrParcelName);
+            this.plugins.core.routing.unregisterRoute(err.appOrParcelName);
+          },
+        });
       });
     }
 
@@ -147,12 +179,38 @@ export default class AppLoader {
     this.singleSpaRegister(this.extensionConfigs);
   };
 
-  onRouting = (ev: CustomEvent) => {
+  beforeMountRouting = () => {
+    if (this.layoutConfig) {
+      hideNotLoggedIn(this.layoutConfig.extensionSlots.applicationSlotId);
+    }
+  };
+  beforeAppChange = (ev: CustomEvent<singleSpa.SingleSpaCustomEventDetail>) => {
+    const { newUrl } = ev.detail;
+    const appName = extractAppNameFromPath(new URL(newUrl).pathname);
+    const status = singleSpa.getAppStatus(appName);
+    if (status === singleSpa.NOT_LOADED) {
+      showLoadingCard(this.layoutConfig.extensionSlots.applicationSlotId);
+    }
+  };
+
+  onAppChange = () => {
+    if (!this.isLoadingUserExtensions) {
+      hideLoadingCard(this.layoutConfig.extensionSlots.applicationSlotId);
+    }
+  };
+
+  onRouting = async (ev: CustomEvent<singleSpa.SingleSpaCustomEventDetail>) => {
     const newURL = new URL(ev.detail.newUrl);
     const { appsByNewStatus } = ev.detail;
     if (this.appNotFound) {
-      hide404(this.layoutConfig.extensionSlots.applicationSlotId);
+      hide404(this.layoutConfig?.extensionSlots.applicationSlotId);
     }
+
+    if (this.layoutConfig) {
+      hideLoadingCard(this.layoutConfig.extensionSlots.applicationSlotId);
+    }
+
+    const appName = extractAppNameFromPath(newURL.pathname);
     // make sure we are no longer on the path of the broken app
     if (this.erroredApps.length && !appsByNewStatus.SKIP_BECAUSE_BROKEN.length) {
       // Note: The broken apps are siloed by the single-spa, and it will not even try to mount them again.
@@ -162,8 +220,18 @@ export default class AppLoader {
       // if we decide to also unregister the app, it will have some side-effects like plugins will no longer work
       // alternatively we can choose just to remove the menuItem from the sidebar.
       // @TODO: decide if we can also unregister the broken app.
-      this.erroredApps.forEach(appName => {
-        singleSpa.unloadApplication(appName);
+      this.erroredApps.forEach(extName => {
+        if (appName === extName) {
+          showError({
+            slot: this.layoutConfig.extensionSlots.applicationSlotId,
+            onRefresh: () => window.location.reload(),
+            onUnload: () => {
+              System.delete(System.resolve(extName));
+              this.plugins.core.routing.unregisterRoute(extName);
+              singleSpa.unloadApplication(extName);
+            },
+          });
+        }
       });
 
       this.erroredApps = [];
@@ -182,8 +250,25 @@ export default class AppLoader {
       // provided by the single-spa. More info: https://github.com/single-spa/single-spa/issues/1000
       const matchingApps = singleSpa.checkActivityFunctions(newURL as unknown as Location);
       if (matchingApps.filter(name => name !== this.worldConfig.layout).length === 0) {
-        this.logger.warn(`No application matches path: ${newURL.pathname}`);
-        const appName = extractAppNameFromPath(newURL.pathname);
+        if (!this.user && !this.isLoadingUserExtensions) {
+          // show not logged in error card
+          showNotLoggedIn(this.layoutConfig?.extensionSlots.applicationSlotId, () => {
+            this.plugins.core.routing.navigateTo({
+              appName: '@akashaorg/app-auth-ewa',
+              getNavigationUrl: appRoutes => {
+                return `${appRoutes.Connect}?${new URLSearchParams({
+                  redirectTo: location.pathname,
+                }).toString()}`;
+              },
+            });
+          });
+          return;
+        }
+
+        if (this.isLoadingUserExtensions) {
+          showLoadingCard(this.layoutConfig.extensionSlots.applicationSlotId);
+          return;
+        }
         // hide if template was already mounted
         hide404(this.layoutConfig.extensionSlots.applicationSlotId);
         show404(
@@ -193,6 +278,7 @@ export default class AppLoader {
           this.worldConfig.title,
         );
         this.appNotFound = true;
+        return;
       }
     }
 
@@ -320,12 +406,14 @@ export default class AppLoader {
       return;
     }
     this.user = { id: loginData.id };
+
+    this.isLoadingUserExtensions = true;
+
     this.userExtensions = await getUserInstalledExtensions();
     if (!this.userExtensions?.length) {
       // no extensions to load
       return;
     }
-
     const resp = await getRemoteLatestExtensionInfos(
       this.userExtensions.map(e => ({ name: e.appName })),
     );
@@ -347,6 +435,7 @@ export default class AppLoader {
     await this.initializeExtensions(modules);
     const extensionConfigs = this.registerExtensions(modules);
     this.singleSpaRegister(extensionConfigs);
+    this.isLoadingUserExtensions = false;
   };
   redirectHomeApp = () => {
     singleSpa.navigateToUrl(`/${this.worldConfig.homepageApp}/`);
@@ -392,15 +481,13 @@ export default class AppLoader {
         }
         this.userExtensions = this.userExtensions.filter(uExt => uExt.appName === ext.appName);
       }
-      this.globalChannel.next({
-        event: EXTENSION_EVENTS.REMOVED,
-        data: { name: ext.appName },
-      });
+      this.plugins.core.routing.unregisterRoute(ext.appName);
     }
     // if any of the mounted extensions are the user installed ones redirect to homepageApp
     if (isUserExtMounted) {
       this.redirectHomeApp();
     }
+    this.user = null;
   };
   // no need for other cleanups because we'll trigger a full page refresh
   uninstallExtension = async (extensionName: string) => {
@@ -601,6 +688,7 @@ export default class AppLoader {
       },
     });
   };
+
   // this function will be called at the end of the
   // installation flow. the singlespa.register function must be called last
   finalizeExtensionInstallation = (

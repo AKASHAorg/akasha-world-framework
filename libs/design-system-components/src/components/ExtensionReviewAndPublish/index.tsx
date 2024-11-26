@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { tw } from '@twind/core';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import Accordion from '@akashaorg/design-system-core/lib/components/Accordion';
@@ -9,7 +9,7 @@ import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Label from '@akashaorg/design-system-core/lib/components/Label';
 import Link from '@akashaorg/design-system-core/lib/components/Link';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
-import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
+import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Section from './section';
@@ -31,6 +31,7 @@ export type ExtensionReviewAndPublishProps = {
   descriptionLabel: string;
   galleryLabel: string;
   imageUploadedLabel: string;
+  imageNotLoadedLabel: string;
   viewAllLabel: string;
   usefulLinksLabel: string;
   licenseLabel: string;
@@ -42,6 +43,9 @@ export type ExtensionReviewAndPublishProps = {
   publicImagePath?: string;
   loading?: boolean;
   isDuplicateExtName?: boolean;
+  contributorsUi: ReactElement;
+  needToMakeChangesLabel: string;
+  editExtension: { handleClick: () => void; label };
   onViewGalleryClick?: () => void;
   onClickCancel: () => void;
   onClickSubmit: () => void;
@@ -59,6 +63,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
     descriptionLabel,
     galleryLabel,
     imageUploadedLabel,
+    imageNotLoadedLabel,
     viewAllLabel,
     usefulLinksLabel,
     licenseLabel,
@@ -70,6 +75,9 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
     publicImagePath = '/images',
     loading,
     isDuplicateExtName,
+    contributorsUi,
+    needToMakeChangesLabel,
+    editExtension,
     onViewGalleryClick,
     onClickCancel,
     onClickSubmit,
@@ -125,7 +133,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
 
   return (
     <>
-      <Stack padding={16} spacing="gap-y-4" customStyle="w-0 min-w-full">
+      <Stack padding="p-4" spacing="gap-y-4" customStyle="mb-4" fullWidth>
         <Text as="span" variant="body2" color={{ light: 'grey4', dark: 'grey6' }}>
           {subtitle.part1} <span className={asteriskStyle}>*</span> {subtitle.part2}
         </Text>
@@ -147,12 +155,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
             background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
             customStyle="w-fit self-end"
           >
-            <Icon
-              size="sm"
-              icon={<ExtensionIcon type={extensionData?.applicationType} />}
-              color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
-              solid={true}
-            />
+            <ExtensionIcon type={extensionData?.applicationType} />
             <Text variant="footnotes2" color={{ light: 'secondaryLight', dark: 'white' }}>
               {extensionData?.applicationType}
             </Text>
@@ -210,6 +213,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
             contentNode={
               <Stack spacing="gap-y-3">
                 <ExtensionImageGallery
+                  imageNotLoadedLabel={imageNotLoadedLabel}
                   images={galleryImagesWithSource?.slice(0, 3).map((image, idx) => ({
                     src: image?.src,
                     size: { width: image?.width, height: image?.height },
@@ -286,14 +290,7 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
               extensionData?.contributors?.length > 0,
               false,
             )}
-            contentNode={
-              <Stack spacing="gap-y-4">
-                {extensionData?.contributors?.map((el, index) => (
-                  // @TODO: provide also the avatar and name for profiles
-                  <ProfileAvatarButton key={index} profileId={el} />
-                ))}
-              </Stack>
-            }
+            contentNode={contributorsUi}
             handleClick={extensionData?.contributors?.length > 0 ? onAccordionClick : () => {}}
           />
         </Stack>
@@ -314,14 +311,31 @@ const ExtensionReviewAndPublish: React.FC<ExtensionReviewAndPublishProps> = prop
             handleClick={extensionData?.keywords?.length > 0 ? onAccordionClick : () => {}}
           />
         </Stack>
+        <Card
+          padding="p-3"
+          elevation="none"
+          radius={10}
+          background={{ light: 'grey9', dark: 'grey3' }}
+        >
+          <Stack align="center" direction="row" spacing="gap-x-2">
+            <Text variant="button-sm">{needToMakeChangesLabel}</Text>
+            <Button
+              variant="secondary"
+              label={editExtension.label}
+              onClick={editExtension.handleClick}
+              customStyle="ml-auto"
+            />
+          </Stack>
+        </Card>
       </Stack>
 
       <Divider />
 
       <Stack direction="row" padding="p-4" spacing="gap-x-2" align="center" justify="end">
-        <Button variant="text" label={backButtonLabel} onClick={onClickCancel} />
+        <Button variant="text" size="md" label={backButtonLabel} onClick={onClickCancel} />
         <Button
           variant="primary"
+          size="md"
           loading={loading}
           disabled={disablePublish || loading}
           label={publishButtonLabel}

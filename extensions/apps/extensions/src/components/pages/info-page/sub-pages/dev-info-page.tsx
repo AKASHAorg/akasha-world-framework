@@ -17,6 +17,10 @@ import {
 } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import { NetworkStatus } from '@apollo/client';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
+import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
+import { getExtensionTypeLabel } from '../../../../utils/extension-utils';
 
 type DevInfoPageProps = {
   devDid: string;
@@ -99,8 +103,27 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
         // @todo: we'll need to show the curated apps only. filtering will be made here
         ?.filter(() => true)
         .map(app => ({
-          ...app,
-          logoImage: transformSource(app.logoImage),
+          coverImageSrc: app?.coverImage?.src,
+          displayName: app?.displayName,
+          applicationType: app?.applicationType,
+          extensionTypeLabel: t('{{extensionTypeLabel}}', {
+            extensionTypeLabel: getExtensionTypeLabel(app?.applicationType),
+          }),
+          author: app.author
+            ? {
+                profileDID: app.author?.akashaProfile?.did?.id,
+                name: app.author?.akashaProfile?.name,
+                avatar: transformSource(app.author?.akashaProfile?.avatar?.default),
+                alternativeAvatars: app.author?.akashaProfile?.avatar.alternatives?.map(alt =>
+                  transformSource(alt),
+                ),
+                nsfw: app.author?.akashaProfile?.nsfw,
+              }
+            : null,
+          description: app?.description,
+          defaultLabel: t('Default'),
+          nsfwLabel: t('NSFW'),
+          nsfw: app?.nsfw,
           action: <Button onClick={handleAppOpen(app.name)} label={t('Open')} />,
         })),
     [appsReq.data, handleAppOpen, t],
@@ -114,10 +137,31 @@ export const DevInfoPage = (props: DevInfoPageProps) => {
           <ProfileAvatarButton
             profileId={devDid}
             label={name}
-            avatar={transformSource(avatar.default)}
+            avatar={transformSource(avatar?.default)}
             alternativeAvatars={avatar?.alternatives?.map(alt => transformSource(alt))}
             onClick={handleProfileClick}
           />
+          {appsReq.error && (
+            <>
+              <Divider />
+              <ErrorLoader
+                noWrapperCard={true}
+                type="list-not-available"
+                title={`${t('Uh-oh')}!${t("We couldn't load the extension list")}!`}
+                details={`${t('It seems there is a problem retreving the list of extensions')}. ${t('Please try again later')}!`}
+              />
+            </>
+          )}
+          {appsReq.networkStatus === NetworkStatus.ready && !apps?.length && (
+            <>
+              <Divider />
+              <DefaultEmptyCard
+                noBorder={true}
+                assetName="longbeam-notfound"
+                infoText={t('There are no releases for this extension yet')}
+              />
+            </>
+          )}
           {apps && apps.length > 0 && (
             <>
               <Divider />

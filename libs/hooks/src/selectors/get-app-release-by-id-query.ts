@@ -1,6 +1,12 @@
 import { GetAppReleaseByIdQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
 import { isNodeWithId } from './selector-utils';
 
+export const selectApp = (data: GetAppReleaseByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node.application;
+  }
+};
+
 export const selectAppName = (data: GetAppReleaseByIdQuery) => {
   if (isNodeWithId(data)) {
     return data.node.application.name;

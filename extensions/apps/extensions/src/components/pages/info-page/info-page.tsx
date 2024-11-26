@@ -28,12 +28,12 @@ import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import CopyToClipboard from '@akashaorg/design-system-core/lib/components/CopyToClipboard';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
-import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { useInstalledExtensions } from '@akashaorg/ui-awf-hooks/lib/use-installed-extensions';
 import { UninstallModal } from './uninstall-modal';
 import AppCoverImage from './AppCoverImage';
 import StackedAvatar from '@akashaorg/design-system-core/lib/components/StackedAvatar';
 import { AppInfoNotificationCards } from '@akashaorg/design-system-components/lib/components/AppInfo/notification-cards';
+import { getExtensionTypeLabel } from '../../../utils/extension-utils';
 
 type InfoPageProps = {
   appId: string;
@@ -122,11 +122,11 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
 
   const handleCollaboratorsClick = () => {
     navigate({
-      to: '/info/$appId/collaborators',
+      to: '/info/$appId/contributors',
       params: {
         appId,
       },
-    }).catch(err => logger.error('cannot navigate to /info/$appId/collaborators : %o', err));
+    }).catch(err => logger.error('cannot navigate to /info/$appId/contributors : %o', err));
   };
 
   const handleLicenseClick = () => {
@@ -149,22 +149,6 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
 
   const appData = selectAkashaApp(appReq.data);
   const latestRelease = useMemo(() => selectLatestRelease(appReq.data), [appReq.data]);
-
-  const extensionTypeLabel = useMemo(() => {
-    if (!appData?.applicationType) {
-      return '';
-    }
-    switch (appData.applicationType) {
-      case AkashaAppApplicationType.App:
-        return t('App');
-      case AkashaAppApplicationType.Plugin:
-        return t('Plugin');
-      case AkashaAppApplicationType.Widget:
-        return t('Widget');
-      default:
-        return t('Other');
-    }
-  }, [appData?.applicationType, t]);
 
   const coverImageSrc = useMemo(() => {
     if (appData?.coverImage?.src) {
@@ -228,7 +212,9 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                   }}
                   nsfw={appData.nsfw}
                   nsfwLabel={'NSFW'}
-                  extensionTypeLabel={extensionTypeLabel}
+                  extensionTypeLabel={t('{{extensionTypeLabel}}', {
+                    extensionTypeLabel: getExtensionTypeLabel(appData?.applicationType),
+                  })}
                   share={{ label: t('Share'), icon: <ShareIcon /> }}
                   report={{
                     label: t('Flag'),
@@ -298,6 +284,7 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                     }}
                   >
                     <ExtensionImageGallery
+                      imageNotLoadedLabel={t(`Cannot load image`)}
                       images={appData.gallery?.map(gImage => ({
                         ...gImage,
                         src: transformSource(gImage)?.src,
@@ -314,14 +301,39 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                       <Text variant="body2" color={{ light: 'grey4', dark: 'grey7' }}>
                         {t('Package name')}
                       </Text>
-                      <Button variant="text" size="md" label={appData.name} />
+                      <CopyToClipboard
+                        stringToBeCopied={appData.name}
+                        copyText={t('Copy to clipboard')}
+                        copiedText={t('Copied')}
+                      >
+                        <Text
+                          variant="button-md"
+                          color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+                        >
+                          {appData.name}
+                        </Text>
+                      </CopyToClipboard>
                     </Stack>
                     <Divider />
                     <Stack direction="row" justify="between">
                       <Text variant="body2" color={{ light: 'grey4', dark: 'grey7' }}>
                         {t('Extension ID')}
                       </Text>
-                      <Button variant="text" size="md" label={truncateDid(appData.id)} />
+                      <CopyToClipboard
+                        copyText={t('Copy to clipboard')}
+                        copiedText={t('Copied')}
+                        stringToBeCopied={appData.id}
+                      >
+                        <Text
+                          variant="button-md"
+                          color={{
+                            light: 'secondaryLight',
+                            dark: 'secondaryDark',
+                          }}
+                        >
+                          {truncateDid(appData.id)}
+                        </Text>
+                      </CopyToClipboard>
                     </Stack>
                     <Divider />
                     <Stack direction="row" justify="between">
