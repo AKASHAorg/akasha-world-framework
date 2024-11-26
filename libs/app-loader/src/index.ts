@@ -180,10 +180,15 @@ export default class AppLoader {
     }
   };
   beforeAppChange = (ev: CustomEvent<singleSpa.SingleSpaCustomEventDetail>) => {
-    const { newUrl } = ev.detail;
+    const { newUrl, oldUrl } = ev.detail;
     const appName = extractAppNameFromPath(new URL(newUrl).pathname);
     const status = singleSpa.getAppStatus(appName);
-    if (status === singleSpa.NOT_LOADED) {
+    const appsWithUnsavedChangesModal = ['@akashaorg/app-antenna', '@akashaorg/app-profile'];
+
+    if (
+      status === singleSpa.NOT_LOADED &&
+      !appsWithUnsavedChangesModal.some(_ns => oldUrl.includes(_ns))
+    ) {
       showLoadingCard(this.layoutConfig.extensionSlots.applicationSlotId);
     }
   };
