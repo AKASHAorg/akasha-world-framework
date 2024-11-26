@@ -12,6 +12,7 @@ import { DRAFT_EXTENSIONS, MAX_GALLERY_IMAGES } from '../../../constants';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
 import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
+import { ExtType } from '../../app-routes';
 
 type ExtensionEditStep2PageProps = {
   extensionId: string;
@@ -151,6 +152,7 @@ export const ExtensionEditStep2Page: React.FC<ExtensionEditStep2PageProps> = ({ 
             storeFormData(formData);
             navigate({
               to: '/edit-extension/$extensionId/gallery-manager',
+              search: { type: ExtType.LOCAL },
               params: {
                 extensionId,
               },
