@@ -2,6 +2,7 @@ import { AvatarSize, AvatarBorderSize, AvatarBorderColor } from '../components/A
 import { Color } from '../components/types/common.types';
 
 export const avatarSizesMap = {
+  xxs: 'w-4 h-4',
   xs: 'w-6 h-6',
   sm: 'w-8 h-8',
   md: 'w-10 h-10',
@@ -11,6 +12,7 @@ export const avatarSizesMap = {
 };
 
 export const avatarBorderSizesMap = {
+  xxs: '1',
   xs: '1',
   sm: '2',
   md: '4',
