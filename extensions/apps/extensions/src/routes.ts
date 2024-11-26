@@ -6,6 +6,7 @@ export const DEVELOPER_MODE = 'Developer Mode';
 export const INFO = 'App Info';
 export const CREATE_EXTENSION = 'Create Extension';
 export const EDIT_EXTENSION = 'Edit Extension';
+export const EDIT_PUBLISHED_EXTENSION = 'Edit Published Extension';
 export const SUBMIT_EXTENSION = 'Submit Extension';
 export const GALLERY_MANAGER = 'Gallery Manager';
 
@@ -19,6 +20,7 @@ export default {
   [INFO]: '/info/$appId',
   [CREATE_EXTENSION]: '/create-extension',
   [EDIT_EXTENSION]: '/edit-extension',
+  [EDIT_PUBLISHED_EXTENSION]: '/edit-published-extension',
   [SUBMIT_EXTENSION]: '/submit-extension',
   [GALLERY_MANAGER]: '/gallery-manager',
 };
