@@ -9,8 +9,6 @@ import {
 } from '@akashaorg/typings/lib/ui';
 import { ILogger } from '@akashaorg/typings/lib/sdk/log';
 
-type Detail = { oldUrl: string; newUrl: string; cancelNavigation: () => void };
-
 export class RoutingPlugin implements IRoutingPlugin {
   #routeRepository: RouteRepository;
   readonly #logger: ILogger;
@@ -215,27 +213,5 @@ export class RoutingPlugin implements IRoutingPlugin {
   // make it useSyncExternalStore friendly
   getSnapshot = () => {
     return this.#routeRepository;
-  };
-
-  /**
-   * This method relies on single spa's before-routing-event to determine when to block navigation.
-   * It is useful in scenarios where the user is allowed to make extra decision before completing the navigation action.
-   * @param shouldCancel - boolean value indicating when the navigation should be canceled, after setting the event listener on the window object.
-   * @param callback -  a callback function trigered after the navigation has been canceled.
-   * @returns a cleanup function that removes the event listener from the window object
-   */
-  cancelNavigation = (shouldCancel: boolean, callback: (targetUrl: string) => void) => {
-    const listenerFn = ({
-      detail: { newUrl, oldUrl, cancelNavigation },
-    }: Event & { detail: Detail }) => {
-      if (shouldCancel && new URL(newUrl).pathname !== new URL(oldUrl).pathname) {
-        cancelNavigation();
-        callback(newUrl);
-      }
-    };
-
-    window.addEventListener('single-spa:before-routing-event', listenerFn);
-
-    return () => window.removeEventListener('single-spa:before-routing-event', listenerFn);
   };
 }
