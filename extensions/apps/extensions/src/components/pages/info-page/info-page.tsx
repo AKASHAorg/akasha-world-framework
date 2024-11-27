@@ -28,12 +28,12 @@ import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import CopyToClipboard from '@akashaorg/design-system-core/lib/components/CopyToClipboard';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
-import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { useInstalledExtensions } from '@akashaorg/ui-awf-hooks/lib/use-installed-extensions';
 import { UninstallModal } from './uninstall-modal';
 import AppCoverImage from './AppCoverImage';
 import StackedAvatar from '@akashaorg/design-system-core/lib/components/StackedAvatar';
 import { AppInfoNotificationCards } from '@akashaorg/design-system-components/lib/components/AppInfo/notification-cards';
+import { getExtensionTypeLabel } from '../../../utils/extension-utils';
 
 type InfoPageProps = {
   appId: string;
@@ -150,22 +150,6 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
   const appData = selectAkashaApp(appReq.data);
   const latestRelease = useMemo(() => selectLatestRelease(appReq.data), [appReq.data]);
 
-  const extensionTypeLabel = useMemo(() => {
-    if (!appData?.applicationType) {
-      return '';
-    }
-    switch (appData.applicationType) {
-      case AkashaAppApplicationType.App:
-        return t('App');
-      case AkashaAppApplicationType.Plugin:
-        return t('Plugin');
-      case AkashaAppApplicationType.Widget:
-        return t('Widget');
-      default:
-        return t('Other');
-    }
-  }, [appData?.applicationType, t]);
-
   const coverImageSrc = useMemo(() => {
     if (appData?.coverImage?.src) {
       return transformSource(appData.coverImage)?.src;
@@ -228,7 +212,9 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                   }}
                   nsfw={appData.nsfw}
                   nsfwLabel={'NSFW'}
-                  extensionTypeLabel={extensionTypeLabel}
+                  extensionTypeLabel={t('{{extensionTypeLabel}}', {
+                    extensionTypeLabel: getExtensionTypeLabel(appData?.applicationType),
+                  })}
                   share={{ label: t('Share'), icon: <ShareIcon /> }}
                   report={{
                     label: t('Flag'),

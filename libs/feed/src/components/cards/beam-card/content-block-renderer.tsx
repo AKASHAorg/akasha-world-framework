@@ -28,7 +28,7 @@ type ContentBlockRendererProps = {
 
 const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = props => {
   const { blockID, authenticatedDID, showHiddenContent, beamIsNsfw, showBlockName } = props;
-  const { navigateToModal, getCorePlugins } = useRootComponentProps();
+  const { navigateToModal, getCorePlugins, encodeAppName } = useRootComponentProps();
   const contentBlockStoreRef = useRef(getCorePlugins()?.contentBlockStore);
   const { t } = useTranslation('ui-lib-feed');
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -74,7 +74,7 @@ const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = props => {
     e.stopPropagation();
     navigateTo({
       appName: '@akashaorg/app-extensions',
-      getNavigationUrl: routes => routes.apps,
+      getNavigationUrl: () => `/info/${encodeAppName(blockApp.name)}`,
     });
   };
 

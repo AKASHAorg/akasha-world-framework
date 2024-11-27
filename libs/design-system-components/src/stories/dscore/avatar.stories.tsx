@@ -43,6 +43,7 @@ export const NSFWAvatar: Story = {
   args: {
     profileId: 'did:pkh:eip155:5:0x36c703c4d22af437dc883e2e0884e57404e16493',
     avatar: { src: 'https://placebeard.it/360x360', height: 360, width: 360 },
+    size: 'xl',
     isNSFW: true,
   },
 };
