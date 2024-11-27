@@ -11,19 +11,21 @@ import {
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
-import appRoutes, { PREFERENCES } from '../../routes';
+import appRoutes, { PREFERENCES } from '../../../routes';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import {
   LockLight,
   LockDark,
-  InfoLight,
-  InfoDark,
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import Checkbox from '@akashaorg/design-system-core/lib/components/Checkbox';
 import getSDK from '@akashaorg/core-sdk';
 import { UserSettingType } from '@akashaorg/core-sdk/src/common/notification/notification-schemas';
 import { UserSetting } from '@pushprotocol/restapi/src/lib';
+import AntennaSetting from './antenna-setting';
+import UnlockCard from './unlock-card';
+import ProfileSetting from './profile-setting';
+import EnableAllSetting from './enable-all-setting';
 
 const preferencesObjectFactory = (val: boolean): UserSettingType[] => {
   // Order of items in array determines the setting category in payload (PushOrg api requirement)
@@ -142,7 +144,7 @@ const NotificationsPreferencesOption: React.FC = () => {
     }));
 
     success = await sdk.services.common.notification.setSettings(preferencesPayload);
-    
+
     _uiEvents.current.next({
       event: NotificationEvents.ShowNotification,
       data: {
@@ -232,116 +234,6 @@ const NotificationsPreferencesOption: React.FC = () => {
   );
 };
 
-const AntennaSetting = ({ isSelected, onChange, isDarkTheme }) => {
-  const { t } = useTranslation('app-settings-ewa');
 
-  return (
-    <Stack>
-      <Stack direction="row" justify="between" align="center">
-        <Text variant="body1">{t('Antenna')}</Text>
-        <Checkbox
-          id="antenna-checkbox"
-          value="Antenna"
-          name="antenna"
-          isSelected={isSelected}
-          handleChange={onChange}
-          size="large"
-          customStyle="w-6 h-6"
-        />
-      </Stack>
-
-      <Text variant="footnotes2" weight="normal" customStyle="dark:text-grey6 text-grey4 mt-2">
-        {t(
-          'Get notifications about new reflections on your beams people you follow & your interests.',
-        )}
-      </Text>
-      <Card padding="p-3" customStyle="mt-4" background={{ light: 'grey9', dark: 'grey3' }}>
-        <Stack direction="row" spacing="gap-x-3">
-          {isDarkTheme ? <InfoLight className="shrink-0" /> : <InfoDark className="shrink-0" />}
-          <Text variant="body1" customStyle="text-sm">
-            {t('Changing notifications preferences requires a signature')}
-          </Text>
-        </Stack>
-      </Card>
-    </Stack>
-  );
-};
-
-const ProfileSetting = ({ isSelected, onChange }) => {
-  const { t } = useTranslation('app-settings-ewa');
-
-  return (
-    <Stack customStyle="border(b-1 solid grey8 dark:grey5) mb-4 pb-4">
-      <Stack direction="row" justify="between" align="center" customStyle="mt-4">
-        <Text variant="body1">{t('Profile')}</Text>
-        <Checkbox
-          id="profile-checkbox"
-          value="Profile"
-          name="profile"
-          isSelected={isSelected}
-          handleChange={onChange}
-          size="large"
-          customStyle="w-6 h-6"
-        />
-      </Stack>
-
-      <Text variant="footnotes2" weight="normal" customStyle="dark:text-grey6 text-grey4 mt-2">
-        {t('Get notifications about new followers')}
-      </Text>
-    </Stack>
-  );
-};
-
-const EnableAllSetting = ({ isSelected, onChange }) => {
-  const { t } = useTranslation('app-settings-ewa');
-
-  return (
-    <Stack customStyle="border(b-1 solid grey8 dark:grey5) mb-4">
-      <Stack direction="row" justify="between" align="center" customStyle="my-4">
-        <Text variant="body1">{t('Enable all')}</Text>
-        <Checkbox
-          id="enable-all-notifications-checkbox"
-          value="Enable all"
-          name="enable-all"
-          isSelected={isSelected}
-          handleChange={onChange}
-          size="large"
-          customStyle="w-6 h-6"
-        />
-      </Stack>
-    </Stack>
-  );
-};
-
-const UnlockCard = ({ isDarkTheme, loading, onClick }) => {
-  const { t } = useTranslation('app-settings-ewa');
-
-  return (
-    <Card background={{ light: 'grey9', dark: 'grey3' }} padding="p-3">
-      <Stack direction="row" spacing="gap-x-3">
-        {isDarkTheme ? <LockLight /> : <LockDark />}
-        <Stack direction="column" spacing="gap-y-1">
-          <Text variant="button-md" color={{ dark: 'white', light: 'black' }}>
-            {t('Unlock preferences')}
-          </Text>
-          <Text variant="body2" color={{ dark: 'white', light: 'black' }}>
-            {t('Click “Unlock” to unlock preferences. You will be prompted with 1 signature.')}
-          </Text>
-          {
-            <Button
-              onClick={onClick}
-              variant="text"
-              size="md"
-              color="dark:secondaryLight secondaryDark"
-              label={t('Unlock')}
-              customStyle="mr-auto"
-              loading={loading}
-            />
-          }
-        </Stack>
-      </Stack>
-    </Card>
-  );
-};
 
 export default NotificationsPreferencesOption;
