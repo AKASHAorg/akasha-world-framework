@@ -3,6 +3,7 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import EntryCardRemoved from '../EntryCardRemoved';
 import CardActions from './card-actions';
+import InlineNotification from '@akashaorg/design-system-core/lib/components/InlineNotification';
 import {
   EllipsisHorizontalIcon,
   FlagIcon,
@@ -28,10 +29,9 @@ type BeamProps = {
 };
 
 type ReflectProps = {
-  content: Descendant[] | ReactElement;
   itemType: EntityTypes.REFLECT;
   navigateTo?: (args: NavigateToParams) => void;
-};
+} & ({ slateContent: Descendant[] } | { errorTitle: string; errorMessage: string });
 
 export type EntryCardProps = {
   entryData: EntryData;
@@ -252,9 +252,9 @@ const EntryCard: React.FC<EntryCardProps> = props => {
                   >
                     {rest.itemType === EntityTypes.REFLECT ? (
                       <>
-                        {Array.isArray(rest.content) && (
+                        {'slateContent' in rest && (
                           <ReadOnlyEditor
-                            content={rest.content}
+                            content={rest.slateContent}
                             disabled={entryData.nsfw}
                             handleMentionClick={rest.onMentionClick}
                             handleLinkClick={url => {
@@ -262,7 +262,13 @@ const EntryCard: React.FC<EntryCardProps> = props => {
                             }}
                           />
                         )}
-                        {!Array.isArray(rest.content) && rest.content}
+                        {'errorTitle' in rest && (
+                          <InlineNotification
+                            title={rest.errorTitle}
+                            message={rest.errorMessage}
+                            type="error"
+                          />
+                        )}
                       </>
                     ) : (
                       rest.sortedContents?.map(item => (

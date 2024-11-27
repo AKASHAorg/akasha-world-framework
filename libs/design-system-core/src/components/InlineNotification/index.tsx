@@ -33,13 +33,14 @@ export type InlineNotificationProps = {
  * @param dataTestId - (optional) useful when writing test
  * @param title - (optional) title
  * @param message - message
+ * @param borderRadius - border radius
  * @param type - type of notification
  * @param background - (optional) customize the background color
  * @param button - (optional) an object containing the label and click handler of a button
  * @param customStyle - (optional) apply your custom styling (Make sure to use standard Tailwind classes)
  * @example
  * ```tsx
- *     <InlineNotification message='A sample message...' type="success" />
+ *     <InlineNotification message='A sample message...' type="error" />
  * ```
  **/
 const InlineNotification: React.FC<InlineNotificationProps> = ({
