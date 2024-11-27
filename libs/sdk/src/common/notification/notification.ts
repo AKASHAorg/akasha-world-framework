@@ -449,8 +449,13 @@ class NotificationService {
   }
 
   getNotificationsEnabledStatus(): boolean {
-    const status = localStorage.getItem(this.localStorageKeyOfNotificationsEnabledStatus);
-    return status ? JSON.parse(status) : false;
+    try {
+      const status = localStorage.getItem(this.localStorageKeyOfNotificationsEnabledStatus);
+      return status ? JSON.parse(status) : false;
+    } catch (error) {
+      console.error('Error retrieving notification status from localStorage:', error);
+      return false;
+    }
   }
 
   setNotificationsEnabledStatus(val: boolean) {

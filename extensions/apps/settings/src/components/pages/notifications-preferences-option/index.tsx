@@ -26,31 +26,17 @@ import AntennaSetting from './antenna-setting';
 import UnlockCard from './unlock-card';
 import ProfileSetting from './profile-setting';
 import EnableAllSetting from './enable-all-setting';
+import { findAppIndex, preferencesObjectFactory } from './utils';
 
-const preferencesObjectFactory = (val: boolean): UserSettingType[] => {
-  // Order of items in array determines the setting category in payload (PushOrg api requirement)
-  return [
-    {
-      index: 1,
-      appName: 'Antenna App',
-      enabled: val,
-    },
-    {
-      index: 2,
-      appName: 'Profile App',
-      enabled: val,
-    },
-    {
-      index: 3,
-      appName: 'Vibes App',
-      enabled: val,
-    },
-  ];
-};
+export enum AppName {
+  ANTENNA = 'Antenna App',
+  PROFILE = 'Profile App',
+  VIBES = 'Vibes App',
+}
 
 const DEFAULT_PREFERENCES: UserSettingType[] = preferencesObjectFactory(true); // Default setting on
-const ANTENNA_ARR_INDEX = DEFAULT_PREFERENCES.findIndex(e => e.appName == 'Antenna App');
-const PROFILE_ARR_INDEX = DEFAULT_PREFERENCES.findIndex(e => e.appName == 'Profile App');
+const ANTENNA_ARR_INDEX = findAppIndex(AppName.ANTENNA, DEFAULT_PREFERENCES);
+const PROFILE_ARR_INDEX = findAppIndex(AppName.PROFILE, DEFAULT_PREFERENCES);
 
 const NotificationsPreferencesOption: React.FC = () => {
   const sdk = getSDK();
@@ -116,19 +102,9 @@ const NotificationsPreferencesOption: React.FC = () => {
     setEnableAllChecked(val);
   };
 
-  const handleSetAntenna = (value: boolean) => {
+  const handleSetPreference = (value: boolean, index: number) => {
     setPreferences(prevState =>
-      prevState.map((item, idx) =>
-        idx === ANTENNA_ARR_INDEX ? { ...item, enabled: value } : item,
-      ),
-    );
-  };
-
-  const handleSetProfile = (value: boolean) => {
-    setPreferences(prevState =>
-      prevState.map((item, idx) =>
-        idx === PROFILE_ARR_INDEX ? { ...item, enabled: value } : item,
-      ),
+      prevState.map((item, idx) => (idx === index ? { ...item, enabled: value } : item)),
     );
   };
 
@@ -199,12 +175,12 @@ const NotificationsPreferencesOption: React.FC = () => {
 
           <ProfileSetting
             isSelected={preferences[PROFILE_ARR_INDEX].enabled}
-            onChange={e => handleSetProfile(e.target.checked)}
+            onChange={e => handleSetPreference(e.target.checked, PROFILE_ARR_INDEX)}
           />
 
           <AntennaSetting
             isSelected={preferences[ANTENNA_ARR_INDEX].enabled}
-            onChange={e => handleSetAntenna(e.target.checked)}
+            onChange={e => handleSetPreference(e.target.checked, ANTENNA_ARR_INDEX)}
             isDarkTheme={isDarkTheme}
           />
         </Stack>
@@ -233,7 +209,5 @@ const NotificationsPreferencesOption: React.FC = () => {
     </Stack>
   );
 };
-
-
 
 export default NotificationsPreferencesOption;
