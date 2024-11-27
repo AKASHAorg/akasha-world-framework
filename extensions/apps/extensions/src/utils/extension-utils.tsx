@@ -1,4 +1,7 @@
-import { AkashaAppsStreamModerationStatus } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import {
+  AkashaAppApplicationType,
+  AkashaAppsStreamModerationStatus,
+} from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { ExtensionStatus } from '@akashaorg/typings/lib/ui';
 
 export const getExtensionStatus = (
@@ -33,5 +36,21 @@ export const getStatusIndicatorStyle = (
       return 'bg-(warningLight dark:warningDark)';
     default:
       return 'bg-grey6';
+  }
+};
+
+export const getExtensionTypeLabel = (applicationType: AkashaAppApplicationType) => {
+  if (!applicationType) {
+    return '';
+  }
+  switch (applicationType) {
+    case AkashaAppApplicationType.App:
+      return 'App';
+    case AkashaAppApplicationType.Plugin:
+      return 'Plugin';
+    case AkashaAppApplicationType.Widget:
+      return 'Widget';
+    default:
+      return 'Other';
   }
 };
