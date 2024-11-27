@@ -28,7 +28,7 @@ type BeamProps = {
 };
 
 type ReflectProps = {
-  slateContent: Descendant[];
+  content: Descendant[] | ReactElement;
   itemType: EntityTypes.REFLECT;
   navigateTo?: (args: NavigateToParams) => void;
 };
@@ -251,14 +251,19 @@ const EntryCard: React.FC<EntryCardProps> = props => {
                     fullWidth={true}
                   >
                     {rest.itemType === EntityTypes.REFLECT ? (
-                      <ReadOnlyEditor
-                        content={rest.slateContent}
-                        disabled={entryData.nsfw}
-                        handleMentionClick={rest.onMentionClick}
-                        handleLinkClick={url => {
-                          rest.navigateTo?.({ getNavigationUrl: () => url });
-                        }}
-                      />
+                      <>
+                        {Array.isArray(rest.content) && (
+                          <ReadOnlyEditor
+                            content={rest.content}
+                            disabled={entryData.nsfw}
+                            handleMentionClick={rest.onMentionClick}
+                            handleLinkClick={url => {
+                              rest.navigateTo?.({ getNavigationUrl: () => url });
+                            }}
+                          />
+                        )}
+                        {!Array.isArray(rest.content) && rest.content}
+                      </>
                     ) : (
                       rest.sortedContents?.map(item => (
                         <Fragment key={item.blockID}>
