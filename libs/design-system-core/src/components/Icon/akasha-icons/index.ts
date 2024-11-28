@@ -17,8 +17,7 @@ import Eth from './eth';
 import Faq from './faq';
 import Following from './following';
 import Github from './github';
-import InfoLight from './info-light';
-import InfoDark from './info-dark';
+import Info from './info';
 import IntegrationAppCTA from './integration-app-cta';
 import Italic from './italic';
 import ImageCrossed from './image-crossed';
@@ -32,8 +31,7 @@ import LicenseSomeRights from './license-some-rights';
 import LicenseWtfpl from './license-wtfpl';
 import ListBulleted from './list-bulleted';
 import ListNumbered from './list-numbered';
-import LockDark from './lock-dark';
-import LockLight from './lock-light';
+import Lock from './lock';
 import Metamask from './metamask';
 import NoEth from './no-eth';
 import Plugin from './plugin';
@@ -70,8 +68,7 @@ export type CustomIconTypes = Extract<
   | 'Faq'
   | 'Following'
   | 'Github'
-  | 'InfoDark'
-  | 'InfoLight'
+  | 'Info'
   | 'IntegrationAppCTA'
   | 'Italic'
   | 'ImageCrossed'
@@ -85,8 +82,7 @@ export type CustomIconTypes = Extract<
   | 'LicenseWtfpl'
   | 'ListNumbered'
   | 'ListBulleted'
-  | 'LockDark'
-  | 'LockLight'
+  | 'Lock'
   | 'Metamask'
   | 'NoEth'
   | 'Plugin'
@@ -120,8 +116,7 @@ export {
   Faq,
   Following,
   Github,
-  InfoDark,
-  InfoLight,
+  Info,
   IntegrationAppCTA,
   Italic,
   ImageCrossed,
@@ -135,8 +130,7 @@ export {
   LicenseWtfpl,
   ListBulleted,
   ListNumbered,
-  LockLight,
-  LockDark,
+  Lock,
   Metamask,
   NoEth,
   Plugin,

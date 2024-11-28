@@ -5,25 +5,29 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import {
-  LockLight,
-  LockDark,
+  Lock,
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 
 export interface IUnlockCardProps {
   // data
-  isDarkTheme: boolean;
   loading?: boolean;
   // handlers
   onClick?: () => void;
 }
 
-const UnlockCard: React.FC<IUnlockCardProps> = ({ onClick, isDarkTheme, loading }) => {
+const UnlockCard: React.FC<IUnlockCardProps> = ({ onClick, loading }) => {
   const { t } = useTranslation('app-settings-ewa');
 
   return (
     <Card background={{ light: 'grey9', dark: 'grey3' }} padding="p-3">
       <Stack direction="row" spacing="gap-x-3">
-        {isDarkTheme ? <LockLight /> : <LockDark />}
+        <Icon
+          icon={<Lock />}
+          size="md"
+          solid={true}
+          color={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+        />
         <Stack direction="column" spacing="gap-y-1">
           <Text variant="button-md" color={{ dark: 'white', light: 'black' }}>
             {t('Unlock preferences')}

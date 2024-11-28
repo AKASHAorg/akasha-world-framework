@@ -2,23 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { tw } from '@twind/core';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import {
-  useAkashaStore,
-  useNotifications,
-  useRootComponentProps,
-  useTheme,
-} from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useNotifications, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import appRoutes, { PREFERENCES } from '../../../routes';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
-import {
-  LockLight,
-  LockDark,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import Checkbox from '@akashaorg/design-system-core/lib/components/Checkbox';
 import getSDK from '@akashaorg/core-sdk';
 import { UserSettingType } from '@akashaorg/core-sdk/src/common/notification/notification-schemas';
 import { UserSetting } from '@pushprotocol/restapi/src/lib';
@@ -40,8 +30,6 @@ const PROFILE_ARR_INDEX = findAppIndex(AppName.PROFILE, DEFAULT_PREFERENCES);
 
 const NotificationsPreferencesOption: React.FC = () => {
   const sdk = getSDK();
-  const { theme } = useTheme();
-  const isDarkTheme = theme === 'Dark-Theme';
   const { notificationsEnabled, waitingForSignature, enableNotifications } = useNotifications();
   const { baseRouteName, uiEvents, getCorePlugins } = useRootComponentProps();
   const _uiEvents = React.useRef(uiEvents);
@@ -113,7 +101,7 @@ const NotificationsPreferencesOption: React.FC = () => {
   };
 
   const handleSave = async () => {
-    let success: boolean;
+    let success: boolean = undefined;
     setLoading(true);
     const preferencesPayload: UserSetting[] = preferences?.map(({ enabled }) => ({
       enabled,
@@ -155,11 +143,7 @@ const NotificationsPreferencesOption: React.FC = () => {
     <Stack spacing="gap-y-4" customStyle="mb-2">
       <Text variant="h5">{t('Notification Preferences')}</Text>
       {!notificationsEnabled && (
-        <UnlockCard
-          onClick={handleUnlockPreferences}
-          loading={waitingForSignature}
-          isDarkTheme={isDarkTheme}
-        />
+        <UnlockCard onClick={handleUnlockPreferences} loading={waitingForSignature} />
       )}
 
       <Card
@@ -181,7 +165,6 @@ const NotificationsPreferencesOption: React.FC = () => {
           <AntennaSetting
             isSelected={preferences[ANTENNA_ARR_INDEX].enabled}
             onChange={e => handleSetPreference(e.target.checked, ANTENNA_ARR_INDEX)}
-            isDarkTheme={isDarkTheme}
           />
         </Stack>
 
