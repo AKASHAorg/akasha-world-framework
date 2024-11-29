@@ -5,7 +5,7 @@ import PrivacyOption from '../pages/privacy-option';
 import ThemeOption from '../pages/theme-option';
 import SettingsPage from '../pages/settings-page';
 import NotificationsOption from '../pages/notifications-option';
-import NotificationsPreferencesOption from '../pages/notifications-preferences-option';
+import NotificationsPreferencesOption from '../pages/notifications-preferences-option/';
 import BrowserNotificationsOption from '../pages/notifications-browser-option';
 import routes, {
   APPS,
