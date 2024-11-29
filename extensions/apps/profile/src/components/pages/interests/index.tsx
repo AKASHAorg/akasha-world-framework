@@ -5,7 +5,6 @@ import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import { ProfileInterestsLoading } from '@akashaorg/design-system-components/lib/components/Profile';
-import EditInterests from '@akashaorg/design-system-components/lib/components/EditInterests';
 import { useTranslation } from 'react-i18next';
 import {
   useGetInterestsByDidQuery,
@@ -17,6 +16,7 @@ import { hasOwn, useRootComponentProps, useAkashaStore } from '@akashaorg/ui-awf
 import getSDK from '@akashaorg/core-sdk';
 import { useApolloClient } from '@apollo/client';
 import { ProfileLabeled } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import EditInterests from '../../edit-interests';
 
 type InterestsPageProps = {
   profileDID: string;
@@ -107,6 +107,13 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
       appName: '@akashaorg/app-antenna',
       getNavigationUrl: (navRoutes: { [key: string]: string }) =>
         `${navRoutes.Tags}/${topic.value}`,
+    });
+  };
+
+  const navigateToProfileInfoPage = () => {
+    navigateTo({
+      appName: '@akashaorg/app-profile',
+      getNavigationUrl: () => `/${profileDID}`,
     });
   };
 
@@ -213,12 +220,7 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
             cancelButton={{
               label: t('Cancel'),
               disabled: isProcessing,
-              handleClick: () => {
-                navigateTo({
-                  appName: '@akashaorg/app-profile',
-                  getNavigationUrl: () => `/${profileDID}`,
-                });
-              },
+              handleClick: navigateToProfileInfoPage,
             }}
             saveButton={{
               label: t('Save'),
