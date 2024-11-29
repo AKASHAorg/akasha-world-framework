@@ -189,7 +189,6 @@ const InterestsPage: React.FC<InterestsPageProps> = props => {
                     key={`${idx}-${interest}`}
                     label={interest.value}
                     iconDirection="right"
-                    size="sm"
                     onPillClick={() => handleInterestClick(interest)}
                     active={isActive}
                     type="action"

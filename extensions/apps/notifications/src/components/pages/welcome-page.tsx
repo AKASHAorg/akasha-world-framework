@@ -1,10 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRootComponentProps, useAkashaStore } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, useAkashaStore, useNotifications } from '@akashaorg/ui-awf-hooks';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import NotificationSettingsCard from '@akashaorg/design-system-components/lib/components/NotificationSettingsCard';
-import getSDK from '@akashaorg/core-sdk';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 
@@ -13,11 +12,7 @@ export type WelcomePageProps = {
 };
 
 const WelcomePage: React.FC<WelcomePageProps> = () => {
-  const sdk = getSDK();
-  const notificationsEnabled = useMemo(
-    () => sdk.services.common.notification.checkIfNotificationsEnabled(),
-    [sdk.services.common.notification],
-  );
+  const { notificationsEnabled, previouslyEnabled } = useNotifications();
   const { baseRouteName, getCorePlugins } = useRootComponentProps();
   const {
     data: { authenticatedProfile },
@@ -60,7 +55,8 @@ const WelcomePage: React.FC<WelcomePageProps> = () => {
       </ErrorLoader>
     );
 
-  return notificationsEnabled ? (
+  // notifications can be displayed even if user has not signed them in current session (readOnly mode)
+  return notificationsEnabled || previouslyEnabled ? (
     <Stack padding="p-4">
       <Text>TODO - Notifications show up here</Text>
     </Stack>
