@@ -109,12 +109,13 @@ const EditProfile: React.FC<EditProfileProps> = ({
     }
   };
 
+  const isValid = !Object.keys(errors).length;
+
   useEffect(() => {
-    const isValid = !Object.keys(errors).length;
-    const buttonDisabled = isValid ? !isFormDirty : true;
+    const buttonDisabled = !isValid || (isValid && !isFormDirty);
     setIsFormValid(isValid);
     setIsDisabled(buttonDisabled);
-  }, [dirtyFields, errors, isFormDirty]);
+  }, [dirtyFields, isFormDirty, isValid]);
 
   useEffect(() => {
     let navigationUnsubscribe: () => void;

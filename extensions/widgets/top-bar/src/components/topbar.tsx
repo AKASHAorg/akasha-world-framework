@@ -138,10 +138,9 @@ const Topbar: React.FC<ITopbarProps> = props => {
             label="Alpha"
             weight="light"
             color="white"
+            size="xs"
             background={{ light: 'errorLight', dark: 'errorDark' }}
             borderColor={{ light: 'errorLight', dark: 'errorDark' }}
-            customStyle="w-fit py-0 px-2"
-            customTextStyle="text-[9px] leading-3"
           />
         </Stack>
       </Button>
