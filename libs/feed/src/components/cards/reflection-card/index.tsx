@@ -3,12 +3,13 @@ import EntryCard, {
   EntryCardProps,
 } from '@akashaorg/design-system-components/lib/components/Entry/EntryCard';
 import AuthorProfileAvatar from '../author-profile-avatar';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
+import Link from '@akashaorg/design-system-core/lib/components/Link';
 import { useAkashaStore } from '@akashaorg/ui-awf-hooks';
 import { EntityTypes, ReflectionData } from '@akashaorg/typings/lib/ui';
 import { decodeb64SlateContent, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { Trans, useTranslation } from 'react-i18next';
-import Text from '@akashaorg/design-system-core/lib/components/Text';
-import Link from '@akashaorg/design-system-core/lib/components/Link';
+import { canDecodeContent } from '../../../utils/can-decode-content';
 
 export type ReflectionCardProps = Pick<
   EntryCardProps,
@@ -59,7 +60,14 @@ const ReflectionCard: React.FC<ReflectionCardProps> = props => {
       dataTestId={pending ? 'pending-reflection-card' : 'reflection-card'}
       entryData={reflectionData}
       reflectAnchorLink="/@akashaorg/app-antenna/reflection"
-      slateContent={reflectionData.content.flatMap(item => decodeb64SlateContent(item.value))}
+      {...(canDecodeContent(reflectionData.content)
+        ? {
+            slateContent: reflectionData.content.flatMap(item => decodeb64SlateContent(item.value)),
+          }
+        : {
+            errorTitle: t('Reflection can’t be loaded'),
+            errorMessage: t('Unable to decode reflection content.'),
+          })}
       noWrapperCard={true}
       flagAsLabel={t('Flag')}
       isViewer={authenticatedDID === reflectionData.authorId}

@@ -3,7 +3,7 @@ import EditorPlaceholder from '@akashaorg/design-system-components/lib/component
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { ReflectEditorProps } from '../../reflect-editor';
-import EditableReflection from '@akashaorg/ui-lib-feed/lib/components/editable-reflection';
+import ReflectionCard from '@akashaorg/ui-lib-feed/lib/components/cards/reflection-card';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import routes, { REFLECT } from '../../../routes';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +38,7 @@ const ReflectionSection: React.FC<ReflectionSectionProps> = props => {
       customStyle={`grow ${activeReflection ? 'mb-2' : ''}`}
     >
       <Card customStyle="grow" type="plain">
-        <EditableReflection
+        <ReflectionCard
           reflectionData={reflectionData}
           contentClickable={false}
           onReflect={() => {

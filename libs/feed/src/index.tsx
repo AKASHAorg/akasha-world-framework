@@ -7,5 +7,5 @@ export { default as ReflectionCard } from './components/cards/reflection-card';
 export { default as ReflectionPreview } from './components/reflection-preview';
 export { default as TagFeed } from './components/tag-feed';
 export { default as BeamContentResolver } from './components/beam-content-resolver';
-export { EditableReflectionResolver } from './components/editable-reflection/editable-reflection-resolver';
+export { EditableReflectionResolver } from './components/editable-reflection-resolver';
 export { getNsfwFiltersForTagFeed, getNsfwFiltersForBeamFeed } from './utils';
