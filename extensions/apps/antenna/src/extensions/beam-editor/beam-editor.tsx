@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, ChangeEvent, KeyboardEvent } from 'react';
+import React, { useEffect, useState, useRef, ChangeEvent, KeyboardEvent, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { type ContentBlock } from '@akashaorg/typings/lib/ui';
@@ -10,6 +10,7 @@ import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import SearchBar from '@akashaorg/design-system-components/lib/components/SearchBar';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
+import UnsavedChangesModal from '@akashaorg/design-system-components/lib/components/UnsavedChangesModal';
 import { EditorBlockExtension } from '@akashaorg/ui-lib-extensions/lib/react/content-block';
 import { Header } from './header';
 import { Footer } from './footer';
@@ -27,12 +28,15 @@ export const BeamEditor: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isNsfw, setIsNsfw] = useState(false);
   const [nsfwBlocks, setNsfwBlocks] = useState(new Map<number, boolean>());
+  const [disablePublishing, setDisablePublishing] = useState(true);
+  const [newUrl, setNewUrl] = useState<string | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation('app-antenna');
 
-  const { getCorePlugins } = useRootComponentProps();
+  const { singleSpa, cancelNavigation, getCorePlugins } = useRootComponentProps();
+
   /*
    * get the logged-in user info and info about their profile's NSFW property
    */
@@ -70,6 +74,12 @@ export const BeamEditor: React.FC = () => {
 
   const { akashaProfile: profileData } =
     data?.node && hasOwn(data.node, 'akashaProfile') ? data.node : { akashaProfile: null };
+
+  const disableBeamPublishing = useMemo(
+    () => isPublishing || disablePublishing,
+    [disablePublishing, isPublishing],
+  );
+
   useEffect(() => {
     if (profileData?.nsfw) {
       setIsNsfw(true);
@@ -104,6 +114,27 @@ export const BeamEditor: React.FC = () => {
       setDisablePublishing(false);
     }
   }, [blocksInUse]);
+
+  useEffect(() => {
+    let navigationUnsubscribe: () => void;
+    /**
+     * when beam publishing is not disabled;
+     * 1. call cancel navigation method from routing plugin
+     * 2. set the new url from the callback fn.
+     */
+    if (!disableBeamPublishing) {
+      navigationUnsubscribe = cancelNavigation(!disableBeamPublishing, url => {
+        setNewUrl(url);
+      });
+    }
+
+    return () => {
+      if (typeof navigationUnsubscribe === 'function') {
+        navigationUnsubscribe();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disableBeamPublishing]);
 
   const onBlockSelectAfter = (newSelection: ContentBlock) => {
     if (!newSelection?.propertyType) {
@@ -234,7 +265,6 @@ export const BeamEditor: React.FC = () => {
     setUiState('editor');
   };
 
-  const [disablePublishing, setDisablePublishing] = useState(false);
   const blocksWithActiveNsfw = [...nsfwBlocks].filter(([, value]) => !!value);
 
   useEffect(() => {
@@ -264,8 +294,31 @@ export const BeamEditor: React.FC = () => {
     });
   }, [blocksInUse, focusedBlock]);
 
+  const handleLeavePage = () => {
+    // reset states
+    setDisablePublishing(true);
+    setNewUrl(null);
+    // navigate away from editor to the desired url using singleSpa.
+    singleSpa.navigateToUrl(newUrl);
+  };
+
+  const handleModalClose = () => setNewUrl(null);
+
   return (
     <Card padding={0} customStyle="divide(y grey9 dark:grey3) h-[80vh] justify-between">
+      {!!newUrl && (
+        <UnsavedChangesModal
+          showModal={!!newUrl}
+          cancelButtonLabel={t('Cancel')}
+          leavePageButtonLabel={t('Leave page')}
+          title={t('Unsaved changes')}
+          description={t(
+            "Are you sure you want to leave this page? The changes you've made will not be saved.",
+          )}
+          handleModalClose={handleModalClose}
+          handleLeavePage={handleLeavePage}
+        />
+      )}
       <Header
         uiState={uiState}
         addTagsLabel={t('Add Tags')}
@@ -440,7 +493,7 @@ export const BeamEditor: React.FC = () => {
         blocksNumber={blocksInUse.length}
         disableAddBlock={blocksInUse.length === maxAllowedBlocks}
         disableTagsSave={isPublishing || JSON.stringify(newTags) === JSON.stringify(editorTags)}
-        disableBeamPublishing={isPublishing || disablePublishing}
+        disableBeamPublishing={disableBeamPublishing}
         handleClickTags={handleTagsBtn}
         handleClickSave={handleClickSave}
         handleClickCancel={handleClickCancel}
