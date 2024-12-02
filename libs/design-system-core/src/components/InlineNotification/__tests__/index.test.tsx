@@ -1,13 +1,13 @@
 import * as React from 'react';
-import MessageCard from '../';
+import InlineNotification from '../';
 import { screen } from '@testing-library/react';
 import { customRender } from '../../../test-utils';
 
-describe('<MessageCard /> Component', () => {
+describe('<InlineNotification /> Component', () => {
   const message = 'Message';
 
   it('renders correctly', () => {
-    customRender(<MessageCard message={message} />, {});
+    customRender(<InlineNotification message={message} type="error" />, {});
     expect(screen.getByText(message)).toBeInTheDocument();
   });
 });

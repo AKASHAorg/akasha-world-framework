@@ -3,6 +3,7 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import EntryCardRemoved from '../EntryCardRemoved';
 import CardActions from './card-actions';
+import InlineNotification from '@akashaorg/design-system-core/lib/components/InlineNotification';
 import {
   EllipsisHorizontalIcon,
   FlagIcon,
@@ -28,10 +29,9 @@ type BeamProps = {
 };
 
 type ReflectProps = {
-  slateContent: Descendant[];
   itemType: EntityTypes.REFLECT;
   navigateTo?: (args: NavigateToParams) => void;
-};
+} & ({ slateContent: Descendant[] } | { errorTitle: string; errorMessage: string });
 
 export type EntryCardProps = {
   entryData: EntryData;
@@ -251,14 +251,25 @@ const EntryCard: React.FC<EntryCardProps> = props => {
                     fullWidth={true}
                   >
                     {rest.itemType === EntityTypes.REFLECT ? (
-                      <ReadOnlyEditor
-                        content={rest.slateContent}
-                        disabled={entryData.nsfw}
-                        handleMentionClick={rest.onMentionClick}
-                        handleLinkClick={url => {
-                          rest.navigateTo?.({ getNavigationUrl: () => url });
-                        }}
-                      />
+                      <>
+                        {'slateContent' in rest && (
+                          <ReadOnlyEditor
+                            content={rest.slateContent}
+                            disabled={entryData.nsfw}
+                            handleMentionClick={rest.onMentionClick}
+                            handleLinkClick={url => {
+                              rest.navigateTo?.({ getNavigationUrl: () => url });
+                            }}
+                          />
+                        )}
+                        {'errorTitle' in rest && (
+                          <InlineNotification
+                            title={rest.errorTitle}
+                            message={rest.errorMessage}
+                            type="error"
+                          />
+                        )}
+                      </>
                     ) : (
                       rest.sortedContents?.map(item => (
                         <Fragment key={item.blockID}>

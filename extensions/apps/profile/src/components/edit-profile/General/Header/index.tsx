@@ -5,7 +5,7 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import List, { ListProps } from '@akashaorg/design-system-core/lib/components/List';
-import ImageModal from '../../../ImageModal';
+import ImageModal from '@akashaorg/design-system-components/lib/components/ImageModal';
 import {
   ArrowUpOnSquareIcon,
   PencilIcon,

@@ -27,10 +27,8 @@ This package contains all hooks required for proper functioning of the AKASHA Co
 
 ### [useNotifications](./src/use-notifications.ts)
 
-> handles notification related functionalities in the [notifications app](../apps/notifications/README.md).
+> handles enabling of notifications and exposes status of pending signature request.
 > Available actions include;
 
-- getMessages
-- markMessageAsRead
-- hasNewNotifications
+- enableNotifications
 

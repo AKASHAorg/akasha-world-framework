@@ -81,6 +81,7 @@ export default class AppLoader {
   appNotFound: boolean;
   erroredApps: string[];
   isLoadingUserExtensions: boolean;
+  navigationCanceledExtensions: Set<string>;
   constructor(worldConfig: WorldConfig) {
     this.worldConfig = worldConfig;
     this.uiEvents = new Subject<UIEventData>();
@@ -97,6 +98,7 @@ export default class AppLoader {
     this.appNotFound = false;
     this.erroredApps = [];
     this.isLoadingUserExtensions = false;
+    this.navigationCanceledExtensions = new Set();
   }
 
   start = async () => {
@@ -184,11 +186,13 @@ export default class AppLoader {
       hideNotLoggedIn(this.layoutConfig.extensionSlots.applicationSlotId);
     }
   };
+
   beforeAppChange = (ev: CustomEvent<singleSpa.SingleSpaCustomEventDetail>) => {
-    const { newUrl } = ev.detail;
-    const appName = extractAppNameFromPath(new URL(newUrl).pathname);
-    const status = singleSpa.getAppStatus(appName);
-    if (status === singleSpa.NOT_LOADED) {
+    const { newUrl, oldUrl } = ev.detail;
+    const newAppName = extractAppNameFromPath(new URL(newUrl).pathname);
+    const currentAppName = extractAppNameFromPath(new URL(oldUrl).pathname);
+    const status = singleSpa.getAppStatus(newAppName);
+    if (status === singleSpa.NOT_LOADED && !this.navigationCanceledExtensions.has(currentAppName)) {
       showLoadingCard(this.layoutConfig.extensionSlots.applicationSlotId);
     }
   };
@@ -685,6 +689,7 @@ export default class AppLoader {
         uiEvents: this.uiEvents,
         logger,
         plugins: this.plugins,
+        cancelNavigation: this.handleCancelNavigation(this.worldConfig.layout),
       },
     });
   };
@@ -739,6 +744,7 @@ export default class AppLoader {
         uiEvents: this.uiEvents,
         logger: this.parentLogger.create(name),
         plugins: this.plugins,
+        cancelNavigation: this.handleCancelNavigation(name),
       };
       singleSpa.registerApplication({
         name,
@@ -750,4 +756,34 @@ export default class AppLoader {
       });
     }
   };
+
+  /**
+   * This method relies on single spa's before-routing-event to determine when to block navigation.
+   * It is useful in scenarios where the user is allowed to make extra decision before completing the navigation action.
+   * @param appName - the name of the current app requiring navigation to be canceled.
+   * @returns a function with the following params:
+   * @param shouldCancel - boolean value indicating when the navigation should be canceled, after setting the event listener on the window object.
+   * @param callback -  a callback function trigered after the navigation has been canceled.
+   *
+   * This function then returns a cleanup function that removes the event listener from the window object
+   */
+  handleCancelNavigation =
+    (appName: string) => (shouldCancel: boolean, callback: (targetUrl: string) => void) => {
+      const listenerFn = ({
+        detail: { newUrl, oldUrl, cancelNavigation },
+      }: CustomEvent<singleSpa.SingleSpaCustomEventDetail>) => {
+        if (shouldCancel && new URL(newUrl).pathname !== new URL(oldUrl).pathname) {
+          cancelNavigation();
+          callback(newUrl);
+        }
+      };
+
+      this.navigationCanceledExtensions.add(appName);
+      window.addEventListener('single-spa:before-routing-event', listenerFn);
+
+      return () => {
+        this.navigationCanceledExtensions.delete(appName);
+        window.removeEventListener('single-spa:before-routing-event', listenerFn);
+      };
+    };
 }

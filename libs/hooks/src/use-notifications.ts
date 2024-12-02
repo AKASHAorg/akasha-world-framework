@@ -1,45 +1,44 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import getSDK from '@akashaorg/core-sdk';
-import { GQL_EVENTS } from '@akashaorg/typings/lib/sdk';
 
 /**
- * Hook to listen for mutation events emitted from the SDK's globalChannel.
- * @example useListenForMutationEvents hook
+ * Hook to enable notifications and observe signature propmpt result.
+ * @example useNotifications hook
  * ```typescript
- * const { messageObj, appid, success, pending } = useListenForMutationEvents();
+ * const { notificationsEnabled, previouslyEnabled, waitingForSignature, enableNotifications } = useNotifications();
  *
  * ```
  */
-export function useListenForMutationEvents() {
-  const [data, setData] = useState(null);
-
+export function useNotifications() {
   const sdk = getSDK();
 
-  const messageObj = useRef(null);
-  const uuid = useRef('');
+  const [previouslyEnabled, setPreviouslyEnabled] = useState(() =>
+    sdk.services.common.notification.getNotificationsEnabledStatus(),
+  );
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
+    sdk.services.common.notification.checkIfNotificationsEnabled(),
+  );
 
-  useEffect(() => {
-    const subSDK = sdk.api.globalChannel.subscribe({
-      next: (eventData: {
-        data: { uuid: string; [key: string]: unknown };
-        event: GQL_EVENTS.MUTATION;
-      }) => {
-        if (eventData.event === GQL_EVENTS.MUTATION) {
-          const currentUuid = eventData.data.uuid;
+  const [waitingForSignature, setWaitingForSignature] = useState(false);
 
-          if (currentUuid !== uuid.current) {
-            uuid.current = currentUuid;
-            messageObj.current = sdk.services.gql.consumeMutationNotificationObject(currentUuid);
-          }
-          setData({ ...eventData.data, messageObj: messageObj.current, appid: uuid.current });
-        }
-      },
-    });
-    return () => {
-      if (subSDK) {
-        subSDK.unsubscribe();
-      }
-    };
-  }, []);
-  return data;
+  const enableNotifications = async () => {
+    setWaitingForSignature(true);
+    let enabled: boolean;
+    try {
+      await sdk.services.common.notification.initialize({ readonly: false });
+      enabled = true;
+      setNotificationsEnabled(true);
+      setPreviouslyEnabled(true);
+      sdk.services.common.notification.setNotificationsEnabledStatus(true);
+    } catch (error) {
+      console.error(error);
+      enabled = false;
+      setNotificationsEnabled(false);
+    } finally {
+      setWaitingForSignature(false);
+    }
+    return enabled;
+  };
+
+  return { notificationsEnabled, previouslyEnabled, waitingForSignature, enableNotifications };
 }
