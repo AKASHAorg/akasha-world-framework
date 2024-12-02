@@ -80,7 +80,6 @@ const BeamContentResolver: React.FC<BeamContentResolverProps> = ({
         showLoginModal={showLoginModal}
         disableActions={preventNavigation}
         onContentClick={function () {
-          if (preventNavigation) return;
           getCorePlugins().routing.navigateTo({
             appName: '@akashaorg/app-antenna',
             getNavigationUrl: navRoutes => `${navRoutes.Beam}/${selectBeamId(beamReq.data)}`,
