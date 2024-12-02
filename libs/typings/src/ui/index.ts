@@ -21,6 +21,7 @@ export * from './extension-point';
 export * from './editor-blocks';
 export * from './media';
 export * from './store';
+export * from './inbox-notification';
 
 export enum LEGAL_DOCS {
   TERMS_OF_USE = 'TermsOfUse',

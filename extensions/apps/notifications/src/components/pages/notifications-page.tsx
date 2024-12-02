@@ -1,261 +1,181 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import {
-  useRootComponentProps,
-  useGetSettings,
-  transformSource,
-  useAkashaStore,
-} from '@akashaorg/ui-awf-hooks';
-import Menu, { MenuProps } from '@akashaorg/design-system-core/lib/components/Menu';
-import {
-  CheckCircleIcon,
-  Cog8ToothIcon,
-  EllipsisHorizontalIcon,
+  BoltIcon,
+  GlobeAltIcon,
+  RectangleGroupIcon,
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import NotificationsCard from '@akashaorg/design-system-components/lib/components/NotificationsCard';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
-import DropDownFilter from '@akashaorg/design-system-components/lib/components/DropDownFilter';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import { EntityTypes, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import routes, { SETTINGS_PAGE, CUSTOMISE_NOTIFICATION_WELCOME_PAGE } from '../../routes';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
-import { useNavigate } from '@tanstack/react-router';
+import getSDK from '@akashaorg/core-sdk';
+import AppIcon from '@akashaorg/design-system-core/lib/components/AppIcon';
+import { notificationFormatRelativeTime } from '@akashaorg/design-system-core/lib/utils';
+import {
+  PushOrgNotification,
+  ChannelOptionIndexes,
+  FollowNotificationMetaData,
+  MentionNotificationMetaData,
+  ReflectionNotificationMetaData,
+} from '@akashaorg/typings/lib/sdk';
+import { InboxNotification } from '@akashaorg/typings/lib/ui';
+import {
+  Antenna,
+  Profile,
+  Vibes,
+} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+// import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
 
-export type Notification = {
-  id: string;
-  [key: string]: unknown;
+const placeholderIcons = {
+  [ChannelOptionIndexes.ANTENNA]: <Antenna />,
+  [ChannelOptionIndexes.PROFILE]: <Profile />,
+  [ChannelOptionIndexes.VIBES]: <Vibes />,
 };
 
 const NotificationsPage: React.FC = () => {
-  const [showMenu, setShowMenu] = useState(false);
-
-  const {
-    data: { authenticatedDID },
-  } = useAkashaStore();
-  const isLoggedIn = !!authenticatedDID;
-
-  const navigate = useNavigate();
-
-  const { data, isLoading } = useGetSettings('@akashaorg/app-notifications');
-
+  const sdk = getSDK();
+  const notificationService = sdk.services.common.notification;
   const { t } = useTranslation('app-notifications');
-  const { getCorePlugins, uiEvents } = useRootComponentProps();
 
+  const { getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
 
-  const _uiEvents = useRef(uiEvents);
+  // notificationsStore
+  const [notifications, setNotifications] = useState([]);
+  const [notificationLoading, setNotificationLoading] = useState(true);
 
-  // mock data used for displaying something. Change when there's real data
-  const allNotifications: Notification[] = [
-    {
-      id: '1',
-      body: {
-        value: {
-          author: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          follower: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          postID: '01f3st44m5g3tc6419b92zyd21',
-        },
-        property: 'POST_MENTION',
-      },
-      createdAt: Date.now(),
-    },
-    {
-      id: '2',
-      body: {
-        value: {
-          author: {
-            name: 'Dr. Cat',
-            userName: 'thedrCat',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          follower: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          postID: '01f3st44m5g3tc6419b92zyd21',
-        },
-        property: 'POST_MENTION',
-      },
-      createdAt: Date.now(),
-    },
-    {
-      id: '3',
-      body: {
-        value: {
-          author: {
-            name: 'Dr. Cat',
-            userName: 'thedrCat',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          follower: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          postID: '01f3st44m5g3tc6419b92zyd21',
-        },
-        property: 'POST_MENTION',
-      },
-      createdAt: Date.now(),
-      read: true,
-    },
-  ]; // notifReq.data;
+  /**
+   * 1. Navigate the click +++
+   * 2. Infitine scroll
+   * 3. End of notifications +++
+   * 4. Connect with DEV 493
+   * 5. Testing for Notification card.
+   * 6. Update notification card story
+   * 7. Translate the notification title body +++
+   * 8. Go to the top Element --Lux---
+   */
 
-  const unreadNotifications = allNotifications?.filter(notif => notif.read === undefined);
-  const readNotifications = allNotifications?.filter(notif => notif.read === true);
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
-  const handleAvatarClick = (id: string) => {
-    navigateTo?.({
-      appName: '@akashaorg/app-profile',
-      getNavigationUrl: navRoutes => `${navRoutes.rootRoute}/${id}`,
-    });
-  };
-
-  const handleEntryClick = (itemId: string, itemType: EntityTypes) => {
-    if (itemType === EntityTypes.BEAM) {
-      navigateTo?.({
-        appName: '@akashaorg/app-antenna',
-        getNavigationUrl: navRoutes => `${navRoutes.Post}/${itemId}`,
-      });
-    } else if (itemType === EntityTypes.REFLECT) {
-      navigateTo?.({
-        appName: '@akashaorg/app-antenna',
-        getNavigationUrl: navRoutes => `${navRoutes.Reply}/${itemId}`,
-      });
+  const fetchNotifications = async () => {
+    try {
+      setNotificationLoading(true);
+      await notificationService.initialize();
+      const notifications = await notificationService.getNotifications();
+      const formattedNotifications = [];
+      for (const notification of notifications) {
+        formattedNotifications.push(getPresentationDataFromNotification(notification));
+      }
+      setNotifications(formattedNotifications);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      setNotificationLoading(false);
     }
   };
 
-  const dropDownMenuItems = [
-    { id: '0', title: t('All') },
-    { id: '1', title: t('Unread') },
-    { id: '2', title: t('Read') },
-  ];
+  const getPresentationDataFromNotification = (
+    notification: PushOrgNotification,
+  ): InboxNotification => {
+    const returnObj: InboxNotification = {
+      title: notification.payload.data.asub,
+      body: notification.payload.data.amsg,
+      // Title and icon for broadcast TBD decided in future iterations
+      notificationTypeIcon: <GlobeAltIcon />,
+      notificationTypeTitle: t('BROADCAST'),
+      notificationAppIcon: null,
+      ctaLinkTitle: null,
+      ctaLinkUrl: null,
+      date: '',
+      isSeen: !notification.isUnread,
+    };
 
-  const [selectedOption, setSelectedOption] = React.useState(dropDownMenuItems[0]);
-
-  const handleResetClick = () => {
-    setSelectedOption(dropDownMenuItems[0]);
-  };
-
-  const markAllAsRead = () => {
-    unreadNotifications.map(() => {
-      // @TODO to be implemented
-    });
-    setShowMenu(!showMenu);
-
-    _uiEvents.current.next({
-      event: NotificationEvents.ShowNotification,
-      data: {
-        type: NotificationTypes.Success,
-        title: 'Marked all as read successfully.',
-      },
-    });
-  };
-
-  const redirectToSettingsPage = () => {
-    // go to customization page
-    navigate({ to: routes[SETTINGS_PAGE] });
-  };
-
-  const dropDownActions: MenuProps['items'] = [
-    {
-      label: 'Mark all as read',
-      icon: <CheckCircleIcon />,
-      onClick: () => markAllAsRead(),
-    },
-    {
-      label: 'Settings',
-      icon: <Cog8ToothIcon />,
-      onClick: () => redirectToSettingsPage(),
-    },
-  ];
-
-  if (isLoading) return <Spinner />;
-
-  if (!isLoggedIn || !data) {
-    navigate({ to: routes[CUSTOMISE_NOTIFICATION_WELCOME_PAGE] });
-  }
-
-  const filterShownNotifications = (selectedOption: number) => {
-    switch (selectedOption) {
-      case 0:
-        return allNotifications;
-      case 1:
-        return unreadNotifications;
-      case 2:
-        return readNotifications;
-      default:
-        return null;
+    // Set notification type title and icon
+    switch (notification.payload.data.type) {
+      case 3:
+        returnObj.notificationTypeTitle = t('ACTIVITY');
+        returnObj.notificationTypeIcon = <BoltIcon />;
+        break;
+      case 4:
+        // Title and icon for group TBD decided in future iterations
+        returnObj.ctaLinkTitle = t('GROUP');
+        returnObj.notificationTypeIcon = <RectangleGroupIcon />;
     }
+
+    const parsedMetaData = notification.payload.data.parsedMetaData;
+    // set CTA/button title and url to navigate
+    switch (returnObj.title) {
+      case 'New mention':
+        const beamId = (parsedMetaData.data as MentionNotificationMetaData).beamID;
+        returnObj.appName = '@akashaorg/app-antenna';
+        returnObj.ctaLinkUrl = `/beam/${beamId}`;
+        returnObj.ctaLinkTitle = t('View');
+        break;
+      case 'New follow':
+        const profileId = (parsedMetaData.data as FollowNotificationMetaData).follower;
+        returnObj.appName = '@akashaorg/app-profile';
+        returnObj.ctaLinkUrl = `/${profileId}`;
+        returnObj.ctaLinkTitle = t('Go to profile');
+        break;
+      case 'New reflection':
+        const reflectionId = (parsedMetaData.data as ReflectionNotificationMetaData).reflectionID;
+        returnObj.appName = '@akashaorg/app-antenna';
+        returnObj.ctaLinkUrl = `/reflection/${reflectionId}`;
+        returnObj.ctaLinkTitle = t('Go to reflection');
+        break;
+    }
+    const placeholderIcon =
+      // This case happens only if we sent notification from PushOrgDashboard
+      placeholderIcons[parsedMetaData?.channelIndex || ChannelOptionIndexes.ANTENNA];
+
+    returnObj.notificationAppIcon = (
+      <AppIcon
+        iconColor={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+        size={{ width: 16, height: 16 }}
+        backgroundSize={32}
+        placeholderIcon={placeholderIcon}
+        background={'grey5'}
+        customStyle="min-w-[32px]"
+        solid
+      />
+    );
+
+    if (notification.timestamp) {
+      // Format notification time
+      returnObj.date = notificationFormatRelativeTime(notification.timestamp.toString());
+    }
+
+    return returnObj;
   };
+
+  const clickNotification = (notification: InboxNotification) => {
+    navigateTo({
+      appName: notification.appName,
+      getNavigationUrl: () => notification.ctaLinkUrl,
+    });
+  };
+
+  if (notificationLoading) return <Spinner />;
 
   return (
     <>
-      <Stack direction="column" customStyle="pb-32 h-[calc(100vh-88px)]">
-        <Stack customStyle="py-4 relative w-full" direction="row">
+      <Stack direction="column" customStyle="pb-32">
+        <Stack customStyle="py-4" direction="row">
           <Text variant="h5" align="center">
             <>{t('Notifications')}</>
           </Text>
-          <Stack direction="column" spacing="gap-y-1" customStyle="absolute right-0 top-5">
-            <Menu
-              anchor={{
-                icon: <EllipsisHorizontalIcon />,
-                variant: 'primary',
-                greyBg: true,
-                iconOnly: true,
-                'aria-label': 'settings',
-              }}
-              items={dropDownActions}
-              customStyle="w-max z-99"
-            />
-          </Stack>
         </Stack>
-        <Stack direction="column">
-          <DropDownFilter
-            dropdownMenuItems={dropDownMenuItems}
-            selected={selectedOption}
-            setSelected={setSelectedOption}
-            resetLabel={t('Reset')}
-            resetHandler={handleResetClick}
+        <Stack>
+          <NotificationsCard
+            notifications={notifications}
+            isFetching={false}
+            clickNotification={clickNotification}
           />
         </Stack>
-        <NotificationsCard
-          notifications={filterShownNotifications(Number(selectedOption.id))}
-          followingLabel={'is now following you'}
-          mentionedPostLabel={'mentioned you in a post'}
-          mentionedCommentLabel={'mentioned you in a comment'}
-          replyToPostLabel={'replied to your post'}
-          replyToReplyLabel={'replied to your reply'}
-          repostLabel={'reposted your post'}
-          moderatedPostLabel={'moderated your post'}
-          moderatedReplyLabel={'moderated your reply'}
-          moderatedAccountLabel={'suspended your account'}
-          markAsReadLabel={'Mark as read'}
-          emptyTitle={'Looks like you don’t have any new notifications yet!'}
-          handleMessageRead={() => {
-            return;
-          }} //@TODO to be implemented
-          handleEntryClick={handleEntryClick}
-          handleProfileClick={handleAvatarClick}
-          transformSource={transformSource}
-          loggedIn={true}
-          isFetching={false}
-        />
       </Stack>
     </>
   );

@@ -18,9 +18,7 @@ import pino from 'pino';
 import { z } from 'zod';
 
 import {
-  type AdditionalMetadata,
   type UserSettingType,
-  type PushOrgNotification,
   type InitializeOptions,
   type ChannelSettings,
   InitializeOptionsSchema,
@@ -34,6 +32,8 @@ import {
   type ChannelOptionIndex,
   type NotificationMetaTypes,
   type NotificationParsedMetaData,
+  type PushOrgNotification,
+  type AdditionalMetadata,
 } from '@akashaorg/typings/lib/sdk';
 
 @injectable()
@@ -435,7 +435,7 @@ class NotificationService {
   }
 
   private setLatestStoredNotificationID(val: string) {
-    return localStorage.set(this.localStorageKeyOfLatestSeenNotification, val);
+    return localStorage.setItem(this.localStorageKeyOfLatestSeenNotification, val);
   }
 
   private get localStorageKeyOfLatestSeenNotification() {
