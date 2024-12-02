@@ -276,7 +276,6 @@ const EntryCard: React.FC<EntryCardProps> = props => {
               )}
               {showHiddenContent && entryData.tags?.length > 0 && (
                 <Stack
-                  padding={{ y: 16 }}
                   justify="start"
                   direction="row"
                   spacing="gap-2"
