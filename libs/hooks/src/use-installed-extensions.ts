@@ -8,6 +8,7 @@ import { AkashaProfile } from '@akashaorg/typings/lib/ui';
 
 export type InstalledExtension = Pick<
   AkashaApp,
+  | 'id'
   | 'name'
   | 'displayName'
   | 'logoImage'
