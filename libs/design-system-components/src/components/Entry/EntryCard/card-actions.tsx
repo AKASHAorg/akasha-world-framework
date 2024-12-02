@@ -31,7 +31,7 @@ const CardActions: React.FC<CardActionProps> = props => {
   const reflectIconUi = (
     <Card
       onMouseEnter={() => {
-        setHovered(true);
+        if (!disableActions) setHovered(true);
       }}
       onMouseLeave={() => {
         setHovered(false);
