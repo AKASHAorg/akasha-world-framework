@@ -20,6 +20,16 @@ import { MAX_GALLERY_IMAGES } from '../../../constants';
 import { AtomContext, formDefaultData } from './main-page';
 import { useAtom } from 'jotai';
 
+const getImageObject = imageWithExtraProps => {
+  if (imageWithExtraProps) {
+    return {
+      src: imageWithExtraProps.src,
+      width: imageWithExtraProps.width,
+      height: imageWithExtraProps.height,
+    };
+  } else return null;
+};
+
 type EditPublishedExtensionPageProps = {
   extensionId: string;
 };
@@ -72,6 +82,7 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
       return {
         ...prev,
         ...formData,
+        dataSavedToForm: true,
       };
     });
   };
@@ -90,8 +101,8 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
 
   const formDefault = useMemo(() => {
     return {
-      logoImage: defaultValues?.logoImage,
-      coverImage: defaultValues?.coverImage,
+      logoImage: getImageObject(defaultValues?.logoImage),
+      coverImage: getImageObject(defaultValues?.coverImage),
       description: defaultValues?.description,
       gallery: defaultValues?.gallery,
       links: defaultValues?.links,
@@ -122,7 +133,13 @@ export const EditPublishedExtensionPage: React.FC<EditPublishedExtensionPageProp
       logoImage: logoImage || formDefault?.logoImage,
       coverImage: coverImage || formDefault?.coverImage,
       description: formData?.description,
-      gallery: formData?.gallery,
+      gallery: galleryImages?.map(galleryImage => {
+        return {
+          width: galleryImage.size?.width,
+          height: galleryImage.size?.height,
+          src: galleryImage.src,
+        };
+      }),
       links: formData?.links,
     };
     updateAppMutation({
