@@ -24,6 +24,20 @@ type EditTestReleasePageProps = {
   extensionId: string;
 };
 
+const getDraftExtension = (extensionId: string, authenticatedDID: string) => {
+  try {
+    const draftExtensions = JSON.parse(
+      localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`),
+    );
+    if (!draftExtensions) {
+      return null;
+    }
+    return draftExtensions.find(ext => ext.id === extensionId);
+  } catch (error) {
+    return error;
+  }
+};
+
 export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extensionId }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
@@ -34,7 +48,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
   const [isLoadingTestMode, setIsLoadingTestMode] = useState(false);
 
   const {
-    data: { authenticatedDID },
+    data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
 
   const showErrorNotification = React.useCallback((title: string) => {
@@ -57,26 +71,17 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
 
   const localRelease = draftReleases.find(release => release.applicationID === extensionId);
 
-  const draftExtension = useMemo(() => {
-    try {
-      const draftExtensions = JSON.parse(
-        localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`),
-      );
-      if (!draftExtensions) {
-        return null;
-      }
-      return draftExtensions.find(ext => ext.id === extensionId);
-    } catch (error) {
-      showErrorNotification(error);
-    }
-  }, [authenticatedDID, extensionId, showErrorNotification]);
+  const draftExtension = getDraftExtension(extensionId, authenticatedDID);
+  const draftExtensionError = draftExtension instanceof Error || false;
+
+  console.log(authenticatedDID, isAuthenticating, draftExtension, draftExtensionError);
 
   const extensionDataReq = useGetAppsByIdQuery({
     variables: {
       id: extensionId,
     },
     fetchPolicy: 'cache-first',
-    skip: !!draftExtension,
+    skip: !authenticatedDID && isAuthenticating,
   });
 
   const baseAppInfo = useMemo(() => {
@@ -97,6 +102,12 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
       };
     }
   }, [draftExtension, extensionDataReq.data, extensionDataReq.networkStatus]);
+
+  useEffect(() => {
+    if (draftExtensionError) {
+      showErrorNotification(draftExtension);
+    }
+  }, [draftExtension, draftExtensionError, showErrorNotification]);
 
   useEffect(() => {
     const testModeLoader = getCorePlugins().testModeLoader;

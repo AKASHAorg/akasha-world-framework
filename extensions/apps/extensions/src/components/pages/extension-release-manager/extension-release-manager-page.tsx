@@ -58,7 +58,7 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
   };
 
   const {
-    data: { authenticatedDID },
+    data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
 
   const showErrorNotification = React.useCallback((title: string) => {
@@ -71,15 +71,25 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
     });
   }, []);
 
-  const draftExtensions: Extension[] = useMemo(() => {
+  const draftExtension: { loaded: boolean; data: Extension } = useMemo(() => {
     try {
-      return JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) || [];
+      if (!authenticatedDID) {
+        return {
+          loaded: false,
+          data: null,
+        };
+      }
+      const drafts =
+        JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) || [];
+      if (!drafts) {
+        return { loaded: true, data: null };
+      }
+      return { loaded: true, data: drafts.find(ext => ext.id === extensionId) };
     } catch (error) {
       showErrorNotification(error);
+      return { loaded: true, data: null };
     }
-  }, [authenticatedDID, showErrorNotification]);
-
-  const localExtensionData = draftExtensions.find(ext => ext.id === extensionId);
+  }, [authenticatedDID, extensionId, showErrorNotification]);
 
   const {
     data: appsByIdReq,
@@ -89,16 +99,16 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
     variables: { id: extensionId },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
+    skip: draftExtension.loaded && !!draftExtension.data,
   });
 
-  const publishedAppData = appsByIdReq?.node;
-
   const extensionData = useMemo(() => {
+    const publishedAppData = appsByIdReq?.node;
     if (publishedAppData && 'applicationType' in publishedAppData) {
       return publishedAppData;
     }
-    return localExtensionData;
-  }, [localExtensionData, publishedAppData]);
+    return draftExtension.data;
+  }, [appsByIdReq?.node, draftExtension]);
 
   const draftReleases = useMemo(() => {
     try {
@@ -173,7 +183,7 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
     navigate({ to: '/publish-extension/$extensionId', params: { extensionId } });
   };
 
-  const handleNavigateToReleaseInfoPage = releaseId => {
+  const handleNavigateToReleaseInfoPage = (releaseId: string) => {
     navigate({
       to: '/release-manager/$extensionId/release-info/$releaseId',
       params: { extensionId, releaseId },
@@ -181,7 +191,7 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
   };
 
   const handleClickPublishReleaseButton = () => {
-    publishedAppData ? handlePublishReleaseNav() : setShowModal(true);
+    appsByIdReq?.node ? handlePublishReleaseNav() : setShowModal(true);
   };
 
   if (appsByIdError) {
@@ -204,7 +214,7 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
     );
   }
 
-  if (!authenticatedDID) {
+  if (!authenticatedDID && !isAuthenticating) {
     return (
       <ErrorLoader
         type="not-authenticated"
