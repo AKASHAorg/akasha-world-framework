@@ -29,7 +29,7 @@ const BasicInfoCard: React.FC<BasicInfoCardProps> = ({
             radius="rounded-xl"
           />
         )}
-        <Stack customStyle="w-[50%] m-auto">
+        <Stack customStyle="w-[70%] m-auto gap-4">
           {titleLabel && (
             <Text variant="h6" align="center">
               {titleLabel}
@@ -37,7 +37,7 @@ const BasicInfoCard: React.FC<BasicInfoCardProps> = ({
           )}
 
           {subtitleLabel && (
-            <Text variant="footnotes2" align="center">
+            <Text variant="subtitle2" align="center">
               {subtitleLabel}
             </Text>
           )}

@@ -1,60 +1,38 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import NotificationsCard, { NotificationsCardProps } from '../../components/NotificationsCard';
+import NotificationsCard, { NotificationCardProps } from '../../components/NotificationCard';
+import React from 'react';
+import { BoltIcon } from '@heroicons/react/24/outline';
+import AppIcon from '@akashaorg/design-system-core/lib/components/AppIcon';
+import { Antenna } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 
-const meta: Meta<NotificationsCardProps> = {
+const meta: Meta<NotificationCardProps> = {
   title: 'DSComponents/Cards/NotificationsCard',
   component: NotificationsCard,
 };
 
-type Story = StoryObj<NotificationsCardProps>;
+type Story = StoryObj<NotificationCardProps>;
 
 export const Default: Story = {
   args: {
-    notifications: [
-      {
-        body: {
-          value: {
-            author: {
-              name: 'Dr. Flynn',
-              userName: 'thedrflynn',
-              ethAddress: '0x003410490050000320006570034567114572000',
-              avatar: { url: 'https://placebeard.it/360x360' },
-            },
-            follower: {
-              name: 'Dr. Flynn',
-              userName: 'thedrflynn',
-              ethAddress: '0x003410490050000320006570034567114572000',
-              avatar: { url: 'https://placebeard.it/360x360' },
-            },
-            postID: '01f3st44m5g3tc6419b92zyd21',
-          },
-          property: 'POST_MENTION',
-        },
-        createdAt: Date.now(),
-      },
-    ],
-    isFetching: false,
-    emptyTitle: 'All clear',
-    markAsReadLabel: 'Mark as read',
-    repostLabel: 'reposted your post',
-    replyToPostLabel: 'replied to your post',
-    replyToReplyLabel: 'replied to your reply',
-    followingLabel: 'is now following you',
-    mentionedPostLabel: 'mentioned you in a post',
-    mentionedCommentLabel: 'mentioned you in a comment',
-    moderatedPostLabel: 'moderated your post',
-    moderatedReplyLabel: 'moderated your reply',
-    moderatedAccountLabel: 'suspended your account',
-    emptySubtitle: "You don't have any new notifications!",
-    loggedIn: true,
-    handleEntryClick: () => ({}),
-    handleMessageRead: () => ({}),
-    handleProfileClick: () => ({}),
-    transformSource: () => ({
-      src: 'https://placebeard.it/360x360',
-      width: 360,
-      height: 360,
-    }),
+    title: 'New reflection',
+    body: 'Someone reflected your beam',
+    date: '1 hour ago',
+    isSeen: true,
+    notificationTypeIcon: <BoltIcon />,
+    notificationTypeTitle: 'Activity',
+    notificationAppIcon: (
+      <AppIcon
+        iconColor={{ light: 'secondaryLight', dark: 'secondaryDark' }}
+        size={{ width: 16, height: 16 }}
+        backgroundSize={32}
+        placeholderIcon={<Antenna />}
+        background={'grey5'}
+        customStyle="min-w-[32px]"
+        solid
+      />
+    ),
+    ctaLinkUrl: 'Link',
+    ctaLinkTitle: 'Go to reflection',
   },
 };
 
