@@ -31,118 +31,12 @@ export type Notification = {
 
 const NotificationsPage: React.FC = () => {
   const sdk = getSDK();
-  const [showMenu, setShowMenu] = useState(false);
-
-  const {
-    data: { authenticatedDID },
-  } = useAkashaStore();
-  const isLoggedIn = !!authenticatedDID;
-
-  const navigate = useNavigate();
-
-  const { data, isLoading } = useGetSettings('@akashaorg/app-notifications');
+  const { isLoading } = useGetSettings('@akashaorg/app-notifications');
 
   const { t } = useTranslation('app-notifications');
-  const { getCorePlugins, uiEvents } = useRootComponentProps();
-
-  const navigateTo = getCorePlugins().routing.navigateTo;
-
+  const { uiEvents } = useRootComponentProps();
   const _uiEvents = useRef(uiEvents);
 
-  // mock data used for displaying something. Change when there's real data
-  const allNotifications: Notification[] = [
-    {
-      id: '1',
-      body: {
-        value: {
-          author: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          follower: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          postID: '01f3st44m5g3tc6419b92zyd21',
-        },
-        property: 'POST_MENTION',
-      },
-      createdAt: Date.now(),
-    },
-    {
-      id: '2',
-      body: {
-        value: {
-          author: {
-            name: 'Dr. Cat',
-            userName: 'thedrCat',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          follower: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          postID: '01f3st44m5g3tc6419b92zyd21',
-        },
-        property: 'POST_MENTION',
-      },
-      createdAt: Date.now(),
-    },
-    {
-      id: '3',
-      body: {
-        value: {
-          author: {
-            name: 'Dr. Cat',
-            userName: 'thedrCat',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          follower: {
-            name: 'Dr. Flynn',
-            userName: 'thedrflynn',
-            ethAddress: '0x003410490050000320006570034567114572000',
-            avatar: { url: 'https://placebeard.it/360x360' },
-          },
-          postID: '01f3st44m5g3tc6419b92zyd21',
-        },
-        property: 'POST_MENTION',
-      },
-      createdAt: Date.now(),
-      read: true,
-    },
-  ]; // notifReq.data;
-
-  const unreadNotifications = allNotifications?.filter(notif => notif.read === undefined);
-  const readNotifications = allNotifications?.filter(notif => notif.read === true);
-
-  const handleAvatarClick = (id: string) => {
-    navigateTo?.({
-      appName: '@akashaorg/app-profile',
-      getNavigationUrl: navRoutes => `${navRoutes.rootRoute}/${id}`,
-    });
-  };
-
-  const handleEntryClick = (itemId: string, itemType: EntityTypes) => {
-    if (itemType === EntityTypes.BEAM) {
-      navigateTo?.({
-        appName: '@akashaorg/app-antenna',
-        getNavigationUrl: navRoutes => `${navRoutes.Post}/${itemId}`,
-      });
-    } else if (itemType === EntityTypes.REFLECT) {
-      navigateTo?.({
-        appName: '@akashaorg/app-antenna',
-        getNavigationUrl: navRoutes => `${navRoutes.Reply}/${itemId}`,
-      });
-    }
-  };
   // Fetch the notification Apps/options that the user is subscribed
   const [options, setSelectedOption] = React.useState([]);
   const [loadingOptions, setLoadingOptions] = React.useState(false);
@@ -200,21 +94,6 @@ const NotificationsPage: React.FC = () => {
     return activeOptions;
   };
 
-  const markAllAsRead = () => {
-    unreadNotifications.map(() => {
-      // @TODO to be implemented
-    });
-    setShowMenu(!showMenu);
-
-    _uiEvents.current.next({
-      event: NotificationEvents.ShowNotification,
-      data: {
-        type: NotificationTypes.Success,
-        title: 'Marked all as read successfully.',
-      },
-    });
-  };
-
   /**
    * Fetch notification by specifying the array of ChannelOptionIndexes / Application indexes
    * If no array or an empty array is sent then the get notification will return notifications from all apps
@@ -229,42 +108,7 @@ const NotificationsPage: React.FC = () => {
     return notifications || [];
   };
 
-  const redirectToSettingsPage = () => {
-    // go to customization page
-    navigate({ to: routes[SETTINGS_PAGE] });
-  };
-
-  const dropDownActions: MenuProps['items'] = [
-    {
-      label: 'Mark all as read',
-      icon: <CheckCircleIcon />,
-      onClick: () => markAllAsRead(),
-    },
-    {
-      label: 'Settings',
-      icon: <Cog8ToothIcon />,
-      onClick: () => redirectToSettingsPage(),
-    },
-  ];
-
   if (isLoading) return <Spinner />;
-
-  if (!isLoggedIn || !data) {
-    navigate({ to: routes[CUSTOMISE_NOTIFICATION_WELCOME_PAGE] });
-  }
-
-  const filterShownNotifications = (selectedOption: number) => {
-    switch (selectedOption) {
-      case 0:
-        return allNotifications;
-      case 1:
-        return unreadNotifications;
-      case 2:
-        return readNotifications;
-      default:
-        return null;
-    }
-  };
   return (
     <>
       <Stack direction="column" customStyle="pb-32 h-[calc(100vh-88px)]">
@@ -272,19 +116,6 @@ const NotificationsPage: React.FC = () => {
           <Text variant="h5" align="center">
             <>{t('Notifications')}</>
           </Text>
-          <Stack direction="column" spacing="gap-y-1" customStyle="absolute right-0 top-5">
-            <Menu
-              anchor={{
-                icon: <EllipsisHorizontalIcon />,
-                variant: 'primary',
-                greyBg: true,
-                iconOnly: true,
-                'aria-label': 'settings',
-              }}
-              items={dropDownActions}
-              customStyle="w-max z-99"
-            />
-          </Stack>
         </Stack>
         <Stack direction="row" spacing="gap-x-2">
           {options.map((option, index) => (
@@ -303,38 +134,6 @@ const NotificationsPage: React.FC = () => {
             </Stack>
           )}
         </Stack>
-        {/* Depricated */}
-        {/* <Stack direction="column">
-          <DropDownFilter
-            dropdownMenuItems={dropDownMenuItems}
-            selected={selectedOption}
-            setSelected={setSelectedOption}
-            resetLabel={t('Reset')}
-            resetHandler={handleResetClick}
-          />
-        </Stack> */}
-        <NotificationsCard
-          notifications={allNotifications}
-          followingLabel={'is now following you'}
-          mentionedPostLabel={'mentioned you in a post'}
-          mentionedCommentLabel={'mentioned you in a comment'}
-          replyToPostLabel={'replied to your post'}
-          replyToReplyLabel={'replied to your reply'}
-          repostLabel={'reposted your post'}
-          moderatedPostLabel={'moderated your post'}
-          moderatedReplyLabel={'moderated your reply'}
-          moderatedAccountLabel={'suspended your account'}
-          markAsReadLabel={'Mark as read'}
-          emptyTitle={'Looks like you don’t have any new notifications yet!'}
-          handleMessageRead={() => {
-            return;
-          }} //@TODO to be implemented
-          handleEntryClick={handleEntryClick}
-          handleProfileClick={handleAvatarClick}
-          transformSource={transformSource}
-          loggedIn={true}
-          isFetching={false}
-        />
       </Stack>
     </>
   );
