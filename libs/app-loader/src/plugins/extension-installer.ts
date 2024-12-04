@@ -4,7 +4,7 @@ import { AUTH_EVENTS } from '@akashaorg/typings/lib/sdk';
 import { SystemModuleType } from '../type-utils';
 import { IAppConfig, IExtensionInstallerPlugin } from '@akashaorg/typings/lib/ui';
 import { ILogger } from '@akashaorg/typings/lib/sdk/log';
-import { AkashaAppEdgeNode, selectLatestRelease } from './utils';
+import { AkashaAppEdgeNode, selectLatestRelease, staticInstallStatusCodes } from './utils';
 import { AkashaApp } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
 type ExtensionInstallerOptions = {
@@ -21,33 +21,6 @@ type ExtensionInstallerOptions = {
     extensionConfig: IAppConfig & { name: string },
   ) => void;
   registerAdditionalResources: (name: string, module: SystemModuleType) => Promise<void>;
-};
-
-const statusCodes = {
-  error: {
-    USER_NOT_CONNECTED: Symbol.for('#user-not-connected'),
-    EXTENSION_NOT_FOUND: Symbol.for('#extension_not_found'),
-    EXTENSION_FETCH_ERROR: Symbol.for('#extension_fetch_error'),
-    EXTENSION_DATA_INVALID: Symbol.for('#extension_data_invalid'),
-    EXTENSION_RELEASE_DATA_INVALID: Symbol.for('#extension_release_data_invalid'),
-    EXTENSION_IMPORT_ERROR: Symbol.for('#extension_import_error'),
-    EXTENSION_INITIALIZATION_FAILED: Symbol.for('#extension_initialization_failed'),
-    EXTENSION_REGISTER_RESOURCES_FAILED: Symbol.for('#extension_register_resources_failed'),
-    EXTENSION_REGISTRATION_FAILED: Symbol.for('#extension_registration_failed'),
-    EXTENSION_INFO_SAVE_FAILED: Symbol.for('#extension_info_save_failed'),
-    EXTENSION_FINALIZATION_FAILED: Symbol.for('#extension_finalization_failed'),
-  },
-  status: {
-    FETCHING_EXTENSION_DATA: Symbol.for('#fetching_ext_data'),
-    IMPORTING_MODULE: Symbol.for('#importing_module'),
-    REGISTERING_RESOURCES: Symbol.for('#registering_resources'),
-    REGISTERING_RESOURCES_SUCCESS: Symbol.for('#registering_resources_success'),
-    INITIALIZING_EXTENSION: Symbol.for('#initialization'),
-    REGISTERING_EXTENSION: Symbol.for('#registering_extension'),
-    SAVING_EXTENSION_INFO: Symbol.for('#saving_extension_info'),
-    FINALIZING_INSTALL: Symbol.for('#finalizing_install'),
-    INSTALL_SUCCESS: Symbol.for('#install_success'),
-  },
 };
 
 export class ExtensionInstaller implements IExtensionInstallerPlugin {
@@ -86,7 +59,7 @@ export class ExtensionInstaller implements IExtensionInstallerPlugin {
   }
 
   getStaticStatusCodes() {
-    return statusCodes;
+    return staticInstallStatusCodes;
   }
   async acceptUserAgreement(extensionData: AkashaApp) {
     const release = selectLatestRelease(extensionData);
@@ -278,7 +251,9 @@ export class ExtensionInstaller implements IExtensionInstallerPlugin {
       this.#notifyErrorStatus(this.getStaticStatusCodes().error.USER_NOT_CONNECTED);
       return;
     }
+
     this.#extensionName = extensionID;
+
     if (!(await this.#fetchExtensionStep(extensionID))) {
       return;
     }

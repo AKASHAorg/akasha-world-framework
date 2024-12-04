@@ -3,7 +3,7 @@ import { IExtensionPointStorePlugin } from './extension-point';
 import { NavigateToParams } from './navigation';
 import { IMenuItem, MenuItemAreaType } from './sidebar-menu-items';
 import { IWidgetStorePlugin } from './widgets';
-import { AkashaApp } from '../sdk/graphql-types-new';
+import { AkashaApp, AkashaAppApplicationType } from '../sdk/graphql-types-new';
 
 /**
  * Interface defining plugin configuration object
@@ -89,7 +89,8 @@ type InstallerStatusCodes =
   | 'REGISTERING_EXTENSION'
   | 'SAVING_EXTENSION_INFO'
   | 'FINALIZING_INSTALL'
-  | 'INSTALL_SUCCESS';
+  | 'INSTALL_SUCCESS'
+  | 'EXTENSION_TEST_LOAD_SUCCESS';
 
 type InstallerStaticCodes = {
   error: Record<InstallerErrorCodes, symbol>;
@@ -125,11 +126,37 @@ export interface IExtensionInstallerPlugin {
    * Retry the execution from an error based on the provided error status.
    */
   retryFromError(errorStatus: symbol): Promise<void>;
+  /**
+   * Returns the static status codes that will be used for installing/uninstalling progress/status.
+   */
+  getStaticStatusCodes(): InstallerStaticCodes;
+  subscribe(
+    listener: (status: { currentStatus?: symbol; errorStatus?: symbol }) => void,
+  ): () => void;
+}
+
+export type LocalReleaseData = {
+  source: string;
+  appName: string;
+  applicationType: AkashaAppApplicationType;
+  appId: string;
+};
+
+/**
+ * Core plugin to load extensions in test mode
+ * the plugin is similar to the installer plugin but with few differences
+ */
+
+export interface ITestModeLoaderPlugin {
+  load(localRelease: LocalReleaseData): Promise<void>;
+
+  unload(): Promise<void>;
 
   /**
    * Returns the static status codes that will be used for installing/uninstalling progress/status.
    */
   getStaticStatusCodes(): InstallerStaticCodes;
+
   subscribe(
     listener: (status: { currentStatus?: symbol; errorStatus?: symbol }) => void,
   ): () => void;
@@ -144,4 +171,5 @@ export type CorePlugins = {
   extensionUninstaller: {
     uninstallExtension(extensionName: string): void;
   };
+  testModeLoader: ITestModeLoaderPlugin;
 };

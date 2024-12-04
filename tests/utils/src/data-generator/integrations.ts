@@ -50,6 +50,13 @@ const corePluginsMock = {
   extensionUninstaller: {
     uninstallExtension: () => {},
   },
+  testModeLoader: {
+    load: () => Promise.resolve(),
+    unload: () => Promise.resolve(),
+    getStaticStatusCodes: () => ({ status: {} as any, error: {} as any }),
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    subscribe: () => () => {},
+  },
 };
 
 const log: any = {

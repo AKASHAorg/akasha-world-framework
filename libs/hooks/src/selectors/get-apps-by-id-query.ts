@@ -7,6 +7,24 @@ export const selectAppDisplayName = (data: GetAppsByIdQuery) => {
   }
 };
 
+export const selectAppName = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node.name;
+  }
+};
+
+export const selectApplicationType = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node.applicationType;
+  }
+};
+
+export const selectAppId = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node.id;
+  }
+};
+
 export const selectAppData = (data: GetAppsByIdQuery) => {
   if (isNodeWithId(data)) {
     return data.node;
