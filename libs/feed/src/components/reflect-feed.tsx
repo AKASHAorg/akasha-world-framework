@@ -192,7 +192,7 @@ const ReflectFeed: React.FC<ReflectFeedProps> = props => {
       {reflections && (
         <DynamicInfiniteScroll
           header={
-            <Card type="plain">
+            <Card type="plain" customStyle="min-h-[inherit]">
               {header}
               {filteredPendingReflections.map((content, index, arr) => (
                 <PendingReflect
