@@ -14,7 +14,7 @@ import { useRootComponentProps, useAkashaStore, useNsfwToggling } from '@akashao
 import { useTranslation } from 'react-i18next';
 import { ENTRY_PER_PAGE, ITEM_SPACING } from '../constants';
 import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
-import { selectPageInfo } from '@akashaorg/ui-awf-hooks/lib/selectors/get-followers-list-by-did-query';
+import { selectPageInfo } from '@akashaorg/ui-awf-hooks/lib/selectors/get-followings-list-by-did-query';
 
 type FollowingPageProps = {
   profileDID: string;
@@ -41,13 +41,13 @@ const FollowingPage: React.FC<FollowingPageProps> = props => {
   const profileData = selectProfileData(profileDataReq.data);
 
   const { data, loading, error, fetchMore } = useGetFollowingListByDidQuery({
-    fetchPolicy:
-      'cache-only' /* data is prefetched during route matching as a result we read from cache here */,
+    fetchPolicy: 'cache-first',
     variables: {
       id: profileDID,
       first: ENTRY_PER_PAGE,
     },
     skip: !isLoggedIn,
+    notifyOnNetworkStatusChange: true,
   });
 
   const pageInfo = selectPageInfo(data);
