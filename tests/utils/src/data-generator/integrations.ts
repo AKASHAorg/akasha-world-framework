@@ -66,12 +66,14 @@ const log: any = {
 export const genAppProps = (): IRootComponentProps & {
   getTranslationPlugin: (ns?: string) => any;
   getCorePlugins: () => any;
+  getDefaultExtensionNames: () => string[];
 } => ({
   logger: log,
   navigateToModal: () => ({}),
   uiEvents: uiEventsMock,
   layoutSlots: {},
   singleSpa: null,
+  getDefaultExtensionNames: () => [],
   worldConfig: genWorldConfig(),
   getTranslationPlugin: () => ({ i18n: {} }),
   getCorePlugins: () => corePluginsMock,
