@@ -41,13 +41,13 @@ const FollowersPage: React.FC<FollowersPageProps> = props => {
   const profileData = selectProfileData(profileDataReq.data);
 
   const { data, loading, error, fetchMore } = useGetFollowersListByDidQuery({
-    fetchPolicy:
-      'cache-only' /* data is prefetched during route matching as a result we read from cache here */,
+    fetchPolicy: 'cache-first',
     variables: {
       id: profileDID,
       first: ENTRY_PER_PAGE,
     },
     skip: !isLoggedIn,
+    notifyOnNetworkStatusChange: true,
   });
 
   const pageInfo = selectPageInfo(data);
