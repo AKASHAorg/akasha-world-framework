@@ -10,23 +10,21 @@ export interface NotificationCardEventProps {
   onClick?: (notification: InboxNotification) => void;
 }
 
-type NotificationCardProps = NotificationCardEventProps & {
-  notification: InboxNotification;
-};
+export type NotificationCardProps = NotificationCardEventProps & InboxNotification;
 
 const NotificationCard = React.forwardRef((props: NotificationCardProps) => {
-  const { onClick, notification } = props;
   const {
+    notificationTypeIcon,
+    notificationTypeTitle,
+    isSeen,
+    notificationAppIcon,
     title,
     body,
-    isSeen,
     date,
-    notificationTypeTitle,
-    notificationTypeIcon,
-    notificationAppIcon,
     ctaLinkUrl,
     ctaLinkTitle,
-  } = notification;
+    onClick,
+  } = props;
 
   return (
     <Stack customStyle="flex flex-col w-full" spacing="gap-y-2">
@@ -51,7 +49,6 @@ const NotificationCard = React.forwardRef((props: NotificationCardProps) => {
         )}
       </Stack>
       <Stack customStyle="flex flex-row" spacing="gap-x-2">
-        {/* Notification Icon based on the which app the notification has been recieved */}
         {notificationAppIcon}
         {/* Title and body */}
         <Stack customStyle="flex flex-column" spacing="gap-x-2">
@@ -75,7 +72,7 @@ const NotificationCard = React.forwardRef((props: NotificationCardProps) => {
           {date}
         </Text>
         {ctaLinkUrl && (
-          <Button plain={true} onClick={() => onClick(notification)}>
+          <Button plain={true} onClick={() => onClick(props)}>
             <Stack>
               <Text
                 variant="footnotes2"

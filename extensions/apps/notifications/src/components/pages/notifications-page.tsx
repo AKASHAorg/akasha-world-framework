@@ -1,32 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+
 import {
   BoltIcon,
   GlobeAltIcon,
   RectangleGroupIcon,
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import NotificationsCard from '@akashaorg/design-system-components/lib/components/NotificationsCard';
-import Stack from '@akashaorg/design-system-core/lib/components/Stack';
-import Text from '@akashaorg/design-system-core/lib/components/Text';
-import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
-import getSDK from '@akashaorg/core-sdk';
-import AppIcon from '@akashaorg/design-system-core/lib/components/AppIcon';
-import { notificationFormatRelativeTime } from '@akashaorg/design-system-core/lib/utils';
-import {
-  PushOrgNotification,
-  ChannelOptionIndexes,
-  FollowNotificationMetaData,
-  MentionNotificationMetaData,
-  ReflectionNotificationMetaData,
-} from '@akashaorg/typings/lib/sdk';
-import { InboxNotification } from '@akashaorg/typings/lib/ui';
 import {
   Antenna,
   Profile,
   Vibes,
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
-// import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
+
+import NotificationCard from '@akashaorg/design-system-components/lib/components/NotificationCard';
+import BasicInfoCard from '@akashaorg/design-system-components/lib/components/NotificationsCard/basic-info-card';
+import Stack from '@akashaorg/design-system-core/lib/components/Stack';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import AppIcon from '@akashaorg/design-system-core/lib/components/AppIcon';
+import Divider from '@akashaorg/design-system-core/lib/components/Divider';
+import Card from '@akashaorg/design-system-core/lib/components/Card';
+import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
+
+import { notificationFormatRelativeTime } from '@akashaorg/design-system-core/lib/utils';
+import {
+  type PushOrgNotification,
+  type FollowNotificationMetaData,
+  type MentionNotificationMetaData,
+  type ReflectionNotificationMetaData,
+  ChannelOptionIndexes,
+} from '@akashaorg/typings/lib/sdk';
+import { type InboxNotification } from '@akashaorg/typings/lib/ui';
+import getSDK from '@akashaorg/core-sdk';
 
 const placeholderIcons = {
   [ChannelOptionIndexes.ANTENNA]: <Antenna />,
@@ -45,17 +51,8 @@ const NotificationsPage: React.FC = () => {
   // notificationsStore
   const [notifications, setNotifications] = useState([]);
   const [notificationLoading, setNotificationLoading] = useState(true);
-
-  /**
-   * 1. Navigate the click +++
-   * 2. Infitine scroll
-   * 3. End of notifications +++
-   * 4. Connect with DEV 493
-   * 5. Testing for Notification card.
-   * 6. Update notification card story
-   * 7. Translate the notification title body +++
-   * 8. Go to the top Element --Lux---
-   */
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(true);
 
   useEffect(() => {
     fetchNotifications();
@@ -65,12 +62,18 @@ const NotificationsPage: React.FC = () => {
     try {
       setNotificationLoading(true);
       await notificationService.initialize();
-      const notifications = await notificationService.getNotifications();
-      const formattedNotifications = [];
-      for (const notification of notifications) {
-        formattedNotifications.push(getPresentationDataFromNotification(notification));
+
+      const fetchedNotifications = await notificationService.getNotifications(currentPage, 20);
+      if (fetchedNotifications.length === 0) {
+        setHasNextPage(false);
+      } else {
+        const formattedNotifications = [];
+        for (const notification of fetchedNotifications) {
+          formattedNotifications.push(getPresentationDataFromNotification(notification));
+        }
+        setCurrentPage(currentPage + 1);
+        setNotifications([...notifications, ...formattedNotifications]);
       }
-      setNotifications(formattedNotifications);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -159,8 +162,6 @@ const NotificationsPage: React.FC = () => {
     });
   };
 
-  if (notificationLoading) return <Spinner />;
-
   return (
     <>
       <Stack direction="column" customStyle="pb-32">
@@ -170,11 +171,53 @@ const NotificationsPage: React.FC = () => {
           </Text>
         </Stack>
         <Stack>
-          <NotificationsCard
-            notifications={notifications}
-            isFetching={false}
-            clickNotification={clickNotification}
-          />
+          {notifications.length === 0 && notificationLoading && <Spinner />}
+          {notifications.length === 0 && !notificationLoading && (
+            <BasicInfoCard
+              titleLabel="No new notifications"
+              subtitleLabel="You’re all caught up! Any new notifications will appear here"
+              image={'/images/no-notifications-found.webp'}
+            />
+          )}
+          <Card radius={16} customStyle="p-0">
+            <DynamicInfiniteScroll
+              count={notifications.length}
+              overScan={8}
+              estimatedHeight={140}
+              hasNextPage={hasNextPage}
+              onLoadMore={async () => {
+                if (notificationLoading || !hasNextPage) return;
+                await fetchNotifications();
+              }}
+            >
+              {({ itemIndex }) => {
+                const notification = notifications[itemIndex];
+                return (
+                  <Stack padding="pl-4 pr-4 pt-4 gap-y-4">
+                    <Stack key={itemIndex} customStyle="flex-row">
+                      <NotificationCard
+                        onClick={clickNotification}
+                        title={notification.title}
+                        body={notification.body}
+                        date={notification.date}
+                        isSeen={notification.isSeen}
+                        notificationTypeIcon={notification.notificationTypeIcon}
+                        notificationTypeTitle={notification.notificationTypeTitle}
+                        notificationAppIcon={notification.notificationAppIcon}
+                        ctaLinkTitle={notification.ctaLinkTitle}
+                        ctaLinkUrl={notification.ctaLinkUrl}
+                      />
+                    </Stack>
+                    {/* the last item does not need a divider */}
+                    {itemIndex !== notifications.length - 1 && (
+                      <Divider customStyle={`dark:border-grey5`} />
+                    )}
+                    {itemIndex == notifications.length - 1 && <Stack customStyle="pb-4" />}
+                  </Stack>
+                );
+              }}
+            </DynamicInfiniteScroll>
+          </Card>
         </Stack>
       </Stack>
     </>

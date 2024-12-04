@@ -3,9 +3,10 @@ export type InboxNotification = {
   body: string;
   date: string;
   isSeen: boolean;
-  notificationTypeIcon: React.Component;
+  notificationTypeIcon: React.ReactElement;
   notificationTypeTitle: string;
-  notificationAppIcon: React.Component;
+  notificationAppIcon: React.ReactElement;
   ctaLinkTitle?: string;
   ctaLinkUrl?: string;
+  appName?: string;
 };
