@@ -4,8 +4,6 @@ import '@akashaorg/design-system-core/src/twind/globals.css';
 import { WorldConfig } from '@akashaorg/typings/lib/ui';
 import { AkashaApp, AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
-console.time('AppLoader:firstMount');
-
 declare const __DEV__: boolean;
 declare const __LOAD_LOCAL_SOURCES__: boolean;
 
@@ -34,6 +32,11 @@ declare const __LOAD_LOCAL_SOURCES__: boolean;
       name: '@akashaorg/ui-widget-mini-profile',
       applicationType: AkashaAppApplicationType.Widget,
       source: `${origin}/widgets/mini-profile/index.js`,
+    },
+    {
+      name: '@akashaorg/ui-widget-test-mode-notifier',
+      applicationType: AkashaAppApplicationType.Widget,
+      source: `${origin}/widgets/test-mode-notifier/index.js`,
     },
   ];
 
@@ -77,6 +80,7 @@ declare const __LOAD_LOCAL_SOURCES__: boolean;
       '@akashaorg/ui-widget-analytics',
       '@akashaorg/ui-widget-sidebar',
       '@akashaorg/ui-widget-mini-profile',
+      '@akashaorg/ui-widget-test-mode-notifier',
     ],
     analytics: {
       trackerUrl: process.env.MATOMO_TRACKER_URL || '',
@@ -94,7 +98,6 @@ declare const __LOAD_LOCAL_SOURCES__: boolean;
   const sdk = getSDK();
   const appLoader = new AppLoader(loaderConfig);
   appLoader.start();
-  // startLoader(loaderConfig);
 
   // tslint:disable-next-line:no-console
   console.log('initial sdk instance', sdk);

@@ -84,6 +84,11 @@ const overrides = [
     applicationType: AkashaAppApplicationType.Widget,
     source: `${origin}/widgets/mini-profile/index.js`,
   },
+  {
+    name: '@akashaorg/ui-widget-test-mode-notifier',
+    applicationType: AkashaAppApplicationType.Widget,
+    source: `${origin}/widgets/test-mode-notifier/index.js`,
+  },
 ];
 
 export default overrides;
