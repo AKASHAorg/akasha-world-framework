@@ -19,8 +19,10 @@ import { selectAppData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by
 import { MAX_GALLERY_IMAGES } from '../../../constants';
 import { AtomContext, formDefaultData } from './main-page';
 import { useAtom } from 'jotai';
+import { AppImageSource } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
-const getImageObject = imageWithExtraProps => {
+// remove all other props except for src, width and height from an image object
+const getImageObject = (imageWithExtraProps: AppImageSource) => {
   if (imageWithExtraProps) {
     return {
       src: imageWithExtraProps.src,
