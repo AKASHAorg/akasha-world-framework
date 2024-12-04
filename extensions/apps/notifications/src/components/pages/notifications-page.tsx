@@ -1,33 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  useRootComponentProps,
-  useGetSettings,
-  transformSource,
-  useAkashaStore,
-} from '@akashaorg/ui-awf-hooks';
-import Menu, { MenuProps } from '@akashaorg/design-system-core/lib/components/Menu';
-import {
-  CheckCircleIcon,
-  Cog8ToothIcon,
-  EllipsisHorizontalIcon,
-} from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import NotificationsCard from '@akashaorg/design-system-components/lib/components/NotificationsCard';
+import { useRootComponentProps, useGetSettings } from '@akashaorg/ui-awf-hooks';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
-import DropDownFilter from '@akashaorg/design-system-components/lib/components/DropDownFilter';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import { EntityTypes, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import routes, { SETTINGS_PAGE, CUSTOMISE_NOTIFICATION_WELCOME_PAGE } from '../../routes';
+import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import getSDK from '@akashaorg/core-sdk';
-import { useNavigate } from '@tanstack/react-router';
 import { ChannelOptionIndexes, UserSettingType } from '@akashaorg/typings/lib/sdk/notification';
-
-export type Notification = {
-  id: string;
-  [key: string]: unknown;
-};
 
 const NotificationsPage: React.FC = () => {
   const sdk = getSDK();
