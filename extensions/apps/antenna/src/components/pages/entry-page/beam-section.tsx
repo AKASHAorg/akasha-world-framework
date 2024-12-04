@@ -35,9 +35,9 @@ const BeamSection: React.FC<BeamSectionProps> = props => {
     <Stack
       dataTestId="beam-section"
       spacing="gap-y-2"
-      customStyle={`grow ${isActive ? 'mb-2' : ''}`}
+      customStyle={`min-h-[inherit] ${isActive ? 'mb-2' : ''}`}
     >
-      <Card customStyle="grow" type="plain">
+      <Stack customStyle="grow">
         <BeamCard
           beamData={beamData}
           noWrapperCard={true}
@@ -57,7 +57,7 @@ const BeamSection: React.FC<BeamSectionProps> = props => {
           }}
         />
         {isActive && <Divider />}
-      </Card>
+      </Stack>
       {isActive && (
         <Stack padding="px-2" customStyle="mt-auto">
           {!isLoggedIn && (
