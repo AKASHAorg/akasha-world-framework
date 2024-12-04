@@ -158,7 +158,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         eventsSub.unsubscribe();
       }
     };
-  }, [authenticatedDID, getDraftExtensions, showErrorNotification]);
+  }, [authenticatedDID, getDraftExtensions]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
