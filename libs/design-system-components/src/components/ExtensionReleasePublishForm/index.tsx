@@ -110,7 +110,7 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
 
   return (
     <>
-      <form onSubmit={onSave} className={tw(apply`h-full`)}>
+      <form className={tw(apply`h-full`)}>
         <Stack direction="column" spacing="gap-y-4">
           <Stack padding="px-4 pb-16" spacing="gap-y-4">
             <Controller
@@ -192,7 +192,6 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
               label={nextButton.label}
               disabled={!isValid || !isFormDirty}
               onClick={showModalFlow ? onConfirmationModalOpen : onSave}
-              type="submit"
             />
           </Stack>
         </Stack>
