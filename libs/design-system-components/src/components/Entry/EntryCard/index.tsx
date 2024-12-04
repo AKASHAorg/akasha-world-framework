@@ -103,7 +103,7 @@ const EntryCard: React.FC<EntryCardProps> = props => {
     hover,
     actionsRight,
     reflectionsCount,
-    customStyle,
+    customStyle = '',
     onTagClick,
     onContentClick,
     onEntryFlag,
@@ -164,13 +164,14 @@ const EntryCard: React.FC<EntryCardProps> = props => {
     <Card
       type="plain"
       dataTestId={dataTestId}
+      customStyle="flex flex-col grow min-h-[inherit]"
       /**
        * attach onClick handler if;
        * 'showNSFWContent' state (initially derived from the inverse of the 'showNSFWCard' prop) and contentClickable are true
        */
       {...(contentClickable && showNSFWContent && { onClick: onContentClick })}
     >
-      <Stack spacing="gap-y-2" padding="p-4" customStyle={`grow min-h-[inherit] ${hoverStyle}`}>
+      <Stack spacing="gap-y-2" padding="p-4" customStyle={`grow ${hoverStyle}`}>
         <Stack direction="row" justify="between">
           {profileAvatar}
           <Menu
@@ -203,106 +204,98 @@ const EntryCard: React.FC<EntryCardProps> = props => {
           <ErrorBoundary {...errorBoundaryProps}>
             <Card
               type="plain"
-              customStyle={contentClickableStyle}
+              customStyle={`flex flex-col justify-start items-center w-full overflow-hidden grow ${showHiddenStyle} ${contentClickableStyle}`}
               /**
                * attach onClick handler if
                * 'showNSFWContent' and 'noWrapperCard' are both true
                */
               {...(showNSFWContent && noWrapperCard && { onClick: onContentClick })}
             >
-              <Stack
-                align="center"
-                justify="start"
-                customStyle={`overflow-hidden ${showHiddenStyle} ${contentClickableStyle}`}
-                data-testid="entry-content"
-                fullWidth={true}
-              >
-                {/* show the overlay in two cases: the user not logged in, or the beam is nsfw and
+              {/* show the overlay in two cases: the user not logged in, or the beam is nsfw and
               the nsfw setting is off */}
-                {((showNSFWCard && !nsfwUserSetting && !showNSFWContent) ||
-                  (!isLoggedIn && showNSFWCard)) && (
-                  <NSFW
-                    {...nsfw}
-                    onClickToView={event => {
-                      event.stopPropagation();
-                      if (!isLoggedIn) {
-                        if (showLoginModal && typeof showLoginModal === 'function') {
-                          showLoginModal(
-                            null,
-                            'To view explicit or sensitive content, please connect to confirm your consent.',
-                          );
-                        }
-                      } else {
-                        setShowNSFWContent(true);
+              {((showNSFWCard && !nsfwUserSetting && !showNSFWContent) ||
+                (!isLoggedIn && showNSFWCard)) && (
+                <NSFW
+                  {...nsfw}
+                  onClickToView={event => {
+                    event.stopPropagation();
+                    if (!isLoggedIn) {
+                      if (showLoginModal && typeof showLoginModal === 'function') {
+                        showLoginModal(
+                          null,
+                          'To view explicit or sensitive content, please connect to confirm your consent.',
+                        );
                       }
-                    }}
-                  />
-                )}
-                {/*
-                 * display the content in case: the content is not nsfw or, the showNSFWContent flag
-                 * is true or, the nsfw setting is on and the user is logged in.
-                 */}
-                {(!entryData.nsfw || showNSFWContent || (nsfwUserSetting && isLoggedIn)) && (
-                  <Stack
-                    justifySelf="start"
-                    alignSelf="start"
-                    align="start"
-                    spacing="gap-y-2"
-                    fullWidth={true}
-                  >
-                    {rest.itemType === EntityTypes.REFLECT ? (
-                      <>
-                        {'slateContent' in rest && (
-                          <ReadOnlyEditor
-                            content={rest.slateContent}
-                            disabled={entryData.nsfw}
-                            handleMentionClick={rest.onMentionClick}
-                            handleLinkClick={url => {
-                              rest.navigateTo?.({ getNavigationUrl: () => url });
-                            }}
-                          />
-                        )}
-                        {'errorTitle' in rest && (
-                          <InlineNotification
-                            title={rest.errorTitle}
-                            message={rest.errorMessage}
-                            type="error"
-                          />
-                        )}
-                      </>
-                    ) : (
-                      rest.sortedContents?.map(item => (
-                        <Fragment key={item.blockID}>
-                          {rest.children({ blockID: item.blockID })}
-                        </Fragment>
-                      ))
-                    )}
-                  </Stack>
-                )}
-                {showHiddenContent && entryData.tags?.length > 0 && (
-                  <Stack
-                    padding={{ y: 16 }}
-                    justify="start"
-                    direction="row"
-                    spacing="gap-2"
-                    customStyle="flex-wrap"
-                    fullWidth
-                  >
-                    {entryData.tags?.map((tag, index) => (
-                      <Pill
-                        key={index}
-                        label={tag}
-                        onPillClick={() => {
-                          if (typeof onTagClick === 'function') {
-                            onTagClick(tag);
-                          }
-                        }}
-                        type="action"
-                      />
-                    ))}
-                  </Stack>
-                )}
-              </Stack>
+                    } else {
+                      setShowNSFWContent(true);
+                    }
+                  }}
+                />
+              )}
+              {/*
+               * display the content in case: the content is not nsfw or, the showNSFWContent flag
+               * is true or, the nsfw setting is on and the user is logged in.
+               */}
+              {(!entryData.nsfw || showNSFWContent || (nsfwUserSetting && isLoggedIn)) && (
+                <Stack
+                  justifySelf="start"
+                  alignSelf="start"
+                  align="start"
+                  spacing="gap-y-2"
+                  customStyle="grow"
+                  fullWidth={true}
+                >
+                  {rest.itemType === EntityTypes.REFLECT ? (
+                    <>
+                      {'slateContent' in rest && (
+                        <ReadOnlyEditor
+                          content={rest.slateContent}
+                          disabled={entryData.nsfw}
+                          handleMentionClick={rest.onMentionClick}
+                          handleLinkClick={url => {
+                            rest.navigateTo?.({ getNavigationUrl: () => url });
+                          }}
+                        />
+                      )}
+                      {'errorTitle' in rest && (
+                        <InlineNotification
+                          title={rest.errorTitle}
+                          message={rest.errorMessage}
+                          type="error"
+                        />
+                      )}
+                    </>
+                  ) : (
+                    rest.sortedContents?.map(item => (
+                      <Fragment key={item.blockID}>
+                        {rest.children({ blockID: item.blockID })}
+                      </Fragment>
+                    ))
+                  )}
+                </Stack>
+              )}
+              {showHiddenContent && entryData.tags?.length > 0 && (
+                <Stack
+                  justify="start"
+                  direction="row"
+                  spacing="gap-2"
+                  customStyle="flex-wrap mt-auto"
+                  fullWidth
+                >
+                  {entryData.tags?.map((tag, index) => (
+                    <Pill
+                      key={index}
+                      label={tag}
+                      onPillClick={() => {
+                        if (typeof onTagClick === 'function') {
+                          onTagClick(tag);
+                        }
+                      }}
+                      type="action"
+                    />
+                  ))}
+                </Stack>
+              )}
             </Card>
           </ErrorBoundary>
         )}
