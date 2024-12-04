@@ -14,7 +14,7 @@ import {
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 
 import NotificationCard from '@akashaorg/design-system-components/lib/components/NotificationCard';
-import BasicInfoCard from '@akashaorg/design-system-components/lib/components/NotificationsCard/basic-info-card';
+import BasicInfoCard from '@akashaorg/design-system-components/lib/components/NotificationCard/basic-info-card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
@@ -34,6 +34,9 @@ import {
 import { type InboxNotification } from '@akashaorg/typings/lib/ui';
 import getSDK from '@akashaorg/core-sdk';
 
+/**
+ * Icons based on the APPs
+ */
 const placeholderIcons = {
   [ChannelOptionIndexes.ANTENNA]: <Antenna />,
   [ChannelOptionIndexes.PROFILE]: <Profile />,
@@ -48,7 +51,7 @@ const NotificationsPage: React.FC = () => {
   const { getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
 
-  // notificationsStore
+  // notification operations
   const [notifications, setNotifications] = useState([]);
   const [notificationLoading, setNotificationLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,6 +61,10 @@ const NotificationsPage: React.FC = () => {
     fetchNotifications();
   }, []);
 
+  /**
+   * Fetch notifications from Notification Service
+   * Handle the pagination
+   */
   const fetchNotifications = async () => {
     try {
       setNotificationLoading(true);
@@ -80,10 +87,14 @@ const NotificationsPage: React.FC = () => {
       setNotificationLoading(false);
     }
   };
-
+  /**
+   * Transform notification, of type PushOrgNotification, to Inbox Notification
+   * It adds the icons and other information based on the payload of the notification
+   */
   const getPresentationDataFromNotification = (
     notification: PushOrgNotification,
   ): InboxNotification => {
+    // set Default data
     const returnObj: InboxNotification = {
       title: notification.payload.data.asub,
       body: notification.payload.data.amsg,
