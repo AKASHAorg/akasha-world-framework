@@ -141,16 +141,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
   }, [authenticatedDID, showErrorNotification]);
 
   useEffect(() => {
-    const getDraftExtensions = () => {
-      try {
-        const existingDraftExtensions =
-          JSON.parse(localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`)) ?? [];
-        setDraftExtensions(existingDraftExtensions);
-      } catch (error) {
-        showErrorNotification(error);
-        setDraftExtensions([]);
-      }
-    };
+    getDraftExtensions();
     // subscribe and listen to events
     const eventsSub = uiEventsRef.current
       .pipe(filterEvents([EventTypes.RefetchMyExtensions]))
@@ -161,7 +152,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
           }
         },
       });
-    getDraftExtensions();
+
     return () => {
       if (eventsSub) {
         eventsSub.unsubscribe();

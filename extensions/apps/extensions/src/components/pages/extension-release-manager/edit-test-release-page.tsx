@@ -74,8 +74,6 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
   const draftExtension = getDraftExtension(extensionId, authenticatedDID);
   const draftExtensionError = draftExtension instanceof Error || false;
 
-  console.log(authenticatedDID, isAuthenticating, draftExtension, draftExtensionError);
-
   const extensionDataReq = useGetAppsByIdQuery({
     variables: {
       id: extensionId,
