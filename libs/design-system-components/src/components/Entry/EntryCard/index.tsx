@@ -166,9 +166,9 @@ const EntryCard: React.FC<EntryCardProps> = props => {
       dataTestId={dataTestId}
       /**
        * attach onClick handler if;
-       * 'showNSFWContent' state (initially derived from the inverse of the 'showNSFWCard' prop) is true
+       * 'showNSFWContent' state (initially derived from the inverse of the 'showNSFWCard' prop) and contentClickable are true
        */
-      {...(showNSFWContent && { onClick: onContentClick })}
+      {...(contentClickable && showNSFWContent && { onClick: onContentClick })}
     >
       <Stack spacing="gap-y-2" padding="p-4" customStyle={`grow min-h-[inherit] ${hoverStyle}`}>
         <Stack direction="row" justify="between">

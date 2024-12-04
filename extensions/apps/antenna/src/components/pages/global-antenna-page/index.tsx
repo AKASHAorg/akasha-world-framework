@@ -19,6 +19,7 @@ import {
 import { Helmet, helmetData } from '@akashaorg/design-system-core/lib/utils';
 import { IModalNavigationOptions } from '@akashaorg/typings/lib/ui';
 import { BeamContentResolver, getNsfwFiltersForBeamFeed } from '@akashaorg/ui-lib-feed';
+import { useInstalledAndDefaultApps } from '../../../utils/use-installed-and-default-apps';
 
 const GlobalAntennaPage: React.FC<unknown> = () => {
   const {
@@ -33,6 +34,8 @@ const GlobalAntennaPage: React.FC<unknown> = () => {
   const [dismissed, dismissCard] = useDismissedCard(
     '@akashaorg/ui-widget-layout_version-info-card',
   );
+
+  const installedAndDefaultApps = useInstalledAndDefaultApps();
 
   const showLoginModal = React.useCallback(
     (redirectTo?: { modal: IModalNavigationOptions }, message?: string) => {
@@ -108,7 +111,15 @@ const GlobalAntennaPage: React.FC<unknown> = () => {
                * so as to prevent NSFW beams from being displayed
                * in the antenna feed when NSFW setting is off
                */
-              return <BeamContentResolver beamId={itemData.beamID} showNSFWCard={false} />;
+              return (
+                <BeamContentResolver
+                  beamId={itemData.beamID}
+                  showNSFWCard={false}
+                  preventNavigation={
+                    !installedAndDefaultApps?.find(app => app.id === itemData.appID)
+                  }
+                />
+              );
             }
           }}
         />
