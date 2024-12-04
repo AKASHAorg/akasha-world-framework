@@ -15,12 +15,14 @@ import { useTranslation } from 'react-i18next';
 
 export type BeamContentResolverProps = {
   beamId: string;
+  preventNavigation?: boolean;
   showNSFWCard?: boolean;
   customStyle?: string;
 };
 
 const BeamContentResolver: React.FC<BeamContentResolverProps> = ({
   beamId,
+  preventNavigation,
   showNSFWCard = false,
   customStyle = '',
 }) => {
@@ -69,13 +71,14 @@ const BeamContentResolver: React.FC<BeamContentResolverProps> = ({
     isNodeWithId(beamReq.data) && (
       <BeamCard
         beamData={beamReq.data}
-        contentClickable={true}
+        contentClickable={!preventNavigation}
         /* Display the overlay according to the passed prop showNSFWCard
          * or the nsfw property of the beam object just fetched through the
          * useIndividualBeam hook (see BeamFeed).
          * */
         showNSFWCard={showNSFWCard ?? selectNsfw(beamReq.data)}
         showLoginModal={showLoginModal}
+        disableActions={preventNavigation}
         onContentClick={function () {
           getCorePlugins().routing.navigateTo({
             appName: '@akashaorg/app-antenna',
