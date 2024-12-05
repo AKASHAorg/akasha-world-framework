@@ -70,7 +70,7 @@ const NotificationsPage: React.FC = () => {
    * If 'All' option is clicked then an empty array is sent.
    * The index of 'All' option is 0
    */
-  const handleOptionChange = index => {
+  const handleOptionChange = (index: number) => {
     const updatedOptions = appOptions.map((option, i) => ({
       ...option,
       active: i === index, // Set active true for the clicked button, false for others
