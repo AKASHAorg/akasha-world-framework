@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useNotifications, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import {
@@ -48,6 +48,7 @@ const NotificationsPage: React.FC = () => {
   const sdk = getSDK();
   const notificationService = sdk.services.common.notification;
   const { t } = useTranslation('app-notifications');
+  const { previouslyEnabled } = useNotifications();
 
   const { uiEvents, getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -61,9 +62,25 @@ const NotificationsPage: React.FC = () => {
   const [appOptions, setAppOptions] = useState([]);
 
   useEffect(() => {
-    fetchNotifications();
-    getSubscribedAppsOptions();
+    initData();
   }, []);
+
+  /**
+   * Fetch subscribed apps
+   * Check first if the user has already subscribed to the channel
+   */
+  const initData = async () => {
+    if (previouslyEnabled) {
+      await notificationService.initialize();
+      fetchNotifications();
+      getSubscribedAppsOptions();
+    } else {
+      navigateTo?.({
+        appName: '@akashaorg/app-settings-ewa',
+        getNavigationUrl: navRoutes => navRoutes['Notifications'],
+      });
+    }
+  };
 
   /**
    * On option change we need to fetch the notifications from that app.
@@ -228,7 +245,7 @@ const NotificationsPage: React.FC = () => {
             <>{t('Notifications')}</>
           </Text>
         </Stack>
-        <Stack direction="row" spacing="gap-x-2">
+        <Stack direction="row" spacing="gap-x-2" customStyle="pb-4">
           {appOptions.map((option, index) => (
             <Button
               key={index}
