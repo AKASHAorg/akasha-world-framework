@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
@@ -9,10 +9,33 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import ExtensionReleasePublishForm from '@akashaorg/design-system-components/lib/components/ExtensionReleasePublishForm';
-import { DRAFT_RELEASES } from '../../../constants';
+import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../../constants';
+import { useGetAppsByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { NetworkStatus } from '@apollo/client';
+import {
+  selectAppId,
+  selectApplicationType,
+  selectAppName,
+} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
+import Modal from '@akashaorg/design-system-core/lib/components/Modal';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 
 type EditTestReleasePageProps = {
   extensionId: string;
+};
+
+const getDraftExtension = (extensionId: string, authenticatedDID: string) => {
+  try {
+    const draftExtensions = JSON.parse(
+      localStorage.getItem(`${DRAFT_EXTENSIONS}-${authenticatedDID}`),
+    );
+    if (!draftExtensions) {
+      return null;
+    }
+    return draftExtensions.find(ext => ext.id === extensionId);
+  } catch (error) {
+    return error;
+  }
 };
 
 export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extensionId }) => {
@@ -22,9 +45,10 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
   const { uiEvents, baseRouteName, getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
   const uiEventsRef = React.useRef(uiEvents);
+  const [isLoadingTestMode, setIsLoadingTestMode] = useState(false);
 
   const {
-    data: { authenticatedDID },
+    data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
 
   const showErrorNotification = React.useCallback((title: string) => {
@@ -37,6 +61,82 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
     });
   }, []);
 
+  const draftReleases = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem(`${DRAFT_RELEASES}-${authenticatedDID}`)) || [];
+    } catch (error) {
+      showErrorNotification(error);
+    }
+  }, [authenticatedDID, showErrorNotification]);
+
+  const localRelease = draftReleases.find(release => release.applicationID === extensionId);
+
+  const draftExtension = getDraftExtension(extensionId, authenticatedDID);
+  const draftExtensionError = draftExtension instanceof Error || false;
+
+  const extensionDataReq = useGetAppsByIdQuery({
+    variables: {
+      id: extensionId,
+    },
+    fetchPolicy: 'cache-first',
+    skip: !authenticatedDID && isAuthenticating,
+  });
+
+  const baseAppInfo = useMemo(() => {
+    if (draftExtension) {
+      return {
+        id: draftExtension.id,
+        name: draftExtension.name,
+        applicationType: draftExtension.applicationType,
+      };
+    }
+
+    if (extensionDataReq.networkStatus === NetworkStatus.ready && extensionDataReq.data) {
+      // select app data
+      return {
+        id: selectAppId(extensionDataReq.data),
+        name: selectAppName(extensionDataReq.data),
+        applicationType: selectApplicationType(extensionDataReq.data),
+      };
+    }
+  }, [draftExtension, extensionDataReq.data, extensionDataReq.networkStatus]);
+
+  useEffect(() => {
+    if (draftExtensionError) {
+      showErrorNotification(draftExtension);
+    }
+  }, [draftExtension, draftExtensionError, showErrorNotification]);
+
+  useEffect(() => {
+    const testModeLoader = getCorePlugins().testModeLoader;
+    let unsubscribe;
+    let timeout;
+    if (testModeLoader) {
+      unsubscribe = testModeLoader.subscribe(({ currentStatus }) => {
+        if (
+          currentStatus &&
+          currentStatus ===
+            getCorePlugins().testModeLoader.getStaticStatusCodes().status
+              .EXTENSION_TEST_LOAD_SUCCESS
+        ) {
+          timeout = setTimeout(() => {
+            navigateTo({
+              appName: baseAppInfo.name,
+            });
+          }, 3000);
+        }
+      });
+    }
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [baseAppInfo.name, getCorePlugins, navigateTo]);
+
   const handleConnectButtonClick = () => {
     navigateTo?.({
       appName: '@akashaorg/app-auth-ewa',
@@ -47,16 +147,6 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
       },
     });
   };
-
-  const draftReleases = useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem(`${DRAFT_RELEASES}-${authenticatedDID}`)) || [];
-    } catch (error) {
-      showErrorNotification(error);
-    }
-  }, [authenticatedDID, showErrorNotification]);
-
-  const localRelease = draftReleases.find(release => release.applicationID === extensionId);
 
   const handleClickSubmit = appReleaseFormData => {
     // remove the old local test release so we can update it
@@ -75,10 +165,19 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
       `${DRAFT_RELEASES}-${authenticatedDID}`,
       JSON.stringify([...newLocalDraftReleases, newLocalRelease]),
     );
-    navigate({
-      to: '/release-manager/$extensionId',
-      params: { extensionId },
+    const testModeLoader = getCorePlugins().testModeLoader;
+
+    if (!baseAppInfo) {
+      return showErrorNotification(`This release does not belong to an extension.`);
+    }
+
+    testModeLoader.load({
+      appId: localRelease.appId,
+      source: appReleaseFormData.sourceURL,
+      appName: baseAppInfo.name,
+      applicationType: baseAppInfo.applicationType,
     });
+    setIsLoadingTestMode(true);
   };
 
   const handleClickCancel = () => {
@@ -106,29 +205,42 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
   }
 
   return (
-    <Card padding={0}>
-      <Stack spacing="gap-y-2">
-        <Stack padding={16}>
-          <Text variant="h5" weight="semibold" align="center">
-            {t('Release Notes')}
-          </Text>
-          <ExtensionReleasePublishForm
-            versionNumberLabel={t('Version Number')}
-            descriptionFieldLabel={t('Description')}
-            descriptionPlaceholderLabel={t('A brief description about this release')}
-            sourceURLFieldLabel={t('Source URL')}
-            sourceURLPlaceholderLabel={t('Webpack dev server / ipfs')}
-            cancelButton={{
-              label: t('Cancel'),
-              handleClick: handleClickCancel,
-            }}
-            nextButton={{
-              label: t('Test Release'),
-              handleClick: handleClickSubmit,
-            }}
-          />
+    <>
+      <Modal show={isLoadingTestMode}>
+        <Spinner />
+        <Text variant="body2" customStyle="px-4 py-2">
+          {t('Loading test mode')}
+        </Text>
+      </Modal>
+      <Card padding={0}>
+        <Stack spacing="gap-y-2">
+          <Stack padding={16}>
+            <Text variant="h5" weight="semibold" align="center">
+              {t('Release Notes')}
+            </Text>
+            <ExtensionReleasePublishForm
+              defaultValues={{
+                versionNumber: '',
+                sourceURL: '',
+                description: '',
+              }}
+              versionNumberLabel={t('Version Number')}
+              descriptionFieldLabel={t('Description')}
+              descriptionPlaceholderLabel={t('A brief description about this release')}
+              sourceURLFieldLabel={t('Source URL')}
+              sourceURLPlaceholderLabel={t('Webpack dev server / ipfs')}
+              cancelButton={{
+                label: t('Cancel'),
+                handleClick: handleClickCancel,
+              }}
+              nextButton={{
+                label: t('Test Release'),
+                handleClick: handleClickSubmit,
+              }}
+            />
+          </Stack>
         </Stack>
-      </Stack>
-    </Card>
+      </Card>
+    </>
   );
 };
