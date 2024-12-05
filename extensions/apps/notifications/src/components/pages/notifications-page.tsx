@@ -86,13 +86,15 @@ const NotificationsPage: React.FC = () => {
    *  */
   const getSubscribedAppsOptions = async () => {
     const userSettings = await sdk.services.common.notification.getSettingsOfUser();
-    const activeOptions = userSettings.filter(appOption => appOption.enabled);
-    activeOptions.unshift({
-      index: 0,
-      appName: t('All'),
-      active: true,
-      enabled: false,
-    });
+    const activeOptions = [
+      {
+        index: 0,
+        appName: t('All'),
+        active: true,
+        enabled: false,
+      },
+      ...userSettings.filter(appOption => appOption.enabled),
+    ];
     setAppOptions(activeOptions);
   };
 
