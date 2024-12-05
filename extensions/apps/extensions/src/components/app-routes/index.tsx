@@ -35,6 +35,8 @@ import { NotFoundComponent } from './not-found-component';
 import { RouteErrorComponent } from './error-component';
 import { rootRoute } from '../root-route';
 import infoRoutes from '../pages/info-page/routes';
+import { EditPublishedExtensionPage } from '../pages/extension-edit-published-page/edit-published-extension-page';
+import { ExtensionEditPublishedMainPage } from '../pages/extension-edit-published-page/main-page';
 
 const defaultRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -146,6 +148,39 @@ const postExtensionCreateRoute = createRoute({
   },
 });
 
+const extensionEditPublishedMainRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: `/edit-published-extension/$extensionId`,
+  notFoundComponent: () => <NotFoundComponent />,
+  component: () => {
+    const { extensionId } = extensionEditPublishedMainRoute.useParams();
+    return (
+      <CatchBoundary
+        getResetKey={() => 'edit_extension_edit_published_main_reset'}
+        errorComponent={RouteErrorComponent}
+      >
+        <ExtensionEditPublishedMainPage extensionId={extensionId} />
+      </CatchBoundary>
+    );
+  },
+});
+const extensionEditPublishedFormRoute = createRoute({
+  getParentRoute: () => extensionEditPublishedMainRoute,
+  path: `/form`,
+  notFoundComponent: () => <NotFoundComponent />,
+  component: () => {
+    const { extensionId } = extensionEditPublishedFormRoute.useParams();
+    return (
+      <CatchBoundary
+        getResetKey={() => 'edit_published_extension_reset'}
+        errorComponent={RouteErrorComponent}
+      >
+        <EditPublishedExtensionPage extensionId={extensionId} />
+      </CatchBoundary>
+    );
+  },
+});
+
 const extensionEditMainRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/edit-extension/$extensionId`,
@@ -193,21 +228,54 @@ const extensionEditStep2Route = createRoute({
     );
   },
 });
+
+type ExtSearch = { type: ExtType };
+
+export enum ExtType {
+  LOCAL = 'local',
+  PUBLISHED = 'published',
+}
+
 const galleryManagerRoute = createRoute({
   getParentRoute: () => extensionEditMainRoute,
   path: '/gallery-manager',
+  validateSearch: (search: Record<string, unknown>): ExtSearch => {
+    return { type: search.type as ExtType };
+  },
   component: () => {
+    const from = galleryManagerRoute.useSearch();
     const { extensionId } = extensionEditMainRoute.useParams();
     return (
       <CatchBoundary
         getResetKey={() => 'edit_extension_gallery_manager_reset'}
         errorComponent={RouteErrorComponent}
       >
-        <ExtensionGalleryManagerPage extensionId={extensionId} />
+        <ExtensionGalleryManagerPage type={from.type} extensionId={extensionId} />
       </CatchBoundary>
     );
   },
 });
+
+const galleryManagerPublishedExtRoute = createRoute({
+  getParentRoute: () => extensionEditPublishedMainRoute,
+  path: '/gallery-manager',
+  validateSearch: (search: Record<string, unknown>): ExtSearch => {
+    return { type: search.type as ExtType };
+  },
+  component: () => {
+    const from = galleryManagerPublishedExtRoute.useSearch();
+    const { extensionId } = extensionEditPublishedMainRoute.useParams();
+    return (
+      <CatchBoundary
+        getResetKey={() => 'edit_extension_gallery_manager_published_ext_reset'}
+        errorComponent={RouteErrorComponent}
+      >
+        <ExtensionGalleryManagerPage type={from.type} extensionId={extensionId} />
+      </CatchBoundary>
+    );
+  },
+});
+
 const extensionEditStep3Route = createRoute({
   getParentRoute: () => extensionEditMainRoute,
   path: '/step3',
@@ -322,26 +390,14 @@ const releaseInfoRoute = createRoute({
   },
 });
 
-type SubmitSearch = { type: SubmitType };
-
-export enum SubmitType {
-  EXTENSION = 'extension',
-  RELEASE = 'release',
-}
-
 const postPublishRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/post-publish/$extensionId`,
   notFoundComponent: () => <NotFoundComponent />,
-  validateSearch: (search: Record<string, unknown>): SubmitSearch => {
-    return { type: search.type as SubmitType };
-  },
   component: () => {
-    const from = postPublishRoute.useSearch();
-    const { extensionId } = postPublishRoute.useParams();
     return (
       <CatchBoundary getResetKey={() => 'post_publish_reset'} errorComponent={RouteErrorComponent}>
-        <PostPublishPage type={from.type} extensionId={extensionId} />
+        <PostPublishPage />
       </CatchBoundary>
     );
   },
@@ -368,6 +424,10 @@ const routeTree = rootRoute.addChildren([
     extensionEditStep3Route,
     extensionEditContributorsRoute,
     galleryManagerRoute,
+  ]),
+  extensionEditPublishedMainRoute.addChildren([
+    extensionEditPublishedFormRoute,
+    galleryManagerPublishedExtRoute,
   ]),
   extensionPublishRoute,
   extensionReleaseManagerRoute,

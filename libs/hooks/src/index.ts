@@ -29,7 +29,7 @@ export { useAccordion } from './use-accordion';
 export { useModalData } from './use-modal-data';
 
 // the following hooks needs refactor/reimplementation
-export { useListenForMutationEvents } from './use-notifications';
+export { useListenForMutationEvents } from './use-mutation-events-listener';
 
 export { useShowFeedback } from './use-show-feedback';
 export { useTheme } from './use-theme';
@@ -40,3 +40,4 @@ export { useMentions } from './use-mentions';
 export { useProfilesList } from './use-profiles-list';
 export { useSaveImage } from './use-save-image';
 export { useValidateUniqueExtensionProp } from './use-validate-unique-extension-prop';
+export { useNotifications } from './use-notifications';

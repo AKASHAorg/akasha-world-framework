@@ -12,7 +12,6 @@ import {
 import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import {
   EventTypes,
-  Extension,
   ExtensionStatus,
   NotificationEvents,
   NotificationTypes,
@@ -94,7 +93,6 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
     error,
     loading,
     fetchMore,
-    refetch,
   } = useGetAppsByPublisherDidQuery({
     variables: {
       id: authenticatedDID,
@@ -151,9 +149,6 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         next: (eventInfo: UIEventData) => {
           if (eventInfo.event === EventTypes.RefetchMyExtensions) {
             getDraftExtensions();
-            refetch({
-              id: authenticatedDID,
-            });
           }
         },
       });
@@ -163,12 +158,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
         eventsSub.unsubscribe();
       }
     };
-  }, [authenticatedDID, getDraftExtensions, refetch]);
-
-  const allMyExtensions = useMemo(
-    () => [...draftExtensions, ...appElements],
-    [draftExtensions, appElements],
-  );
+  }, [authenticatedDID, getDraftExtensions]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -180,6 +170,11 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
       },
     });
   };
+
+  const allMyExtensions = useMemo(
+    () => [...draftExtensions, ...appElements],
+    [draftExtensions, appElements],
+  );
 
   if (!authenticatedDID) {
     return (
@@ -267,7 +262,7 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
               const extensionData = allMyExtensions[itemIndex];
               return (
                 <ExtensionElement
-                  extensionData={extensionData as Extension}
+                  extensionData={extensionData}
                   showDivider={itemIndex < allMyExtensions.length - 1}
                   filter={selectedStatus}
                   filterShowAllOptionValue={extensionStatusMenuItems[0]}

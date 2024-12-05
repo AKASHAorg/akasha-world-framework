@@ -6,13 +6,25 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Image from '@akashaorg/design-system-core/lib/components/Image';
 
+const IMAGES = {
+  notificationsDefault: '/images/notificationapp-welcome-min.webp',
+  browserDefault: '/images/notification-browser.webp',
+  browserEnabled: '/images/notification-browser-enabled.webp',
+  browserDisabled: '/images/notification-browser-disabled.webp',
+  noNotifications: '/images/notificationapp-welcome-min.webp',
+};
+
+export type NotificationsImageSrc = keyof typeof IMAGES;
+
 export type NotificationSettingsCardProps = {
   // data
   title: string;
   text: string;
-  imageSrc?: string;
+  image?: NotificationsImageSrc;
   isLoading?: boolean;
   showButton?: boolean;
+  buttonLabel?: string;
+  noWrapperCard?: boolean;
   // handlers
   handleButtonClick: () => void;
 };
@@ -20,41 +32,45 @@ export type NotificationSettingsCardProps = {
 const NotificationSettingsCard: React.FC<NotificationSettingsCardProps> = ({
   title,
   text,
-  imageSrc,
+  image = IMAGES.notificationsDefault,
   isLoading,
+  buttonLabel,
+  noWrapperCard,
   showButton = true,
   handleButtonClick,
 }) => {
-  return (
-    <Card radius={16} customStyle="p-0 w-full grow flex-wrap">
-      <Stack padding="p-5" align="center">
-        {imageSrc ? (
-          <Image
-            customStyle="w-[180px] h-[180px] object-contain mb-4"
-            src={imageSrc}
-            alt="Notification illustration"
-          />
-        ) : (
-          <div aria-hidden="true" className="w-[180px] h-[180px] bg-[#C4C4C4] mb-4"></div>
-        )}
-        <Text variant="h5" customStyle="mb-2 text-center">
-          {title}
-        </Text>
-        <Text variant="body2" customStyle="mb-4 text-center">
-          {text}
-        </Text>
+  const content = (
+    <Stack padding="p-5" align="center">
+      <Image
+        customStyle="w-[180px] h-[180px] object-contain mb-4"
+        src={IMAGES[image]}
+        alt="Notification illustration"
+      />
+      <Text variant="h5" customStyle="mb-2 text-center">
+        {title}
+      </Text>
+      <Text variant="body2" customStyle="mb-4 text-center">
+        {text}
+      </Text>
 
-        {showButton && (
-          <Button
-            label="Go to Settings"
-            variant="primary"
-            size="md"
-            customStyle="w-fit"
-            loading={isLoading}
-            onClick={handleButtonClick}
-          />
-        )}
-      </Stack>
+      {showButton && (
+        <Button
+          label={buttonLabel}
+          variant="primary"
+          size="md"
+          customStyle="w-fit"
+          loading={isLoading}
+          onClick={handleButtonClick}
+        />
+      )}
+    </Stack>
+  );
+
+  return noWrapperCard ? (
+    content
+  ) : (
+    <Card radius={16} customStyle="p-0 w-full grow flex-wrap">
+      {content}
     </Card>
   );
 };

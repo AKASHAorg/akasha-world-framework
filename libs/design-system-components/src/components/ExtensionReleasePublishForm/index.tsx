@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import * as z from 'zod';
 import { Controller } from 'react-hook-form';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -9,6 +9,8 @@ import { apply, tw } from '@twind/core';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ButtonType } from '../types/common.types';
+import Modal from '@akashaorg/design-system-core/lib/components/Modal';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
 
 export enum FieldName {
   versionNumber = 'versionNumber',
@@ -23,20 +25,25 @@ export type ExtensionReleasePublishValues = {
 };
 
 export type ExtensionReleasePublishProps = {
+  versionNumberLabel: string;
+  descriptionFieldLabel: string;
+  descriptionPlaceholderLabel: string;
+  sourceURLFieldLabel: string;
+  sourceURLPlaceholderLabel?: string;
+  confirmationModalTitleLabel?: string;
+  confirmationModalDescriptionLabel?: string;
+  cancelLabel?: string;
+  confirmLabel?: string;
   defaultValues?: ExtensionReleasePublishValues;
   cancelButton: ButtonType;
   nextButton: {
     label: string;
     handleClick: (data: ExtensionReleasePublishValues) => void;
   };
-  versionNumberLabel?: string;
-  descriptionFieldLabel?: string;
-  descriptionPlaceholderLabel?: string;
-  sourceURLFieldLabel?: string;
-  sourceURLPlaceholderLabel?: string;
   loading?: boolean;
   requireVersionNumber?: boolean;
   requireDescription?: boolean;
+  showModalFlow?: boolean;
 };
 
 const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props => {
@@ -56,6 +63,11 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
     loading,
     requireVersionNumber,
     requireDescription,
+    confirmationModalTitleLabel,
+    confirmationModalDescriptionLabel,
+    confirmLabel,
+    cancelLabel,
+    showModalFlow,
   } = props;
 
   const {
@@ -81,95 +93,130 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
       });
     }
   };
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+  const onConfirmationModalClose = () => {
+    setShowConfirmationModal(false);
+  };
+
+  const onConfirmationModalOpen = () => {
+    setShowConfirmationModal(true);
+  };
+
+  const handleSave = ev => {
+    onConfirmationModalClose();
+    onSave(ev);
+  };
 
   return (
-    <form onSubmit={onSave} className={tw(apply`h-full`)}>
-      <Stack direction="column" spacing="gap-y-4">
-        <Stack padding="px-4 pb-16" spacing="gap-y-4">
-          <Controller
-            control={control}
-            name={FieldName.versionNumber}
-            render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
-              <TextField
-                id={name}
-                type="text"
-                name={name}
-                label={versionNumberLabel}
-                placeholder="e.g. 1.0.0"
-                value={value}
-                caption={error?.message}
-                status={error?.message ? 'error' : null}
-                onChange={onChange}
-                inputRef={ref}
-                required={requireVersionNumber}
-              />
-            )}
-            defaultValue={defaultValues.versionNumber}
-          />
+    <>
+      <form className={tw(apply`h-full`)}>
+        <Stack direction="column" spacing="gap-y-4">
+          <Stack padding="px-4 pb-16" spacing="gap-y-4">
+            <Controller
+              control={control}
+              name={FieldName.versionNumber}
+              render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
+                <TextField
+                  id={name}
+                  type="text"
+                  name={name}
+                  label={versionNumberLabel}
+                  placeholder="e.g. 1.0.0"
+                  value={value}
+                  caption={error?.message}
+                  status={error?.message ? 'error' : null}
+                  onChange={onChange}
+                  inputRef={ref}
+                  required={requireVersionNumber}
+                />
+              )}
+              defaultValue={defaultValues.versionNumber}
+            />
+            <Divider />
+            <Controller
+              control={control}
+              name={FieldName.description}
+              render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
+                <TextField
+                  id={name}
+                  name={name}
+                  label={descriptionFieldLabel}
+                  placeholder={descriptionPlaceholderLabel}
+                  value={value}
+                  onChange={onChange}
+                  caption={error?.message}
+                  status={error?.message ? 'error' : null}
+                  inputRef={ref}
+                  type="multiline"
+                  maxLength={2000}
+                  required={requireDescription}
+                />
+              )}
+              defaultValue={defaultValues.description}
+            />
+            <Divider />
+            <Controller
+              control={control}
+              name={FieldName.sourceURL}
+              render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
+                <TextField
+                  id={name}
+                  type="text"
+                  name={name}
+                  label={sourceURLFieldLabel}
+                  placeholder={sourceURLPlaceholderLabel}
+                  value={value}
+                  caption={error?.message}
+                  status={error?.message ? 'error' : null}
+                  onChange={onChange}
+                  inputRef={ref}
+                  required={true}
+                />
+              )}
+              defaultValue={defaultValues.sourceURL}
+            />
+          </Stack>
           <Divider />
-          <Controller
-            control={control}
-            name={FieldName.description}
-            render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
-              <TextField
-                id={name}
-                name={name}
-                label={descriptionFieldLabel}
-                placeholder={descriptionPlaceholderLabel}
-                value={value}
-                onChange={onChange}
-                caption={error?.message}
-                status={error?.message ? 'error' : null}
-                inputRef={ref}
-                type="multiline"
-                maxLength={2000}
-                required={requireDescription}
-              />
-            )}
-            defaultValue={defaultValues.description}
-          />
-          <Divider />
-          <Controller
-            control={control}
-            name={FieldName.sourceURL}
-            render={({ field: { name, value, onChange, ref }, fieldState: { error } }) => (
-              <TextField
-                id={name}
-                type="text"
-                name={name}
-                label={sourceURLFieldLabel}
-                placeholder={sourceURLPlaceholderLabel}
-                value={value}
-                caption={error?.message}
-                status={error?.message ? 'error' : null}
-                onChange={onChange}
-                inputRef={ref}
-                required={true}
-              />
-            )}
-            defaultValue={defaultValues.sourceURL}
-          />
-        </Stack>
-        <Divider />
 
-        <Stack direction="row" justify="end" spacing="gap-x-2" customStyle="px-4 pb-4">
-          <Button
-            variant="text"
-            label={cancelButton.label}
-            onClick={cancelButton.handleClick}
-            disabled={cancelButton.disabled}
-          />
-          <Button
-            variant="primary"
-            loading={loading}
-            label={nextButton.label}
-            disabled={!isValid || !isFormDirty}
-            onClick={onSave}
-            type="submit"
-          />
+          <Stack direction="row" justify="end" spacing="gap-x-2" customStyle="px-4 pb-4">
+            <Button
+              variant="text"
+              label={cancelButton.label}
+              onClick={cancelButton.handleClick}
+              disabled={cancelButton.disabled}
+            />
+            <Button
+              variant="primary"
+              loading={loading}
+              label={nextButton.label}
+              disabled={!isValid || !isFormDirty}
+              onClick={showModalFlow ? onConfirmationModalOpen : onSave}
+            />
+          </Stack>
         </Stack>
-      </Stack>
-    </form>
+      </form>
+      <Modal
+        title={{ label: confirmationModalTitleLabel }}
+        show={showConfirmationModal}
+        onClose={onConfirmationModalClose}
+        customStyle="max-w-[615px]"
+        actions={[
+          {
+            variant: 'text',
+            label: cancelLabel,
+            onClick: onConfirmationModalClose,
+          },
+          {
+            variant: 'primary',
+            label: confirmLabel,
+            onClick: handleSave,
+          },
+        ]}
+      >
+        <Text variant="body1">{confirmationModalDescriptionLabel}</Text>
+      </Modal>
+    </>
   );
 };
 

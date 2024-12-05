@@ -28,7 +28,7 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import MessageCard from '@akashaorg/design-system-core/lib/components/MessageCard';
+import InlineNotification from '@akashaorg/design-system-core/lib/components/InlineNotification';
 
 import {
   Bold,
@@ -476,14 +476,9 @@ const EditorBox: React.FC<EditorBoxProps> = props => {
         {/* w-0 min-w-full is used to prevent parent width expansion without setting a fixed width */}
         <Stack ref={editorContainerRef} customStyle="w-0 min-w-full">
           {mentionsLimitReached && (
-            <MessageCard
+            <InlineNotification
               message={mentionsLimit.label}
-              icon={
-                <Icon
-                  icon={<ExclamationTriangleIcon />}
-                  color={{ light: 'warningLight', dark: 'warningLight' }}
-                />
-              }
+              type="warning"
               background={{ light: 'warningDark/30', dark: 'warningDark/30' }}
             />
           )}

@@ -36,7 +36,7 @@ const ListSidebarApps: React.FC<ListSidebarAppsProps> = props => {
   const [appsWithSubroutes, otherApps]: IMenuItem[][] = useMemo(() => {
     return list.reduce(
       (acc, app) => {
-        if (app.subRoutes.length > 0) {
+        if (Array.isArray(app.subRoutes) && app.subRoutes.length > 0) {
           acc[0].push(app);
         } else {
           acc[1].push(app);

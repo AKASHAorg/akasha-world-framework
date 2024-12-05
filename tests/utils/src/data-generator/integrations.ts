@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/consistent-function-scoping */
 import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import { genWorldConfig } from './world-config';
 import { uiEventsMock } from '../mocks/uiEvents';
@@ -9,13 +10,13 @@ const corePluginsMock = {
     getUrlForApp: () => '',
     registerRoute: () => {},
     unregisterRoute: () => {},
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     subscribe: () => () => {},
     getSnapshot: () => ({
       all: {},
       activeExtensionsNames: {},
       byArea: {},
     }),
+    cancelNavigation: () => () => {},
   },
   contentBlockStore: {
     registerContentBlocks: () => {},
@@ -44,11 +45,17 @@ const corePluginsMock = {
     retryFromError: () => Promise.resolve(),
     // modify statusCodes as needed
     getStaticStatusCodes: () => ({ status: {} as any, error: {} as any }),
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     subscribe: () => () => {},
   },
   extensionUninstaller: {
     uninstallExtension: () => {},
+  },
+  testModeLoader: {
+    load: () => Promise.resolve(),
+    unload: () => Promise.resolve(),
+    getStaticStatusCodes: () => ({ status: {} as any, error: {} as any }),
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    subscribe: () => () => {},
   },
 };
 
@@ -66,12 +73,14 @@ const log: any = {
 export const genAppProps = (): IRootComponentProps & {
   getTranslationPlugin: (ns?: string) => any;
   getCorePlugins: () => any;
+  getDefaultExtensionNames: () => string[];
 } => ({
   logger: log,
   navigateToModal: () => ({}),
   uiEvents: uiEventsMock,
   layoutSlots: {},
   singleSpa: null,
+  getDefaultExtensionNames: () => [],
   worldConfig: genWorldConfig(),
   getTranslationPlugin: () => ({ i18n: {} }),
   getCorePlugins: () => corePluginsMock,
@@ -84,4 +93,5 @@ export const genAppProps = (): IRootComponentProps & {
   encodeAppName: name => name,
   decodeAppName: name => name,
   getModalFromParams: () => ({ name: 'test-modal' }),
+  cancelNavigation: () => () => {},
 });

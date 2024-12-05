@@ -32,6 +32,7 @@ export interface IRootComponentProps {
   encodeAppName: (name: string) => string;
   decodeAppName: (name: string) => string;
   children?: React.ReactNode;
+  cancelNavigation: (shouldCancel: boolean, callback: (targetUrl: string) => void) => () => void;
 }
 
 /**

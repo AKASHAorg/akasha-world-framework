@@ -11,7 +11,6 @@ import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui
 import ExtensionReleasePublishForm from '@akashaorg/design-system-components/lib/components/ExtensionReleasePublishForm';
 import { useSetAppReleaseMutation } from '@akashaorg/ui-awf-hooks/lib/generated';
 import getSDK from '@akashaorg/core-sdk';
-import { SubmitType } from '../../app-routes';
 import { PROPERTY, PROVIDER } from '../../../constants';
 
 type ExtensionReleasePublishPageProps = {
@@ -35,11 +34,10 @@ export const ExtensionReleasePublishPage: React.FC<ExtensionReleasePublishPagePr
 
   const [setAppReleaseMutation, { loading }] = useSetAppReleaseMutation({
     context: { source: sdk.current.services.gql.contextSources.composeDB },
-    onCompleted: () => {
+    onCompleted: data => {
       navigate({
-        to: `/post-publish/$extensionId`,
-        search: { type: SubmitType.RELEASE },
-        params: { extensionId },
+        to: `/release-manager/$extensionId/release-info/$releaseId`,
+        params: { extensionId, releaseId: data.setAkashaAppRelease?.document?.id },
       });
     },
     onError: () => {
@@ -130,7 +128,14 @@ export const ExtensionReleasePublishPage: React.FC<ExtensionReleasePublishPagePr
             descriptionPlaceholderLabel={t('A brief description about this release')}
             sourceURLFieldLabel={t('Source URL')}
             sourceURLPlaceholderLabel={t('Webpack dev server / ipfs')}
+            cancelLabel={t('Cancel')}
+            confirmLabel={t('Confirm')}
+            confirmationModalTitleLabel={t('Release Submission Confirmation')}
+            confirmationModalDescriptionLabel={t(
+              'Once you submit, your extension will update, and all users will be notified about the new release version.',
+            )}
             loading={loading}
+            showModalFlow={true}
             requireVersionNumber={true}
             requireDescription={true}
             cancelButton={{

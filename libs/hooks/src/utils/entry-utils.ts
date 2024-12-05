@@ -21,6 +21,7 @@ export const decodeb64SlateContent = (base64Content: string, logger?: Logger) =>
     if (logger) {
       logger.error(`Error parsing content: ${err.message}`);
     }
+    return null;
   }
 };
 

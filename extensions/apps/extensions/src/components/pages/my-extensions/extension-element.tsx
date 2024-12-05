@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import getSDK from '@akashaorg/core-sdk';
 import ExtensionIcon from '@akashaorg/design-system-core/lib/components/ExtensionIcon';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import AppAvatar from '@akashaorg/design-system-core/lib/components/AppAvatar';
-import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Menu from '@akashaorg/design-system-core/lib/components/Menu';
@@ -78,10 +77,24 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
     });
   };
 
-  const handleExtensionEdit = () => {
+  const handleEditLocalExtension = () => {
     navigate({
       to: `/edit-extension/$extensionId/step1`,
       params: { extensionId: extensionData?.id },
+    });
+  };
+
+  const handleEditPublishedExtension = () => {
+    navigate({
+      to: `/edit-published-extension/$extensionId/form`,
+      params: { extensionId: extensionData?.id },
+    });
+  };
+
+  const handleNavigateToExtensionInfoPage = () => {
+    navigate({
+      to: `/info/$appId`,
+      params: { appId: extensionData?.name },
     });
   };
 
@@ -104,9 +117,14 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
       case ExtensionStatus.InReview:
         return [
           {
+            label: t('View Extension'),
+            icon: <EyeIcon />,
+            onClick: handleNavigateToExtensionInfoPage,
+          },
+          {
             label: t('Edit Extension'),
             icon: <PencilIcon />,
-            onClick: handleExtensionEdit,
+            onClick: handleEditPublishedExtension,
           },
           {
             label: t('Release Manager'),
@@ -125,13 +143,12 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           {
             label: t('View Extension'),
             icon: <EyeIcon />,
-            onClick: () => {},
+            onClick: handleNavigateToExtensionInfoPage,
           },
-
           {
             label: t('Edit Extension'),
             icon: <PencilIcon />,
-            onClick: handleExtensionEdit,
+            onClick: handleEditPublishedExtension,
           },
           {
             label: t('Release Manager'),
@@ -141,7 +158,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           {
             label: t('Delete Extension'),
             icon: <TrashIcon />,
-            onClick: () => {},
+            onClick: handleExtensionRemove,
             color: { light: 'errorLight', dark: 'errorDark' },
           },
         ];
@@ -155,7 +172,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           {
             label: t('Edit Extension'),
             icon: <PencilIcon />,
-            onClick: handleExtensionEdit,
+            onClick: handleEditLocalExtension,
           },
           {
             label: t('Release Manager'),
@@ -188,91 +205,83 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
     }
   };
 
+  const iconType = useMemo(() => extensionData?.applicationType, [extensionData]);
+
+  if (!showElement()) return null;
+
   return (
-    <>
-      {showElement() && (
-        <Stack spacing="gap-y-4">
-          <Stack direction="row" justify="between" spacing="gap-x-8" fullWidth>
-            <Stack direction="row" spacing="gap-x-3" customStyle="max-h-[60px] w-[60%]">
-              <AppAvatar
-                appType={extensionData?.applicationType}
-                avatar={transformSource(extensionData?.logoImage)}
-                extensionId={extensionData?.id}
-              />
-              <Stack direction="column" justify="between" customStyle="w-0 min-w-full">
-                <Stack direction="row" spacing="gap-2">
-                  <Text variant="button-sm" truncate>
-                    {extensionData?.name}
-                  </Text>
+    <Stack spacing="gap-y-4">
+      <Stack direction="row" justify="between" spacing="gap-x-8" fullWidth>
+        <Stack direction="row" spacing="gap-x-3" customStyle="max-h-[60px] w-[60%]">
+          <AppAvatar
+            appType={extensionData?.applicationType}
+            avatar={transformSource(extensionData?.logoImage)}
+            extensionId={extensionData?.id}
+          />
+          <Stack direction="column" justify="between" customStyle="w-0 min-w-full">
+            <Stack direction="row" spacing="gap-2">
+              <Text variant="button-sm" truncate>
+                {extensionData?.name}
+              </Text>
 
-                  {extensionData?.applicationType && (
-                    <Stack
-                      customStyle="w-[18px] h-[18px] rounded-full shrink-0"
-                      background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
-                      justify="center"
-                      align="center"
-                    >
-                      <Icon
-                        color={{ light: 'white', dark: 'white' }}
-                        size={'xs'}
-                        solid
-                        icon={<ExtensionIcon type={extensionData?.applicationType} />}
-                      />
-                    </Stack>
-                  )}
-                </Stack>
-                <Text
-                  variant="footnotes2"
-                  weight="normal"
-                  color={{ light: 'grey4', dark: 'grey7' }}
-                  truncate
-                >
-                  {extensionData?.description || extensionData?.displayName}
-                </Text>
-              </Stack>
-            </Stack>
-
-            <Stack
-              direction="column"
-              justify={showMenu ? 'between' : 'end'}
-              align="end"
-              customStyle="shrink-0"
-              padding={showMenu ? 'p-0' : 'pr-4'}
-            >
-              {showMenu && (
-                <Menu
-                  anchor={{
-                    icon: <EllipsisHorizontalIcon />,
-                    variant: 'primary',
-                    greyBg: true,
-                    iconOnly: true,
-                    'aria-label': 'settings',
-                  }}
-                  items={menuItems(
-                    getExtensionStatus(
-                      extensionData?.localDraft,
-                      appStreamData?.edges[0]?.node?.status,
-                    ),
-                  )}
-                  customStyle="w-max z-99"
-                />
-              )}
-              <Stack direction="row" align="center" spacing="gap-x-1.5">
+              {extensionData?.applicationType && (
                 <Stack
-                  customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}`}
-                />
-                <Text variant="footnotes2" weight="normal">
-                  {getExtensionStatus(
-                    extensionData?.localDraft,
-                    appStreamData?.edges[0]?.node?.status,
-                  )}
-                </Text>
-              </Stack>
+                  customStyle="w-[18px] h-[18px] rounded-full shrink-0"
+                  background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
+                  justify="center"
+                  align="center"
+                >
+                  <ExtensionIcon size="xs" type={iconType} />
+                </Stack>
+              )}
             </Stack>
+            <Text
+              variant="footnotes2"
+              weight="normal"
+              color={{ light: 'grey4', dark: 'grey7' }}
+              truncate
+            >
+              {extensionData?.description || extensionData?.displayName}
+            </Text>
           </Stack>
-          {showDivider && <Divider />}
         </Stack>
-      )}
-    </>
+
+        <Stack
+          direction="column"
+          justify={showMenu ? 'between' : 'end'}
+          align="end"
+          customStyle="shrink-0"
+          padding={showMenu ? 'p-0' : 'pr-4'}
+        >
+          {showMenu && (
+            <Menu
+              anchor={{
+                icon: <EllipsisHorizontalIcon />,
+                variant: 'primary',
+                greyBg: true,
+                iconOnly: true,
+                'aria-label': 'settings',
+              }}
+              items={menuItems(
+                getExtensionStatus(
+                  extensionData?.localDraft,
+                  appStreamData?.edges[0]?.node?.status,
+                ),
+              )}
+              customStyle="w-max z-99"
+            />
+          )}
+          <Stack direction="row" align="center" spacing="gap-x-1.5">
+            <Stack
+              customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}`}
+            />
+            <Text variant="footnotes2" weight="normal">
+              {getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}
+            </Text>
+          </Stack>
+        </Stack>
+      </Stack>
+      {showDivider && <Divider />}
+    </Stack>
   );
 };

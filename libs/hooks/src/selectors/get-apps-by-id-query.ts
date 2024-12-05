@@ -6,3 +6,27 @@ export const selectAppDisplayName = (data: GetAppsByIdQuery) => {
     return data.node.displayName;
   }
 };
+
+export const selectAppName = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node.name;
+  }
+};
+
+export const selectApplicationType = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node.applicationType;
+  }
+};
+
+export const selectAppId = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node.id;
+  }
+};
+
+export const selectAppData = (data: GetAppsByIdQuery) => {
+  if (isNodeWithId(data)) {
+    return data.node;
+  }
+};

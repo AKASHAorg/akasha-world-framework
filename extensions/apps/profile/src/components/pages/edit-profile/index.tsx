@@ -4,7 +4,6 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import EditProfile from '@akashaorg/design-system-components/lib/components/EditProfile';
 import getSDK from '@akashaorg/core-sdk';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,6 +20,7 @@ import {
 } from '@akashaorg/typings/lib/ui';
 import { getAvatarImage, getCoverImage } from './get-profile-images';
 import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
+import EditProfile from '../../edit-profile';
 
 type EditProfilePageProps = {
   profileDID: string;
@@ -269,9 +269,7 @@ const EditProfilePage: React.FC<EditProfilePageProps> = props => {
           cancelButton={{
             label: t('Cancel'),
             disabled: isProcessing,
-            handleClick: () => {
-              navigateToProfileInfoPage();
-            },
+            handleClick: navigateToProfileInfoPage,
           }}
           saveButton={{
             label: t('Save'),
