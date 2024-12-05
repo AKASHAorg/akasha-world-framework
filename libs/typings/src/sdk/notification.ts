@@ -32,6 +32,12 @@ export type NotificationBaseMetaData = {
   appId: string;
 };
 
+export type UserSettingType = {
+  index: number;
+  appName: string;
+  enabled: boolean;
+  active?: boolean;
+};
 export type AdditionalMetadata = {
   data: string;
   type: string;

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-
+import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
+import Button from '@akashaorg/design-system-core/lib/components/Button';
 import {
   BoltIcon,
   GlobeAltIcon,
@@ -48,18 +49,54 @@ const NotificationsPage: React.FC = () => {
   const notificationService = sdk.services.common.notification;
   const { t } = useTranslation('app-notifications');
 
-  const { getCorePlugins } = useRootComponentProps();
+  const { uiEvents, getCorePlugins } = useRootComponentProps();
   const navigateTo = getCorePlugins().routing.navigateTo;
+  const _uiEvents = useRef(uiEvents);
 
   // notification operations
   const [notifications, setNotifications] = useState([]);
   const [notificationLoading, setNotificationLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const [appOptions, setAppOptions] = useState([]);
 
   useEffect(() => {
     fetchNotifications();
+    getSubscribedAppsOptions();
   }, []);
+
+  /**
+   * On option change we need to fetch the notifications from that app.
+   * If 'All' option is clicked then an empty array is sent.
+   * The index of 'All' option is 0
+   */
+  const handleOptionChange = (index: number) => {
+    const updatedOptions = appOptions.map((option, i) => ({
+      ...option,
+      active: i === index, // Set active true for the clicked button, false for others
+    }));
+    setCurrentPage(1);
+    setAppOptions(updatedOptions);
+    fetchNotifications();
+  };
+
+  /**
+   *  Get the apps that the user has subscribed to
+   *  Insert in the active options the option 'All' notifications which will fetch notification from each app
+   *  */
+  const getSubscribedAppsOptions = async () => {
+    const userSettings = await sdk.services.common.notification.getSettingsOfUser();
+    const activeOptions = [
+      {
+        index: 0,
+        appName: t('All'),
+        active: true,
+        enabled: false,
+      },
+      ...userSettings.filter(appOption => appOption.enabled),
+    ];
+    setAppOptions(activeOptions);
+  };
 
   /**
    * Fetch notifications from Notification Service
@@ -70,7 +107,11 @@ const NotificationsPage: React.FC = () => {
       setNotificationLoading(true);
       await notificationService.initialize();
 
-      const fetchedNotifications = await notificationService.getNotifications(currentPage, 20);
+      const fetchedNotifications = await notificationService.getNotifications(
+        currentPage,
+        20,
+        appOptions,
+      );
       if (fetchedNotifications.length === 0) {
         setHasNextPage(false);
       } else {
@@ -82,7 +123,13 @@ const NotificationsPage: React.FC = () => {
         setNotifications([...notifications, ...formattedNotifications]);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      _uiEvents.current.next({
+        event: NotificationEvents.ShowNotification,
+        data: {
+          type: NotificationTypes.Error,
+          title: error.message,
+        },
+      });
     } finally {
       setNotificationLoading(false);
     }
@@ -180,6 +227,18 @@ const NotificationsPage: React.FC = () => {
           <Text variant="h5" align="center">
             <>{t('Notifications')}</>
           </Text>
+        </Stack>
+        <Stack direction="row" spacing="gap-x-2">
+          {appOptions.map((option, index) => (
+            <Button
+              key={index}
+              variant="secondary"
+              size="sm"
+              active={option.active}
+              label={option.appName}
+              onClick={() => handleOptionChange(index)}
+            ></Button>
+          ))}
         </Stack>
         <Stack>
           {notifications.length === 0 && notificationLoading && <Spinner />}

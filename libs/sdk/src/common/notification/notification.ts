@@ -18,7 +18,6 @@ import pino from 'pino';
 import { z } from 'zod';
 
 import {
-  type UserSettingType,
   type InitializeOptions,
   type ChannelSettings,
   InitializeOptionsSchema,
@@ -32,6 +31,7 @@ import {
   type ChannelOptionIndex,
   type NotificationMetaTypes,
   type NotificationParsedMetaData,
+  type UserSettingType,
   type PushOrgNotification,
   type AdditionalMetadata,
 } from '@akashaorg/typings/lib/sdk';
@@ -162,7 +162,7 @@ class NotificationService {
   /**
    * Retrieves the user-specific settings for channel.
    *
-   * This method fetches the user's subscription details validates the data against a predefined schema
+   * This method fetches the user's subscription details, validates the data against a predefined schema
    * and returns the parsed user settings.
    * The `notificationsClient` must be initialized in read mode before invoking this method
    * @returns {Promise<UserSettingType[]>}
