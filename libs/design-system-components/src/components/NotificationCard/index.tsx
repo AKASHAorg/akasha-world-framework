@@ -12,7 +12,7 @@ export interface NotificationCardEventProps {
 
 export type NotificationCardProps = NotificationCardEventProps & InboxNotification;
 
-const NotificationCard = React.forwardRef((props: NotificationCardProps) => {
+const NotificationCard: React.FC<NotificationCardProps> = (props) => {
   const {
     notificationTypeIcon,
     notificationTypeTitle,
@@ -88,6 +88,6 @@ const NotificationCard = React.forwardRef((props: NotificationCardProps) => {
       </Stack>
     </Stack>
   );
-});
+};
 
 export default NotificationCard;

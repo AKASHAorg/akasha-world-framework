@@ -6,10 +6,8 @@ import {
 } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import {
   ChannelOptionIndexes,
-  FollowNotificationMetaData,
-  MentionNotificationMetaData,
+  NotificationMetaTypes,
   PushOrgNotification,
-  ReflectionNotificationMetaData,
 } from '@akashaorg/typings/lib/sdk';
 import { InboxNotification } from '@akashaorg/typings/lib/ui';
 import { BoltIcon, GlobeAltIcon, RectangleGroupIcon } from '@heroicons/react/24/outline';
@@ -20,6 +18,8 @@ import 'dayjs/locale/es';
 import 'dayjs/locale/ro';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
+import { AkashaApp } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import { formatRelativeDateTime } from '@akashaorg/design-system-core/lib/utils';
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
 /**
@@ -37,6 +37,7 @@ const placeholderIcons = {
  */
 export const getPresentationDataFromNotification = (
   notification: PushOrgNotification,
+  apps: AkashaApp[],
 ): InboxNotification => {
   // set Default data
   const returnObj: InboxNotification = {
@@ -64,29 +65,17 @@ export const getPresentationDataFromNotification = (
       returnObj.ctaLinkTitle = 'GROUP';
       returnObj.notificationTypeIcon = <RectangleGroupIcon />;
   }
-
   const parsedMetaData = notification.payload.data.parsedMetaData;
-  // set CTA/button title and url to navigate
-  switch (returnObj.title) {
-    case 'New mention':
-      const beamId = (parsedMetaData.data as MentionNotificationMetaData).beamID;
-      returnObj.appName = '@akashaorg/app-antenna';
-      returnObj.ctaLinkUrl = `/beam/${beamId}`;
-      returnObj.ctaLinkTitle = 'View';
-      break;
-    case 'New reflection':
-      const reflectionId = (parsedMetaData.data as ReflectionNotificationMetaData).reflectionID;
-      returnObj.appName = '@akashaorg/app-antenna';
-      returnObj.ctaLinkUrl = `/reflection/${reflectionId}`;
-      returnObj.ctaLinkTitle = 'Go to reflection';
-      break;
-    case 'New follow':
-      const profileId = (parsedMetaData.data as FollowNotificationMetaData).follower;
-      returnObj.appName = '@akashaorg/app-profile';
-      returnObj.ctaLinkUrl = `/${profileId}`;
-      returnObj.ctaLinkTitle = 'Go to profile';
-      break;
+  const parsedData = parsedMetaData?.data;
+  if (typeof parsedData !== 'string') {
+    const linkDetails = generateLinkDetails(parsedData);
+    if (linkDetails) {
+      returnObj.appName = getAppName(parsedData.appId, apps);
+      returnObj.ctaLinkUrl = linkDetails.url;
+      returnObj.ctaLinkTitle = linkDetails.title;
+    }
   }
+
   const placeholderIcon =
     // This case happens only if we sent notification from PushOrgDashboard
     placeholderIcons[parsedMetaData?.channelIndex || ChannelOptionIndexes.ANTENNA];
@@ -105,36 +94,25 @@ export const getPresentationDataFromNotification = (
 
   if (notification.timestamp) {
     // Format notification time
-    returnObj.date = notificationFormatRelativeTime(notification.timestamp.toString());
+    returnObj.date = formatRelativeDateTime(notification.timestamp.toString());
   }
 
   return returnObj;
 };
 
-const notificationFormatRelativeTime = (date: string, locale?: string) => {
-  if (dayjs(date).isValid()) {
-    let time = dayjs(date);
-    if (/^[0-9]*$/.test(date)) {
-      time = date.length > 10 ? dayjs(+date) : dayjs.unix(+date);
-    }
-
-    if (locale) {
-      time = time.locale(locale);
-    }
-
-    const now = dayjs();
-    if (time.isSame(now, 'day')) {
-      // If the date is today
-      return time.fromNow();
-    } else if (time.isSame(now.subtract(1, 'day'), 'day')) {
-      // If the date is yesterday
-      return time.calendar(null, {
-        lastDay: '[Yesterday] HH:mm',
-      });
-    } else {
-      // If the date is before yesterday
-      return time.format('DD MMM HH:mm');
-    }
+const generateLinkDetails = (
+  data: NotificationMetaTypes,
+): { url: string; title: string } | null => {
+  switch (data.type) {
+    case 'mention':
+      return { url: `/beam/${data.beamID}`, title: 'View' };
+    case 'reflection':
+      return { url: `/reflection/${data.reflectionID}`, title: 'Go to reflection' };
+    case 'following':
+      return { url: `/${data.follower}`, title: 'Go to profile' };
+    default:
+      return null;
   }
-  return '';
 };
+
+const getAppName = (appId: string, apps: AkashaApp[]) => apps.find(app => app.id === appId)?.name;

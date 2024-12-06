@@ -12,6 +12,7 @@ import EventBus from '../event-bus';
 import AWF_Config from '../config';
 import Web3Connector from '../web3.connector';
 import { validate } from '../validator';
+import Gql from '../../gql';
 
 import { inject, injectable } from 'inversify';
 import pino from 'pino';
@@ -230,11 +231,14 @@ class NotificationService {
       throw new Error(
         'Settings must contain all the opt-ins available. Please be aware that the order of the opt-in sent matter',
       );
-    const response = await this.notificationsWriteClient.notification.subscribe(this._notificationChannelId, {
-      settings: newSettings,
-    });
+    const response = await this.notificationsWriteClient.notification.subscribe(
+      this._notificationChannelId,
+      {
+        settings: newSettings,
+      },
+    );
 
-    return response.status === 204 ? true : false
+    return response.status === 204 ? true : false;
   }
 
   /**

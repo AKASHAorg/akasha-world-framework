@@ -20,12 +20,26 @@ import NotificationSettingsCard from '@akashaorg/design-system-components/lib/co
 import { getPresentationDataFromNotification } from '../utils/notifications-util';
 import { UserSettingType } from '@akashaorg/typings/lib/sdk';
 
+import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { selectApps } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+
 const NotificationsPage: React.FC = () => {
   const sdk = getSDK();
   const notificationService = sdk.services.common.notification;
   const { t } = useTranslation('app-notifications');
+  const { uiEvents, getCorePlugins, getDefaultExtensionNames } = useRootComponentProps();
 
-  const { uiEvents, getCorePlugins } = useRootComponentProps();
+  const defaultApps = getDefaultExtensionNames();
+  const indexingDid = sdk.services.common.misc.getIndexingDID();
+  const { data } = useGetAppsByPublisherDidQuery({
+    variables: {
+      id: indexingDid,
+      first: defaultApps.length,
+    },
+    context: { source: sdk.services.gql.contextSources.default },
+  });
+  const apps = selectApps(data);
+
   const navigateTo = getCorePlugins().routing.navigateTo;
   const _uiEvents = useRef(uiEvents);
 
@@ -104,7 +118,7 @@ const NotificationsPage: React.FC = () => {
         setHasNextPage(false);
       } else {
         const formattedNotifications = fetchedNotifications.map(notification =>
-          getPresentationDataFromNotification(notification),
+          getPresentationDataFromNotification(notification, apps),
         );
         setCurrentPage(currentPage + 1);
         setNotifications([...notifications, ...formattedNotifications]);

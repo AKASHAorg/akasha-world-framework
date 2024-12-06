@@ -84,7 +84,6 @@ export type PushOrgNotification = {
 };
 
 export type NotificationMetaTypes =
-  | UnknownMetaData
   | FollowNotificationMetaData
   | ReflectionNotificationMetaData
   | MentionNotificationMetaData;
