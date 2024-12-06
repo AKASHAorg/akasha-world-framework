@@ -208,19 +208,24 @@ const NotificationsPage: React.FC = () => {
                         <Stack key={itemIndex} customStyle="flex-row">
                           <NotificationCard
                             onClick={() => clickNotification(notification)}
-                            title={t(`{{title}}`, notification.title)}
-                            body={t(`{{body}}`, notification.body)}
+                            title={t(`{{title}}`, {
+                              title: notification.title,
+                            })}
+                            body={t(`{{body}}`, {
+                              body: notification.body,
+                            })}
                             date={notification.date}
                             isSeen={notification.isSeen}
                             notificationTypeIcon={notification.notificationTypeIcon}
-                            notificationTypeTitle={t(
-                              `{{notificationTypeTitle}}`,
-                              notification.notificationTypeTitle,
-                            )}
+                            notificationTypeTitle={t(`{{notificationTypeTitle}}`, {
+                              notificationTypeTitle: notification.notificationTypeTitle,
+                            })}
                             notificationAppIcon={notification.notificationAppIcon}
                             ctaLinkTitle={
                               notification.ctaLinkTitle &&
-                              t(`{{ctaLinkTitle}}`, notification.ctaLinkTitle)
+                              t(`{{ctaLinkTitle}}`, {
+                                ctaLinkTitle: notification.ctaLinkTitle,
+                              })
                             }
                             ctaLinkUrl={notification.ctaLinkUrl}
                           />
