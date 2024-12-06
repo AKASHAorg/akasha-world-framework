@@ -2,9 +2,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import 'dayjs/locale/ro';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(relativeTime);
-dayjs.extend(calendar);
 
 const formatDate = (date: string, format = 'D MMM YYYY  H[h]mm', locale?: string) => {
   if (dayjs(date).isValid()) {
