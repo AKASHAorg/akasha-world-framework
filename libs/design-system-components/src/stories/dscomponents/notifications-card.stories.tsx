@@ -27,7 +27,7 @@ export const Default: Story = {
         backgroundSize={32}
         placeholderIcon={<Antenna />}
         background={'grey5'}
-        customStyle="min-w-[32px]"
+        customStyle="min-w-8"
         solid
       />
     ),

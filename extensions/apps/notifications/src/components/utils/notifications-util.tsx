@@ -87,7 +87,7 @@ export const getPresentationDataFromNotification = (
       backgroundSize={32}
       placeholderIcon={placeholderIcon}
       background={'grey5'}
-      customStyle="min-w-[32px]"
+      customStyle="min-w-8"
       solid
     />
   );

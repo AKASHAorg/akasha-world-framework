@@ -12,7 +12,6 @@ import EventBus from '../event-bus';
 import AWF_Config from '../config';
 import Web3Connector from '../web3.connector';
 import { validate } from '../validator';
-import Gql from '../../gql';
 
 import { inject, injectable } from 'inversify';
 import pino from 'pino';

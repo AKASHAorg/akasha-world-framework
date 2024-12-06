@@ -3,8 +3,12 @@ import 'dayjs/locale/es';
 import 'dayjs/locale/ro';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
+import isYesterday from 'dayjs/plugin/isYesterday';
+import isToday from 'dayjs/plugin/isToday';
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
+dayjs.extend(isYesterday);
+dayjs.extend(isToday);
 
 const formatDate = (date: string, format = 'D MMM YYYY  H[h]mm', locale?: string) => {
   if (dayjs(date).isValid()) {
@@ -64,11 +68,10 @@ const formatRelativeDateTime = (date: string, locale?: string) => {
       time = time.locale(locale);
     }
 
-    const now = dayjs();
-    if (time.isSame(now, 'day')) {
+    if (time.isToday()) {
       // If the date is today
       return time.fromNow();
-    } else if (time.isSame(now.subtract(1, 'day'), 'day')) {
+    } else if (time.isYesterday()) {
       // If the date is yesterday
       return time.calendar(null, {
         lastDay: '[Yesterday] HH:mm',
@@ -79,6 +82,6 @@ const formatRelativeDateTime = (date: string, locale?: string) => {
     }
   }
   return '';
-}
+};
 
 export { formatDate, formatDateShort, formatRelativeTime, formatRelativeDateTime };
