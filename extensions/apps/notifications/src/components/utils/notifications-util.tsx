@@ -67,7 +67,7 @@ export const getPresentationDataFromNotification = (
   }
   const parsedMetaData = notification.payload.data.parsedMetaData;
   const parsedData = parsedMetaData?.data;
-  if (typeof parsedData !== 'string') {
+  if (parsedData && typeof parsedData !== 'string') {
     const linkDetails = generateLinkDetails(parsedData);
     if (linkDetails) {
       returnObj.appName = getAppName(parsedData.appId, apps);
