@@ -131,6 +131,7 @@ const ExtensionEditStep2Form: React.FC<ExtensionEditStep2FormProps> = props => {
                 status={error?.message ? 'error' : null}
                 inputRef={ref}
                 type="multiline"
+                required={true}
               />
             )}
             defaultValue={defaultValues.description}

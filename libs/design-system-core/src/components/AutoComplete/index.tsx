@@ -15,6 +15,7 @@ export type AutoCompleteProps = {
   options?: string[];
   placeholder?: InputProps['placeholder'];
   disabled?: InputProps['disabled'];
+  required?: boolean;
   value?: string;
   customStyle?: string;
   multiple?: boolean;
@@ -48,6 +49,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = props => {
     options,
     placeholder,
     disabled,
+    required,
     customStyle = '',
     value,
     multiple,
@@ -145,6 +147,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = props => {
         customStyle="rounded-3xl"
         radius={100}
         disabled={disabled}
+        required={required}
       />
       {showSuggestions && suggestions.length > 0 && (
         <Stack direction="row" customStyle={'relative'}>

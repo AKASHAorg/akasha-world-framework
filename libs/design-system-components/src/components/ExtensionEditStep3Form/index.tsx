@@ -21,6 +21,7 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { ApolloError } from '@apollo/client';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
+import Label from '@akashaorg/design-system-core/lib/components/Label';
 
 const MAX_TAGS = 4;
 
@@ -271,7 +272,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
           <Divider />
 
           <Stack direction="column" spacing="gap-2">
-            <Text variant="h6">{tagsLabel}</Text>
+            <Label required={true}>{tagsLabel}</Label>
             <Text variant="subtitle2" color={{ light: 'grey4', dark: 'grey6' }} weight="light">
               {tagsDescriptionLabel}
             </Text>
@@ -302,6 +303,7 @@ const ExtensionEditStep3Form: React.FC<ExtensionEditStep3FormProps> = props => {
                       }
                     }}
                     disabled={maxTagsSelected}
+                    required={true}
                     multiple
                   />
                 );

@@ -119,7 +119,7 @@ export const ExtensionEditContributorsPage: React.FC<ExtensionEditContributorsPa
   const handleAddContributor = (profile: AkashaProfile) => {
     if (addedContributors?.length < MAX_CONTRIBUTORS) {
       setAddedContributors(prev => {
-        const res = Array.from(new Set([...prev, profile]));
+        const res = Array.from(new Set([profile, ...prev]));
         return res;
       });
       setSearchValue('');
