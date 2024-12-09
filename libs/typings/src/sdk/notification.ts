@@ -32,8 +32,58 @@ export type NotificationBaseMetaData = {
   appId: string;
 };
 
+export type UserSettingType = {
+  index: number;
+  appName: string;
+  enabled: boolean;
+  active?: boolean;
+};
+export type AdditionalMetadata = {
+  data: string;
+  type: string;
+  domain: string;
+};
+
+export type PushOrgNotification = {
+  payload_id: number;
+  sender: string;
+  epoch: string;
+  payload: {
+    data: {
+      app: string;
+      sid: string;
+      url: string;
+      acta: string;
+      aimg: string;
+      amsg: string;
+      asub: string;
+      icon: string;
+      type: number;
+      epoch: string;
+      etime: string;
+      hidden: string;
+      silent: string;
+      sectype: string | null;
+      additionalMeta?: AdditionalMetadata;
+      parsedMetaData?: NotificationParsedMetaData;
+    };
+    recipients: {
+      [key: string]: string | null;
+    };
+    notification: {
+      body: string;
+      title: string;
+    };
+    verificationProof: string;
+  };
+  source: string;
+  etime: string;
+  sid: string | null;
+  timestamp?: Date;
+  isUnread?: boolean;
+};
+
 export type NotificationMetaTypes =
-  | UnknownMetaData
   | FollowNotificationMetaData
   | ReflectionNotificationMetaData
   | MentionNotificationMetaData;

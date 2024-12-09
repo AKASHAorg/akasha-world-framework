@@ -10,7 +10,6 @@ import appRoutes, { PREFERENCES } from '../../../routes';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import getSDK from '@akashaorg/core-sdk';
-import { UserSettingType } from '@akashaorg/core-sdk/src/common/notification/notification-schemas';
 import { UserSetting } from '@pushprotocol/restapi/src/lib';
 import AntennaSetting from './antenna-setting';
 import UnlockCard from './unlock-card';
@@ -18,6 +17,7 @@ import ProfileSetting from './profile-setting';
 import EnableAllSetting from './enable-all-setting';
 import { findAppIndex, preferencesObjectFactory } from './utils';
 import LoadingSettingsPlaceholder from './loading-settings-placeholder';
+import { UserSettingType } from '@akashaorg/typings/lib/sdk';
 
 export enum AppName {
   ANTENNA = 'Antenna App',
