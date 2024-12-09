@@ -26,6 +26,3 @@ setCacheNameDetails({
 // @ts-ignore
 self.skipWaiting();
 clientsClaim();
-
-
-

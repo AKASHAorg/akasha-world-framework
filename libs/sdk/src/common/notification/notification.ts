@@ -18,9 +18,6 @@ import pino from 'pino';
 import { z } from 'zod';
 
 import {
-  type AdditionalMetadata,
-  type UserSettingType,
-  type PushOrgNotification,
   type InitializeOptions,
   type ChannelSettings,
   InitializeOptionsSchema,
@@ -34,6 +31,9 @@ import {
   type ChannelOptionIndex,
   type NotificationMetaTypes,
   type NotificationParsedMetaData,
+  type UserSettingType,
+  type PushOrgNotification,
+  type AdditionalMetadata,
 } from '@akashaorg/typings/lib/sdk';
 
 @injectable()
@@ -169,7 +169,7 @@ class NotificationService {
   /**
    * Retrieves the user-specific settings for channel.
    *
-   * This method fetches the user's subscription details validates the data against a predefined schema
+   * This method fetches the user's subscription details, validates the data against a predefined schema
    * and returns the parsed user settings.
    * The `notificationsClient` must be initialized in read mode before invoking this method
    * @returns {Promise<UserSettingType[] | null>} Null is resolved when user has not set any preferences yet
@@ -230,11 +230,14 @@ class NotificationService {
       throw new Error(
         'Settings must contain all the opt-ins available. Please be aware that the order of the opt-in sent matter',
       );
-    const response = await this.notificationsWriteClient.notification.subscribe(this._notificationChannelId, {
-      settings: newSettings,
-    });
+    const response = await this.notificationsWriteClient.notification.subscribe(
+      this._notificationChannelId,
+      {
+        settings: newSettings,
+      },
+    );
 
-    return response.status === 204 ? true : false
+    return response.status === 204 ? true : false;
   }
 
   /**
@@ -445,7 +448,7 @@ class NotificationService {
   }
 
   private setLatestStoredNotificationID(val: string) {
-    return localStorage.set(this.localStorageKeyOfLatestSeenNotification, val);
+    return localStorage.setItem(this.localStorageKeyOfLatestSeenNotification, val);
   }
 
   getNotificationsEnabledStatus(): boolean {

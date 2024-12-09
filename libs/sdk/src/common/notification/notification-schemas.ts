@@ -1,11 +1,7 @@
 import { z, boolean } from 'zod';
 import {
   ChannelOptionIndexes,
-  type FollowNotificationMetaData,
-  type MentionNotificationMetaData,
-  type NotificationMetaTypes,
-  type NotificationParsedMetaData,
-  type ReflectionNotificationMetaData,
+  type UserSettingType,
 } from '@akashaorg/typings/lib/sdk/notification';
 
 export const setNewSettingsSchema = z.array(
@@ -50,11 +46,6 @@ export const ChannelInfoResponseSchema = z
 
 export type ChannelSettings = z.infer<typeof NotificationSettingTypeSchema>;
 
-export type UserSettingType = {
-  index: number;
-  appName: string;
-  enabled: boolean;
-};
 export const ChannelUserSettingsSchema = z
   .object({
     channel: z.string(),
@@ -92,67 +83,4 @@ export const MetaDataSchema = z.object({
   type: z.string(),
 });
 
-export type AdditionalMetadata = {
-  data: string;
-  type: string;
-  domain: string;
-};
-
-export type PushOrgNotification = {
-  payload_id: number;
-  sender: string;
-  epoch: string;
-  payload: {
-    data: {
-      app: string;
-      sid: string;
-      url: string;
-      acta: string;
-      aimg: string;
-      amsg: string;
-      asub: string;
-      icon: string;
-      type: number;
-      epoch: string;
-      etime: string;
-      hidden: string;
-      silent: string;
-      sectype: string | null;
-      additionalMeta?: AdditionalMetadata;
-      parsedMetaData?: NotificationParsedMetaData;
-    };
-    recipients: {
-      [key: string]: string | null;
-    };
-    notification: {
-      body: string;
-      title: string;
-    };
-    verificationProof: string;
-  };
-  source: string;
-  etime: string;
-  sid: string | null;
-  timestamp?: Date;
-  isUnread?: boolean;
-};
-
 export const ChannelOptionIndexSchema = z.nativeEnum(ChannelOptionIndexes);
-
-export function isFollowNotification(
-  data: NotificationMetaTypes,
-): data is FollowNotificationMetaData {
-  return data.type === 'follow';
-}
-
-export function isMentionNotification(
-  data: NotificationMetaTypes,
-): data is MentionNotificationMetaData {
-  return data.type === 'mention';
-}
-
-export function isReflectionNotification(
-  data: NotificationMetaTypes,
-): data is ReflectionNotificationMetaData {
-  return data.type === 'reflection';
-}
