@@ -2,13 +2,14 @@ import React from 'react';
 import ReactDOMClient from 'react-dom/client';
 import singleSpaReact from 'single-spa-react';
 import { useNotifications, useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { BellAlert } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+
 import {
   NotificationEvents,
   type IRootComponentProps,
   type UIEventData,
 } from '@akashaorg/typings/lib/ui';
 import {
-  BellAlertIcon,
   BellIcon,
   BellSnoozeIcon,
   ExclamationTriangleIcon,
@@ -107,7 +108,7 @@ const RoundedNotificationButton = () => {
     if (snoozeNotifications) {
       return <BellSnoozeIcon />;
     }
-    return hasNewNotifications ? <BellAlertIcon /> : <BellIcon />;
+    return hasNewNotifications ? <BellAlert /> : <BellIcon />;
   }, [hasNewNotifications, snoozeNotifications]);
 
   return (
