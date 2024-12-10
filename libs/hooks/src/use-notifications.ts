@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import getSDK from '@akashaorg/core-sdk';
 
 /**
@@ -19,7 +19,20 @@ export function useNotifications() {
     sdk.services.common.notification.checkIfNotificationsEnabled(),
   );
 
+  const [readOnlyMode, setReadOnlyMode] = useState(false);
   const [waitingForSignature, setWaitingForSignature] = useState(false);
+
+  // Initialise notificaitons readOnly client (without signature)
+  useEffect(() => {
+    sdk.services.common.notification
+      .initialize({ readonly: true })
+      .then(() => {
+        setReadOnlyMode(true);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
 
   const enableNotifications = async () => {
     setWaitingForSignature(true);
@@ -35,10 +48,17 @@ export function useNotifications() {
       enabled = false;
       setNotificationsEnabled(false);
     } finally {
+      setReadOnlyMode(false);
       setWaitingForSignature(false);
     }
     return enabled;
   };
 
-  return { notificationsEnabled, previouslyEnabled, waitingForSignature, enableNotifications };
+  return {
+    notificationsEnabled,
+    previouslyEnabled,
+    waitingForSignature,
+    readOnlyMode,
+    enableNotifications,
+  };
 }
