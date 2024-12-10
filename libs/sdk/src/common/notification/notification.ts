@@ -106,10 +106,6 @@ class NotificationService {
    * @throws {Error} If `notificationsClient` is not initialized in read mode.
    */
   async listenToNotificationEvents() {
-    // Prompt the user to enable browser notifications.
-    const accepted = await this.enableBrowserNotifications();
-    if (!accepted) throw new Error('The user has refused to receive notifications');
-
     // Initialize a notification stream using the notifications client.
     this._notificationsStream = await this.notificationsClient.initStream(
       [CONSTANTS.STREAM.NOTIF],
@@ -121,21 +117,30 @@ class NotificationService {
     );
     // Listen for incoming notifications on the specified stream.
     this._notificationsStream.on(CONSTANTS.STREAM.NOTIF, (data: any) => {
-      // Extract notification data and create a browser Notification instance.
-      const notification = new Notification(data?.message?.notification.body, {
-        body: data?.message?.notification.body,
-        icon: data?.channel?.icon,
-        data: data?.message?.payload,
+      // Set new notifications badge
+      this._globalChannel.next({
+        data: {},
+        event: NOTIFICATION_EVENTS.NEW_NOTIFICATIONS,
       });
-      // Add a click event listener to the notification.
-      notification.onclick = (event: any) => {
-        event.preventDefault();
-        window.open(data?.message?.payload?.cta || data?.channel?.url, '_blank');
-      };
+
+      if (Notification.permission == 'granted') {
+        // Extract notification data and create a browser Notification instance.
+        const notification = new Notification(data?.message?.notification.body, {
+          body: data?.message?.notification.body,
+          icon: data?.channel?.icon,
+          data: data?.message?.payload,
+        });
+        // Add a click event listener to the notification.
+        notification.onclick = (event: any) => {
+          event.preventDefault();
+          window.open(data?.message?.payload?.cta || data?.channel?.url, '_blank');
+        };
+      }
     });
 
     await this._notificationsStream.connect();
   }
+
   /**
    * Stops listening to notification events and disconnects the notification stream.
    * @throws {Error} If there is an issue disconnecting the notification stream.
@@ -259,11 +264,13 @@ class NotificationService {
     z.number().positive().optional(),
     z.number().positive().max(100).optional(),
     z.array(ChannelOptionIndexSchema).optional(),
+    z.boolean().optional(),
   )
   async getNotifications(
     page: number = 1,
     limit: number = 30,
     channelOptionIndexes: ChannelOptionIndex[] = [],
+    resetLatestSeenState = true,
   ): Promise<PushOrgNotification[]> {
     if (!this._web3.state.address?.length) {
       return [];
@@ -318,17 +325,22 @@ class NotificationService {
       notifications = notifications.slice(startIndex, endIndex);
     }
 
-    // Set latest seen Notification ID so we can know which notification marked as seen
-    // Find the largest SID among fetched notifications
-    const largestFetchedNotificationID = Math.max(
-      ...notifications.map(n => n.payload_id),
-      latestStoredNotificationID,
-    );
-    // Update local storage if there is a new largest notification ID
-    if (largestFetchedNotificationID > latestStoredNotificationID) {
-      this.setLatestStoredNotificationID(largestFetchedNotificationID.toString());
+    if (resetLatestSeenState) {
+      // Set latest seen Notification ID so we can know which notification marked as seen
+      // Find the largest SID among fetched notifications
+      const largestFetchedNotificationID = Math.max(
+        ...notifications.map(n => n.payload_id),
+        latestStoredNotificationID,
+      );
+      // Update local storage if there is a new largest notification ID
+      if (largestFetchedNotificationID > latestStoredNotificationID) {
+        this.setLatestStoredNotificationID(largestFetchedNotificationID.toString());
+        this._globalChannel.next({
+          event: NOTIFICATION_EVENTS.UNREAD_NOTIFICATIONS_CLEARED,
+          data: {},
+        });
+      }
     }
-
     return notifications;
   }
 
@@ -364,7 +376,7 @@ class NotificationService {
     notification: PushOrgNotification,
     latestStoredNotificationID: number,
   ) {
-    if (notification.payload.data.additionalMeta) {
+    if (notification.payload?.data.additionalMeta) {
       const metaData: NotificationParsedMetaData = this.parseMetaData(
         notification.payload.data.additionalMeta,
       );

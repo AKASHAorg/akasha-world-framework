@@ -85,7 +85,7 @@ const BrowserNotificationsOption: React.FC = () => {
   const handleEnableBrowserNotifications = async () => {
     setLoading(true);
     try {
-      await sdk.services.common.notification.listenToNotificationEvents();
+      await sdk.services.common.notification.enableBrowserNotifications();
     } catch (error) {
       console.warn('User rejected browser notifications');
     } finally {
