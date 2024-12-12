@@ -1,0 +1,4870 @@
+schema
+@link(url: "https://specs.apollo.dev/link/v1.0")
+@link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+type AkashaApp implements Node & AkashaAppInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaAppInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  meta: [AppProviderValue]
+  name: String!
+  nsfw: Boolean
+  links: [AppLinkSource]
+  gallery: [AppImageSource]
+  license: String!
+  keywords: [String]
+  createdAt: DateTime!
+  logoImage: AppImageSource
+  coverImage: AppImageSource
+  description: String!
+  displayName: String!
+  contributors: [CeramicAccount]
+  applicationType: AkashaAppApplicationType
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  releases(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+
+    """Returns only documents created by the provided account"""
+    account: ID
+    filters: AkashaAppReleaseInterfaceFiltersInput
+    sorting: AkashaAppReleaseInterfaceSortingInput
+  ): AkashaAppReleaseInterfaceConnection!
+  releasesCount(
+    """Counts only documents created by the provided account"""
+    account: ID
+    filters: AkashaAppReleaseInterfaceFiltersInput
+  ): Int!
+}
+
+enum AkashaAppApplicationType
+@join__type(graph: COMPOSEDB)
+{
+  APP @join__enumValue(graph: COMPOSEDB)
+  PLUGIN @join__enumValue(graph: COMPOSEDB)
+  WIDGET @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaAppApplicationTypeValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaAppApplicationType
+  notEqualTo: AkashaAppApplicationType
+  in: [AkashaAppApplicationType!]
+  notIn: [AkashaAppApplicationType!]
+}
+
+"""A connection to a list of items."""
+type AkashaAppConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaAppEdge]
+}
+
+"""An edge in a connection."""
+type AkashaAppEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaApp
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaAppFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaAppObjectFilterInput
+  and: [AkashaAppFiltersInput!]
+  or: [AkashaAppFiltersInput!]
+  not: AkashaAppFiltersInput
+}
+
+input AkashaAppInput
+@join__type(graph: COMPOSEDB)
+{
+  meta: [AppProviderValueInput]
+  name: String!
+  nsfw: Boolean
+  links: [AppLinkSourceInput]
+  gallery: [AppImageSourceInput]
+  license: String!
+  keywords: [String]
+  createdAt: DateTime!
+  logoImage: AppImageSourceInput
+  coverImage: AppImageSourceInput
+  description: String!
+  displayName: String!
+  contributors: [DID]
+  applicationType: AkashaAppApplicationType
+}
+
+interface AkashaAppInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  meta: [AppProviderValue]
+  name: String!
+  nsfw: Boolean
+  links: [AppLinkSource]
+  gallery: [AppImageSource]
+  license: String!
+  keywords: [String]
+  createdAt: DateTime!
+  logoImage: AppImageSource
+  coverImage: AppImageSource
+  description: String!
+  displayName: String!
+  contributors: [CeramicAccount]
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+}
+
+"""A connection to a list of items."""
+type AkashaAppInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaAppInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaAppInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaAppInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaAppInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaAppInterfaceObjectFilterInput
+  and: [AkashaAppInterfaceFiltersInput!]
+  or: [AkashaAppInterfaceFiltersInput!]
+  not: AkashaAppInterfaceFiltersInput
+}
+
+input AkashaAppInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  name: StringValueFilterInput
+  nsfw: BooleanValueFilterInput
+  license: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  description: StringValueFilterInput
+  displayName: StringValueFilterInput
+}
+
+input AkashaAppInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  name: SortOrder
+  nsfw: SortOrder
+  license: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+}
+
+input AkashaAppObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  name: StringValueFilterInput
+  nsfw: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  displayName: StringValueFilterInput
+  applicationType: AkashaAppApplicationTypeValueFilterInput
+}
+
+type AkashaAppRelease implements Node & AkashaAppReleaseInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaAppReleaseInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  meta: [AppProviderValue]
+  source: URI!
+  version: String!
+  createdAt: DateTime!
+  applicationID: CeramicStreamID!
+  application: AkashaAppInterface
+}
+
+"""A connection to a list of items."""
+type AkashaAppReleaseConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaAppReleaseEdge]
+}
+
+"""An edge in a connection."""
+type AkashaAppReleaseEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaAppRelease
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaAppReleaseFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaAppReleaseObjectFilterInput
+  and: [AkashaAppReleaseFiltersInput!]
+  or: [AkashaAppReleaseFiltersInput!]
+  not: AkashaAppReleaseFiltersInput
+}
+
+input AkashaAppReleaseInput
+@join__type(graph: COMPOSEDB)
+{
+  meta: [AppProviderValueInput]
+  source: URI!
+  version: String!
+  createdAt: DateTime!
+  applicationID: CeramicStreamID!
+}
+
+interface AkashaAppReleaseInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  meta: [AppProviderValue]
+  source: URI!
+  version: String!
+  createdAt: DateTime!
+  applicationID: CeramicStreamID!
+  application: AkashaAppInterface
+}
+
+"""A connection to a list of items."""
+type AkashaAppReleaseInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaAppReleaseInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaAppReleaseInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaAppReleaseInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaAppReleaseInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaAppReleaseInterfaceObjectFilterInput
+  and: [AkashaAppReleaseInterfaceFiltersInput!]
+  or: [AkashaAppReleaseInterfaceFiltersInput!]
+  not: AkashaAppReleaseInterfaceFiltersInput
+}
+
+input AkashaAppReleaseInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  source: StringValueFilterInput
+  version: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  applicationID: StringValueFilterInput
+}
+
+input AkashaAppReleaseInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  source: SortOrder
+  version: SortOrder
+  createdAt: SortOrder
+  applicationID: SortOrder
+}
+
+input AkashaAppReleaseObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  version: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  applicationID: StringValueFilterInput
+}
+
+input AkashaAppReleaseSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  version: SortOrder
+  createdAt: SortOrder
+  applicationID: SortOrder
+}
+
+input AkashaAppSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  name: SortOrder
+  nsfw: SortOrder
+  createdAt: SortOrder
+  displayName: SortOrder
+  applicationType: SortOrder
+}
+
+type AkashaAppsStream implements Node & AkashaIndexStreamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaIndexStreamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  active: Boolean!
+  status: AkashaAppsStreamModerationStatus
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+  applicationID: CeramicStreamID!
+  moderation: Node
+  application: AkashaAppInterface
+}
+
+"""A connection to a list of items."""
+type AkashaAppsStreamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaAppsStreamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaAppsStreamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaAppsStream
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaAppsStreamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaAppsStreamObjectFilterInput
+  and: [AkashaAppsStreamFiltersInput!]
+  or: [AkashaAppsStreamFiltersInput!]
+  not: AkashaAppsStreamFiltersInput
+}
+
+input AkashaAppsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean!
+  status: AkashaAppsStreamModerationStatus
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+  applicationID: CeramicStreamID!
+}
+
+enum AkashaAppsStreamModerationStatus
+@join__type(graph: COMPOSEDB)
+{
+  REMOVED @join__enumValue(graph: COMPOSEDB)
+  IN_REVIEW @join__enumValue(graph: COMPOSEDB)
+  SUSPENDED @join__enumValue(graph: COMPOSEDB)
+  NSFW @join__enumValue(graph: COMPOSEDB)
+  OK @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaAppsStreamModerationStatusValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaAppsStreamModerationStatus
+  notEqualTo: AkashaAppsStreamModerationStatus
+  in: [AkashaAppsStreamModerationStatus!]
+  notIn: [AkashaAppsStreamModerationStatus!]
+}
+
+input AkashaAppsStreamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  active: BooleanValueFilterInput
+  status: AkashaAppsStreamModerationStatusValueFilterInput
+  createdAt: StringValueFilterInput
+  moderationID: StringValueFilterInput
+  applicationID: StringValueFilterInput
+}
+
+input AkashaAppsStreamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  active: SortOrder
+  status: SortOrder
+  createdAt: SortOrder
+  moderationID: SortOrder
+  applicationID: SortOrder
+}
+
+type AkashaBeam implements Node & AkashaBeamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaBeamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  nsfw: Boolean
+  tags: [BeamLabeled]
+  appID: CeramicStreamID!
+  active: Boolean!
+  content: [BeamBlockRecord!]!
+  mentions: [CeramicAccount]
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+  embeddedStream: BeamEmbeddedType
+  app: AkashaAppInterface
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  appVersion: AkashaAppReleaseInterface
+  reflections(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+
+    """Returns only documents created by the provided account"""
+    account: ID
+    filters: AkashaReflectInterfaceFiltersInput
+    sorting: AkashaReflectInterfaceSortingInput
+  ): AkashaReflectInterfaceConnection!
+  reflectionsCount(
+    """Counts only documents created by the provided account"""
+    account: ID
+    filters: AkashaReflectInterfaceFiltersInput
+  ): Int!
+}
+
+"""A connection to a list of items."""
+type AkashaBeamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaBeamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaBeamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaBeam
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaBeamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaBeamObjectFilterInput
+  and: [AkashaBeamFiltersInput!]
+  or: [AkashaBeamFiltersInput!]
+  not: AkashaBeamFiltersInput
+}
+
+input AkashaBeamInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: Boolean
+  tags: [BeamLabeledInput]
+  appID: CeramicStreamID!
+  active: Boolean!
+  content: [BeamBlockRecordInput]!
+  mentions: [DID]
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+  embeddedStream: BeamEmbeddedTypeInput
+}
+
+interface AkashaBeamInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  nsfw: Boolean
+  tags: [BeamLabeled]
+  appID: CeramicStreamID!
+  active: Boolean!
+  content: [BeamBlockRecord!]!
+  mentions: [CeramicAccount]
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+  embeddedStream: BeamEmbeddedType
+  app: AkashaAppInterface
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  appVersion: AkashaAppReleaseInterface
+}
+
+"""A connection to a list of items."""
+type AkashaBeamInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaBeamInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaBeamInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaBeamInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaBeamInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaBeamInterfaceObjectFilterInput
+  and: [AkashaBeamInterfaceFiltersInput!]
+  or: [AkashaBeamInterfaceFiltersInput!]
+  not: AkashaBeamInterfaceFiltersInput
+}
+
+input AkashaBeamInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: BooleanValueFilterInput
+  appID: StringValueFilterInput
+  active: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  appVersionID: StringValueFilterInput
+}
+
+input AkashaBeamInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: SortOrder
+  appID: SortOrder
+  active: SortOrder
+  createdAt: SortOrder
+  appVersionID: SortOrder
+}
+
+input AkashaBeamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: BooleanValueFilterInput
+  appID: StringValueFilterInput
+  active: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  appVersionID: StringValueFilterInput
+}
+
+input AkashaBeamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: SortOrder
+  appID: SortOrder
+  active: SortOrder
+  createdAt: SortOrder
+  appVersionID: SortOrder
+}
+
+type AkashaBeamStream implements Node & AkashaIndexStreamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaIndexStreamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  appID: CeramicStreamID
+  active: Boolean!
+  beamID: CeramicStreamID!
+  status: AkashaBeamStreamModerationStatus
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+  beam: AkashaBeamInterface
+  moderation: Node
+}
+
+"""A connection to a list of items."""
+type AkashaBeamStreamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaBeamStreamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaBeamStreamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaBeamStream
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaBeamStreamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaBeamStreamObjectFilterInput
+  and: [AkashaBeamStreamFiltersInput!]
+  or: [AkashaBeamStreamFiltersInput!]
+  not: AkashaBeamStreamFiltersInput
+}
+
+input AkashaBeamStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  appID: CeramicStreamID
+  active: Boolean!
+  beamID: CeramicStreamID!
+  status: AkashaBeamStreamModerationStatus
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+}
+
+enum AkashaBeamStreamModerationStatus
+@join__type(graph: COMPOSEDB)
+{
+  REMOVED @join__enumValue(graph: COMPOSEDB)
+  IN_REVIEW @join__enumValue(graph: COMPOSEDB)
+  SUSPENDED @join__enumValue(graph: COMPOSEDB)
+  NSFW @join__enumValue(graph: COMPOSEDB)
+  OK @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaBeamStreamModerationStatusValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaBeamStreamModerationStatus
+  notEqualTo: AkashaBeamStreamModerationStatus
+  in: [AkashaBeamStreamModerationStatus!]
+  notIn: [AkashaBeamStreamModerationStatus!]
+}
+
+input AkashaBeamStreamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  appID: StringValueFilterInput
+  active: BooleanValueFilterInput
+  beamID: StringValueFilterInput
+  status: AkashaBeamStreamModerationStatusValueFilterInput
+  createdAt: StringValueFilterInput
+  moderationID: StringValueFilterInput
+}
+
+input AkashaBeamStreamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  appID: SortOrder
+  active: SortOrder
+  beamID: SortOrder
+  status: SortOrder
+  createdAt: SortOrder
+  moderationID: SortOrder
+}
+
+type AkashaBlockStorage implements Node & AkashaContentBlockInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaContentBlockInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  kind: AkashaBlockStorageBlockDef
+  nsfw: Boolean
+  active: Boolean!
+  blockID: CeramicStreamID!
+  content: [BlockLabeledValue!]!
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+  block: AkashaContentBlock
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  appVersion: AkashaAppReleaseInterface
+}
+
+enum AkashaBlockStorageBlockDef
+@join__type(graph: COMPOSEDB)
+{
+  TEXT @join__enumValue(graph: COMPOSEDB)
+  RTF @join__enumValue(graph: COMPOSEDB)
+  FORM @join__enumValue(graph: COMPOSEDB)
+  IMAGE @join__enumValue(graph: COMPOSEDB)
+  ANIMATED_IMAGE @join__enumValue(graph: COMPOSEDB)
+  VIDEO @join__enumValue(graph: COMPOSEDB)
+  BOOL @join__enumValue(graph: COMPOSEDB)
+  EMOJI @join__enumValue(graph: COMPOSEDB)
+  FORM_DATA @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaBlockStorageBlockDefValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaBlockStorageBlockDef
+  notEqualTo: AkashaBlockStorageBlockDef
+  in: [AkashaBlockStorageBlockDef!]
+  notIn: [AkashaBlockStorageBlockDef!]
+}
+
+"""A connection to a list of items."""
+type AkashaBlockStorageConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaBlockStorageEdge]
+}
+
+"""An edge in a connection."""
+type AkashaBlockStorageEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaBlockStorage
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaBlockStorageFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaBlockStorageObjectFilterInput
+  and: [AkashaBlockStorageFiltersInput!]
+  or: [AkashaBlockStorageFiltersInput!]
+  not: AkashaBlockStorageFiltersInput
+}
+
+input AkashaBlockStorageInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: AkashaBlockStorageBlockDef
+  nsfw: Boolean
+  active: Boolean!
+  blockID: CeramicStreamID!
+  content: [BlockLabeledValueInput]!
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+}
+
+input AkashaBlockStorageObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: AkashaBlockStorageBlockDefValueFilterInput
+  nsfw: BooleanValueFilterInput
+  active: BooleanValueFilterInput
+  blockID: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  appVersionID: StringValueFilterInput
+}
+
+input AkashaBlockStorageSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: SortOrder
+  nsfw: SortOrder
+  active: SortOrder
+  blockID: SortOrder
+  createdAt: SortOrder
+  appVersionID: SortOrder
+}
+
+type AkashaContentBlock implements Node & AkashaContentBlockInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaContentBlockInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  kind: AkashaContentBlockBlockDef
+  nsfw: Boolean
+  active: Boolean!
+  content: [BlockLabeledValue!]!
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  appVersion: AkashaAppReleaseInterface
+}
+
+enum AkashaContentBlockBlockDef
+@join__type(graph: COMPOSEDB)
+{
+  TEXT @join__enumValue(graph: COMPOSEDB)
+  RTF @join__enumValue(graph: COMPOSEDB)
+  FORM @join__enumValue(graph: COMPOSEDB)
+  IMAGE @join__enumValue(graph: COMPOSEDB)
+  ANIMATED_IMAGE @join__enumValue(graph: COMPOSEDB)
+  VIDEO @join__enumValue(graph: COMPOSEDB)
+  BOOL @join__enumValue(graph: COMPOSEDB)
+  EMOJI @join__enumValue(graph: COMPOSEDB)
+  FORM_DATA @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaContentBlockBlockDefValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaContentBlockBlockDef
+  notEqualTo: AkashaContentBlockBlockDef
+  in: [AkashaContentBlockBlockDef!]
+  notIn: [AkashaContentBlockBlockDef!]
+}
+
+"""A connection to a list of items."""
+type AkashaContentBlockConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaContentBlockEdge]
+}
+
+"""An edge in a connection."""
+type AkashaContentBlockEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaContentBlock
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaContentBlockFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaContentBlockObjectFilterInput
+  and: [AkashaContentBlockFiltersInput!]
+  or: [AkashaContentBlockFiltersInput!]
+  not: AkashaContentBlockFiltersInput
+}
+
+input AkashaContentBlockInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: AkashaContentBlockBlockDef
+  nsfw: Boolean
+  active: Boolean!
+  content: [BlockLabeledValueInput]!
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+}
+
+interface AkashaContentBlockInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  nsfw: Boolean
+  active: Boolean!
+  content: [BlockLabeledValue!]!
+  createdAt: DateTime!
+  appVersionID: CeramicStreamID!
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  appVersion: AkashaAppReleaseInterface
+}
+
+"""A connection to a list of items."""
+type AkashaContentBlockInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaContentBlockInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaContentBlockInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaContentBlockInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaContentBlockInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaContentBlockInterfaceObjectFilterInput
+  and: [AkashaContentBlockInterfaceFiltersInput!]
+  or: [AkashaContentBlockInterfaceFiltersInput!]
+  not: AkashaContentBlockInterfaceFiltersInput
+}
+
+input AkashaContentBlockInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: BooleanValueFilterInput
+  active: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  appVersionID: StringValueFilterInput
+}
+
+input AkashaContentBlockInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: SortOrder
+  active: SortOrder
+  createdAt: SortOrder
+  appVersionID: SortOrder
+}
+
+input AkashaContentBlockObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: AkashaContentBlockBlockDefValueFilterInput
+  nsfw: BooleanValueFilterInput
+  active: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  appVersionID: StringValueFilterInput
+}
+
+input AkashaContentBlockSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: SortOrder
+  nsfw: SortOrder
+  active: SortOrder
+  createdAt: SortOrder
+  appVersionID: SortOrder
+}
+
+type AkashaContentBlockStream implements Node & AkashaIndexStreamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaIndexStreamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  active: Boolean!
+  status: AkashaContentBlockStreamModerationStatus
+  blockID: CeramicStreamID!
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+  block: AkashaContentBlockInterface
+  moderation: Node
+}
+
+"""A connection to a list of items."""
+type AkashaContentBlockStreamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaContentBlockStreamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaContentBlockStreamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaContentBlockStream
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaContentBlockStreamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaContentBlockStreamObjectFilterInput
+  and: [AkashaContentBlockStreamFiltersInput!]
+  or: [AkashaContentBlockStreamFiltersInput!]
+  not: AkashaContentBlockStreamFiltersInput
+}
+
+input AkashaContentBlockStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean!
+  status: AkashaContentBlockStreamModerationStatus
+  blockID: CeramicStreamID!
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+}
+
+enum AkashaContentBlockStreamModerationStatus
+@join__type(graph: COMPOSEDB)
+{
+  REMOVED @join__enumValue(graph: COMPOSEDB)
+  IN_REVIEW @join__enumValue(graph: COMPOSEDB)
+  SUSPENDED @join__enumValue(graph: COMPOSEDB)
+  NSFW @join__enumValue(graph: COMPOSEDB)
+  OK @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaContentBlockStreamModerationStatusValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaContentBlockStreamModerationStatus
+  notEqualTo: AkashaContentBlockStreamModerationStatus
+  in: [AkashaContentBlockStreamModerationStatus!]
+  notIn: [AkashaContentBlockStreamModerationStatus!]
+}
+
+input AkashaContentBlockStreamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  active: BooleanValueFilterInput
+  status: AkashaContentBlockStreamModerationStatusValueFilterInput
+  blockID: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  moderationID: StringValueFilterInput
+}
+
+input AkashaContentBlockStreamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  active: SortOrder
+  status: SortOrder
+  blockID: SortOrder
+  createdAt: SortOrder
+  moderationID: SortOrder
+}
+
+type AkashaFollow implements Node & AkashaFollowInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaFollowInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  profileID: CeramicStreamID!
+  isFollowing: Boolean!
+
+  """Account controlling the document"""
+  did: CeramicAccount!
+  profile: AkashaProfileInterface
+}
+
+"""A connection to a list of items."""
+type AkashaFollowConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaFollowEdge]
+}
+
+"""An edge in a connection."""
+type AkashaFollowEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaFollow
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaFollowFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaFollowObjectFilterInput
+  and: [AkashaFollowFiltersInput!]
+  or: [AkashaFollowFiltersInput!]
+  not: AkashaFollowFiltersInput
+}
+
+input AkashaFollowInput
+@join__type(graph: COMPOSEDB)
+{
+  profileID: CeramicStreamID!
+  isFollowing: Boolean!
+}
+
+interface AkashaFollowInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  profileID: CeramicStreamID!
+  isFollowing: Boolean!
+
+  """Account controlling the document"""
+  did: CeramicAccount!
+  profile: AkashaProfileInterface
+}
+
+"""A connection to a list of items."""
+type AkashaFollowInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaFollowInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaFollowInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaFollowInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaFollowInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaFollowInterfaceObjectFilterInput
+  and: [AkashaFollowInterfaceFiltersInput!]
+  or: [AkashaFollowInterfaceFiltersInput!]
+  not: AkashaFollowInterfaceFiltersInput
+}
+
+input AkashaFollowInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  profileID: StringValueFilterInput
+  isFollowing: BooleanValueFilterInput
+}
+
+input AkashaFollowInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  profileID: SortOrder
+  isFollowing: SortOrder
+}
+
+input AkashaFollowObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  profileID: StringValueFilterInput
+  isFollowing: BooleanValueFilterInput
+}
+
+input AkashaFollowSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  profileID: SortOrder
+  isFollowing: SortOrder
+}
+
+type AkashaIndexedStream implements Node & AkashaIndexStreamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaIndexStreamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  active: Boolean!
+  status: AkashaIndexedStreamModerationStatus
+  stream: CeramicStreamID!
+  createdAt: DateTime!
+  indexType: String!
+  indexValue: String!
+  streamType: AkashaIndexedStreamStreamType
+  moderationID: CeramicStreamID
+  moderation: Node
+  streamView: Node
+}
+
+"""A connection to a list of items."""
+type AkashaIndexedStreamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaIndexedStreamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaIndexedStreamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaIndexedStream
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaIndexedStreamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaIndexedStreamObjectFilterInput
+  and: [AkashaIndexedStreamFiltersInput!]
+  or: [AkashaIndexedStreamFiltersInput!]
+  not: AkashaIndexedStreamFiltersInput
+}
+
+input AkashaIndexedStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean!
+  status: AkashaIndexedStreamModerationStatus
+  stream: CeramicStreamID!
+  createdAt: DateTime!
+  indexType: String!
+  indexValue: String!
+  streamType: AkashaIndexedStreamStreamType
+  moderationID: CeramicStreamID
+}
+
+enum AkashaIndexedStreamModerationStatus
+@join__type(graph: COMPOSEDB)
+{
+  REMOVED @join__enumValue(graph: COMPOSEDB)
+  IN_REVIEW @join__enumValue(graph: COMPOSEDB)
+  SUSPENDED @join__enumValue(graph: COMPOSEDB)
+  NSFW @join__enumValue(graph: COMPOSEDB)
+  OK @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaIndexedStreamModerationStatusValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaIndexedStreamModerationStatus
+  notEqualTo: AkashaIndexedStreamModerationStatus
+  in: [AkashaIndexedStreamModerationStatus!]
+  notIn: [AkashaIndexedStreamModerationStatus!]
+}
+
+input AkashaIndexedStreamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  active: BooleanValueFilterInput
+  status: AkashaIndexedStreamModerationStatusValueFilterInput
+  stream: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  indexType: StringValueFilterInput
+  indexValue: StringValueFilterInput
+  streamType: AkashaIndexedStreamStreamTypeValueFilterInput
+  moderationID: StringValueFilterInput
+}
+
+input AkashaIndexedStreamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  active: SortOrder
+  status: SortOrder
+  stream: SortOrder
+  createdAt: SortOrder
+  indexType: SortOrder
+  indexValue: SortOrder
+  streamType: SortOrder
+  moderationID: SortOrder
+}
+
+enum AkashaIndexedStreamStreamType
+@join__type(graph: COMPOSEDB)
+{
+  BEAM @join__enumValue(graph: COMPOSEDB)
+  REFLECT @join__enumValue(graph: COMPOSEDB)
+  PROFILE @join__enumValue(graph: COMPOSEDB)
+  APP @join__enumValue(graph: COMPOSEDB)
+  EXTENSION @join__enumValue(graph: COMPOSEDB)
+  PLUGIN @join__enumValue(graph: COMPOSEDB)
+  WIDGET @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaIndexedStreamStreamTypeValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaIndexedStreamStreamType
+  notEqualTo: AkashaIndexedStreamStreamType
+  in: [AkashaIndexedStreamStreamType!]
+  notIn: [AkashaIndexedStreamStreamType!]
+}
+
+interface AkashaIndexStreamInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  active: Boolean!
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+  moderation: Node
+}
+
+"""A connection to a list of items."""
+type AkashaIndexStreamInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaIndexStreamInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaIndexStreamInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaIndexStreamInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaIndexStreamInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaIndexStreamInterfaceObjectFilterInput
+  and: [AkashaIndexStreamInterfaceFiltersInput!]
+  or: [AkashaIndexStreamInterfaceFiltersInput!]
+  not: AkashaIndexStreamInterfaceFiltersInput
+}
+
+input AkashaIndexStreamInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  active: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  moderationID: StringValueFilterInput
+}
+
+input AkashaIndexStreamInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  active: SortOrder
+  createdAt: SortOrder
+  moderationID: SortOrder
+}
+
+type AkashaInterestsStream implements Node & AkashaIndexStreamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaIndexStreamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  value: String!
+  active: Boolean!
+  status: AkashaInterestsStreamModerationStatus
+  createdAt: DateTime!
+  labelType: String!
+  moderationID: CeramicStreamID
+  moderation: Node
+}
+
+"""A connection to a list of items."""
+type AkashaInterestsStreamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaInterestsStreamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaInterestsStreamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaInterestsStream
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaInterestsStreamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaInterestsStreamObjectFilterInput
+  and: [AkashaInterestsStreamFiltersInput!]
+  or: [AkashaInterestsStreamFiltersInput!]
+  not: AkashaInterestsStreamFiltersInput
+}
+
+input AkashaInterestsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  value: String!
+  active: Boolean!
+  status: AkashaInterestsStreamModerationStatus
+  createdAt: DateTime!
+  labelType: String!
+  moderationID: CeramicStreamID
+}
+
+enum AkashaInterestsStreamModerationStatus
+@join__type(graph: COMPOSEDB)
+{
+  REMOVED @join__enumValue(graph: COMPOSEDB)
+  IN_REVIEW @join__enumValue(graph: COMPOSEDB)
+  SUSPENDED @join__enumValue(graph: COMPOSEDB)
+  NSFW @join__enumValue(graph: COMPOSEDB)
+  OK @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaInterestsStreamModerationStatusValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaInterestsStreamModerationStatus
+  notEqualTo: AkashaInterestsStreamModerationStatus
+  in: [AkashaInterestsStreamModerationStatus!]
+  notIn: [AkashaInterestsStreamModerationStatus!]
+}
+
+input AkashaInterestsStreamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  value: StringValueFilterInput
+  active: BooleanValueFilterInput
+  status: AkashaInterestsStreamModerationStatusValueFilterInput
+  createdAt: StringValueFilterInput
+  labelType: StringValueFilterInput
+  moderationID: StringValueFilterInput
+}
+
+input AkashaInterestsStreamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  value: SortOrder
+  active: SortOrder
+  status: SortOrder
+  createdAt: SortOrder
+  labelType: SortOrder
+  moderationID: SortOrder
+}
+
+type AkashaProfile implements Node & AkashaProfileInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaProfileInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  name: String!
+  nsfw: Boolean
+  appID: CeramicStreamID!
+  links: [ProfileLinkSource]
+  avatar: ProfileImageVersions
+  createdAt: DateTime!
+  background: ProfileImageVersions
+  description: String
+  appVersionID: CeramicStreamID!
+  app: AkashaAppInterface
+
+  """Account controlling the document"""
+  did: CeramicAccount!
+  appVersion: AkashaAppReleaseInterface
+  followers(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+
+    """Returns only documents created by the provided account"""
+    account: ID
+    filters: AkashaFollowInterfaceFiltersInput
+    sorting: AkashaFollowInterfaceSortingInput
+  ): AkashaFollowInterfaceConnection!
+  followersCount(
+    """Counts only documents created by the provided account"""
+    account: ID
+    filters: AkashaFollowInterfaceFiltersInput
+  ): Int!
+}
+
+"""A connection to a list of items."""
+type AkashaProfileConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaProfileEdge]
+}
+
+"""An edge in a connection."""
+type AkashaProfileEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaProfile
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaProfileFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaProfileObjectFilterInput
+  and: [AkashaProfileFiltersInput!]
+  or: [AkashaProfileFiltersInput!]
+  not: AkashaProfileFiltersInput
+}
+
+input AkashaProfileInput
+@join__type(graph: COMPOSEDB)
+{
+  name: String!
+  nsfw: Boolean
+  appID: CeramicStreamID!
+  links: [ProfileLinkSourceInput]
+  avatar: ProfileImageVersionsInput
+  createdAt: DateTime!
+  background: ProfileImageVersionsInput
+  description: String
+  appVersionID: CeramicStreamID!
+}
+
+type AkashaProfileInterests implements Node & AkashaProfileInterestsInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaProfileInterestsInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  topics: [ProfileLabeled!]!
+
+  """Account controlling the document"""
+  did: CeramicAccount!
+}
+
+"""A connection to a list of items."""
+type AkashaProfileInterestsConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaProfileInterestsEdge]
+}
+
+"""An edge in a connection."""
+type AkashaProfileInterestsEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaProfileInterests
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaProfileInterestsInput
+@join__type(graph: COMPOSEDB)
+{
+  topics: [ProfileLabeledInput]!
+}
+
+interface AkashaProfileInterestsInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  topics: [ProfileLabeled!]!
+
+  """Account controlling the document"""
+  did: CeramicAccount!
+}
+
+"""A connection to a list of items."""
+type AkashaProfileInterestsInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaProfileInterestsInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaProfileInterestsInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaProfileInterestsInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+interface AkashaProfileInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  name: String!
+  nsfw: Boolean
+  appID: CeramicStreamID!
+  links: [ProfileLinkSource]
+  avatar: ProfileImageVersions
+  createdAt: DateTime!
+  background: ProfileImageVersions
+  description: String
+  appVersionID: CeramicStreamID!
+  app: AkashaAppInterface
+
+  """Account controlling the document"""
+  did: CeramicAccount!
+  appVersion: AkashaAppReleaseInterface
+}
+
+"""A connection to a list of items."""
+type AkashaProfileInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaProfileInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaProfileInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaProfileInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaProfileInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaProfileInterfaceObjectFilterInput
+  and: [AkashaProfileInterfaceFiltersInput!]
+  or: [AkashaProfileInterfaceFiltersInput!]
+  not: AkashaProfileInterfaceFiltersInput
+}
+
+input AkashaProfileInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  name: StringValueFilterInput
+  nsfw: BooleanValueFilterInput
+  appID: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  description: StringValueFilterInput
+  appVersionID: StringValueFilterInput
+}
+
+input AkashaProfileInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  name: SortOrder
+  nsfw: SortOrder
+  appID: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  appVersionID: SortOrder
+}
+
+input AkashaProfileObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  name: StringValueFilterInput
+  nsfw: BooleanValueFilterInput
+  appID: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  appVersionID: StringValueFilterInput
+}
+
+input AkashaProfileSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  name: SortOrder
+  nsfw: SortOrder
+  appID: SortOrder
+  createdAt: SortOrder
+  appVersionID: SortOrder
+}
+
+type AkashaProfileStream implements Node & AkashaIndexStreamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaIndexStreamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  appID: CeramicStreamID
+  active: Boolean!
+  status: AkashaProfileStreamModerationStatus
+  createdAt: DateTime!
+  profileID: CeramicStreamID!
+  moderationID: CeramicStreamID
+  profile: AkashaProfileInterface
+  moderation: Node
+}
+
+"""A connection to a list of items."""
+type AkashaProfileStreamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaProfileStreamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaProfileStreamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaProfileStream
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaProfileStreamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaProfileStreamObjectFilterInput
+  and: [AkashaProfileStreamFiltersInput!]
+  or: [AkashaProfileStreamFiltersInput!]
+  not: AkashaProfileStreamFiltersInput
+}
+
+input AkashaProfileStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  appID: CeramicStreamID
+  active: Boolean!
+  status: AkashaProfileStreamModerationStatus
+  createdAt: DateTime!
+  profileID: CeramicStreamID!
+  moderationID: CeramicStreamID
+}
+
+enum AkashaProfileStreamModerationStatus
+@join__type(graph: COMPOSEDB)
+{
+  REMOVED @join__enumValue(graph: COMPOSEDB)
+  IN_REVIEW @join__enumValue(graph: COMPOSEDB)
+  SUSPENDED @join__enumValue(graph: COMPOSEDB)
+  NSFW @join__enumValue(graph: COMPOSEDB)
+  OK @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaProfileStreamModerationStatusValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaProfileStreamModerationStatus
+  notEqualTo: AkashaProfileStreamModerationStatus
+  in: [AkashaProfileStreamModerationStatus!]
+  notIn: [AkashaProfileStreamModerationStatus!]
+}
+
+input AkashaProfileStreamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  appID: StringValueFilterInput
+  active: BooleanValueFilterInput
+  status: AkashaProfileStreamModerationStatusValueFilterInput
+  createdAt: StringValueFilterInput
+  profileID: StringValueFilterInput
+  moderationID: StringValueFilterInput
+}
+
+input AkashaProfileStreamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  appID: SortOrder
+  active: SortOrder
+  status: SortOrder
+  createdAt: SortOrder
+  profileID: SortOrder
+  moderationID: SortOrder
+}
+
+type AkashaReflect implements Node & AkashaReflectInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaReflectInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  nsfw: Boolean
+  tags: [String]
+  active: Boolean!
+  beamID: CeramicStreamID!
+  content: [ReflectProviderValue!]!
+  isReply: Boolean
+  mentions: [CeramicStreamID]
+  createdAt: DateTime!
+  reflection: CeramicStreamID
+  beam: AkashaBeamInterface
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  reflectionView: Node
+}
+
+"""A connection to a list of items."""
+type AkashaReflectConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaReflectEdge]
+}
+
+"""An edge in a connection."""
+type AkashaReflectEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaReflect
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaReflectFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaReflectObjectFilterInput
+  and: [AkashaReflectFiltersInput!]
+  or: [AkashaReflectFiltersInput!]
+  not: AkashaReflectFiltersInput
+}
+
+input AkashaReflectInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: Boolean
+  tags: [String]
+  active: Boolean!
+  beamID: CeramicStreamID!
+  content: [ReflectProviderValueInput]!
+  isReply: Boolean
+  mentions: [CeramicStreamID]
+  createdAt: DateTime!
+  reflection: CeramicStreamID
+}
+
+interface AkashaReflectInterface implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  nsfw: Boolean
+  tags: [String]
+  active: Boolean!
+  beamID: CeramicStreamID!
+  content: [ReflectProviderValue!]!
+  isReply: Boolean
+  mentions: [CeramicStreamID]
+  createdAt: DateTime!
+  reflection: CeramicStreamID
+  beam: AkashaBeamInterface
+
+  """Account controlling the document"""
+  author: CeramicAccount!
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+  reflectionView: Node
+}
+
+"""A connection to a list of items."""
+type AkashaReflectInterfaceConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaReflectInterfaceEdge]
+}
+
+"""An edge in a connection."""
+type AkashaReflectInterfaceEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaReflectInterface
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaReflectInterfaceFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaReflectInterfaceObjectFilterInput
+  and: [AkashaReflectInterfaceFiltersInput!]
+  or: [AkashaReflectInterfaceFiltersInput!]
+  not: AkashaReflectInterfaceFiltersInput
+}
+
+input AkashaReflectInterfaceObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: BooleanValueFilterInput
+  active: BooleanValueFilterInput
+  beamID: StringValueFilterInput
+  isReply: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  reflection: StringValueFilterInput
+}
+
+input AkashaReflectInterfaceSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: SortOrder
+  active: SortOrder
+  beamID: SortOrder
+  isReply: SortOrder
+  createdAt: SortOrder
+  reflection: SortOrder
+}
+
+input AkashaReflectObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: BooleanValueFilterInput
+  active: BooleanValueFilterInput
+  beamID: StringValueFilterInput
+  isReply: BooleanValueFilterInput
+  createdAt: StringValueFilterInput
+  reflection: StringValueFilterInput
+}
+
+input AkashaReflectSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: SortOrder
+  active: SortOrder
+  beamID: SortOrder
+  isReply: SortOrder
+  createdAt: SortOrder
+  reflection: SortOrder
+}
+
+type AkashaReflectStream implements Node & AkashaIndexStreamInterface
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__implements(graph: COMPOSEDB, interface: "AkashaIndexStreamInterface")
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  active: Boolean!
+  beamID: CeramicStreamID!
+  status: AkashaReflectStreamModerationStatus
+  isReply: Boolean
+  replyTo: CeramicStreamID
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+  reflectionID: CeramicStreamID!
+  moderation: Node
+  reflection: AkashaReflectInterface
+}
+
+"""A connection to a list of items."""
+type AkashaReflectStreamConnection
+@join__type(graph: COMPOSEDB)
+{
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AkashaReflectStreamEdge]
+}
+
+"""An edge in a connection."""
+type AkashaReflectStreamEdge
+@join__type(graph: COMPOSEDB)
+{
+  """The item at the end of the edge"""
+  node: AkashaReflectStream
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input AkashaReflectStreamFiltersInput
+@join__type(graph: COMPOSEDB)
+{
+  where: AkashaReflectStreamObjectFilterInput
+  and: [AkashaReflectStreamFiltersInput!]
+  or: [AkashaReflectStreamFiltersInput!]
+  not: AkashaReflectStreamFiltersInput
+}
+
+input AkashaReflectStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean!
+  beamID: CeramicStreamID!
+  status: AkashaReflectStreamModerationStatus
+  isReply: Boolean
+  replyTo: CeramicStreamID
+  createdAt: DateTime!
+  moderationID: CeramicStreamID
+  reflectionID: CeramicStreamID!
+}
+
+enum AkashaReflectStreamModerationStatus
+@join__type(graph: COMPOSEDB)
+{
+  REMOVED @join__enumValue(graph: COMPOSEDB)
+  IN_REVIEW @join__enumValue(graph: COMPOSEDB)
+  SUSPENDED @join__enumValue(graph: COMPOSEDB)
+  NSFW @join__enumValue(graph: COMPOSEDB)
+  OK @join__enumValue(graph: COMPOSEDB)
+  OTHER @join__enumValue(graph: COMPOSEDB)
+}
+
+input AkashaReflectStreamModerationStatusValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: AkashaReflectStreamModerationStatus
+  notEqualTo: AkashaReflectStreamModerationStatus
+  in: [AkashaReflectStreamModerationStatus!]
+  notIn: [AkashaReflectStreamModerationStatus!]
+}
+
+input AkashaReflectStreamObjectFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  active: BooleanValueFilterInput
+  beamID: StringValueFilterInput
+  status: AkashaReflectStreamModerationStatusValueFilterInput
+  isReply: BooleanValueFilterInput
+  replyTo: StringValueFilterInput
+  createdAt: StringValueFilterInput
+  moderationID: StringValueFilterInput
+  reflectionID: StringValueFilterInput
+}
+
+input AkashaReflectStreamSortingInput
+@join__type(graph: COMPOSEDB)
+{
+  active: SortOrder
+  beamID: SortOrder
+  status: SortOrder
+  isReply: SortOrder
+  replyTo: SortOrder
+  createdAt: SortOrder
+  moderationID: SortOrder
+  reflectionID: SortOrder
+}
+
+type AppImageSource
+@join__type(graph: COMPOSEDB)
+{
+  src: URI!
+  width: Int
+  height: Int
+}
+
+input AppImageSourceInput
+@join__type(graph: COMPOSEDB)
+{
+  src: URI!
+  width: Int
+  height: Int
+}
+
+type AppLinkSource
+@join__type(graph: COMPOSEDB)
+{
+  href: URI!
+  label: String
+}
+
+input AppLinkSourceInput
+@join__type(graph: COMPOSEDB)
+{
+  href: URI!
+  label: String
+}
+
+type AppProviderValue
+@join__type(graph: COMPOSEDB)
+{
+  value: String!
+  property: String!
+  provider: String!
+}
+
+input AppProviderValueInput
+@join__type(graph: COMPOSEDB)
+{
+  value: String!
+  property: String!
+  provider: String!
+}
+
+type BeamBlockRecord
+@join__type(graph: COMPOSEDB)
+{
+  order: Int!
+  blockID: CeramicStreamID!
+}
+
+input BeamBlockRecordInput
+@join__type(graph: COMPOSEDB)
+{
+  order: Int!
+  blockID: CeramicStreamID!
+}
+
+type BeamEmbeddedType
+@join__type(graph: COMPOSEDB)
+{
+  label: String!
+  embeddedID: CeramicStreamID!
+}
+
+input BeamEmbeddedTypeInput
+@join__type(graph: COMPOSEDB)
+{
+  label: String!
+  embeddedID: CeramicStreamID!
+}
+
+type BeamLabeled
+@join__type(graph: COMPOSEDB)
+{
+  value: String!
+  labelType: String!
+}
+
+input BeamLabeledInput
+@join__type(graph: COMPOSEDB)
+{
+  value: String!
+  labelType: String!
+}
+
+type BlockLabeledValue
+@join__type(graph: COMPOSEDB)
+{
+  label: String!
+  value: String!
+  propertyType: String!
+}
+
+input BlockLabeledValueInput
+@join__type(graph: COMPOSEDB)
+{
+  label: String!
+  value: String!
+  propertyType: String!
+}
+
+input BooleanValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: Boolean
+}
+
+input CACAO_CAPABILITY
+@join__type(graph: STREAMS)
+{
+  h: CacaoHeader!
+  p: CacaoPayload!
+  s: CacaoSignature
+}
+
+input CacaoHeader
+@join__type(graph: STREAMS)
+{
+  t: CacaoHeaderT!
+}
+
+scalar CacaoHeaderT
+@join__type(graph: STREAMS)
+
+input CacaoPayload
+@join__type(graph: STREAMS)
+{
+  domain: String!
+  iss: String!
+  aud: String!
+  version: String!
+  nonce: String!
+  iat: String!
+  nbf: String
+  exp: String
+  statement: String
+  requestId: String
+  resources: [String]
+}
+
+input CacaoSignature
+@join__type(graph: STREAMS)
+{
+  t: CacaoSignatureT!
+  s: String!
+}
+
+scalar CacaoSignatureT
+@join__type(graph: STREAMS)
+
+type CeramicAccount implements Node
+@join__implements(graph: COMPOSEDB, interface: "Node")
+@join__type(graph: COMPOSEDB)
+{
+  """Globally unique identifier of the account (DID string)"""
+  id: ID!
+
+  """
+  Whether the Ceramic instance is currently authenticated with this account or not
+  """
+  isViewer: Boolean!
+  akashaApp(with: WithAkashaAppInput!): AkashaApp
+  akashaAppInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppInterfaceFiltersInput
+    sorting: AkashaAppInterfaceSortingInput
+  ): AkashaAppInterfaceConnection
+  akashaAppInterfaceListCount(filters: AkashaAppInterfaceFiltersInput): Int!
+  akashaAppList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppFiltersInput
+    sorting: AkashaAppSortingInput
+  ): AkashaAppConnection
+  akashaAppListCount(filters: AkashaAppFiltersInput): Int!
+  akashaAppRelease(with: WithAkashaAppReleaseInput!): AkashaAppRelease
+  akashaAppReleaseInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppReleaseInterfaceFiltersInput
+    sorting: AkashaAppReleaseInterfaceSortingInput
+  ): AkashaAppReleaseInterfaceConnection
+  akashaAppReleaseInterfaceListCount(filters: AkashaAppReleaseInterfaceFiltersInput): Int!
+  akashaAppReleaseList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppReleaseFiltersInput
+    sorting: AkashaAppReleaseSortingInput
+  ): AkashaAppReleaseConnection
+  akashaAppReleaseListCount(filters: AkashaAppReleaseFiltersInput): Int!
+  akashaAppsStream(with: WithAkashaAppsStreamInput!): AkashaAppsStream
+  akashaAppsStreamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppsStreamFiltersInput
+    sorting: AkashaAppsStreamSortingInput
+  ): AkashaAppsStreamConnection
+  akashaAppsStreamListCount(filters: AkashaAppsStreamFiltersInput): Int!
+  akashaBeamInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBeamInterfaceFiltersInput
+    sorting: AkashaBeamInterfaceSortingInput
+  ): AkashaBeamInterfaceConnection
+  akashaBeamInterfaceListCount(filters: AkashaBeamInterfaceFiltersInput): Int!
+  akashaBeamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBeamFiltersInput
+    sorting: AkashaBeamSortingInput
+  ): AkashaBeamConnection
+  akashaBeamListCount(filters: AkashaBeamFiltersInput): Int!
+  akashaBeamStream(with: WithAkashaBeamStreamInput!): AkashaBeamStream
+  akashaBeamStreamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBeamStreamFiltersInput
+    sorting: AkashaBeamStreamSortingInput
+  ): AkashaBeamStreamConnection
+  akashaBeamStreamListCount(filters: AkashaBeamStreamFiltersInput): Int!
+  akashaBlockStorage(with: WithAkashaBlockStorageInput!): AkashaBlockStorage
+  akashaBlockStorageList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBlockStorageFiltersInput
+    sorting: AkashaBlockStorageSortingInput
+  ): AkashaBlockStorageConnection
+  akashaBlockStorageListCount(filters: AkashaBlockStorageFiltersInput): Int!
+  akashaContentBlockInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaContentBlockInterfaceFiltersInput
+    sorting: AkashaContentBlockInterfaceSortingInput
+  ): AkashaContentBlockInterfaceConnection
+  akashaContentBlockInterfaceListCount(filters: AkashaContentBlockInterfaceFiltersInput): Int!
+  akashaContentBlockList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaContentBlockFiltersInput
+    sorting: AkashaContentBlockSortingInput
+  ): AkashaContentBlockConnection
+  akashaContentBlockListCount(filters: AkashaContentBlockFiltersInput): Int!
+  akashaContentBlockStream(with: WithAkashaContentBlockStreamInput!): AkashaContentBlockStream
+  akashaContentBlockStreamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaContentBlockStreamFiltersInput
+    sorting: AkashaContentBlockStreamSortingInput
+  ): AkashaContentBlockStreamConnection
+  akashaContentBlockStreamListCount(filters: AkashaContentBlockStreamFiltersInput): Int!
+  akashaFollow(with: WithAkashaFollowInput!): AkashaFollow
+  akashaFollowInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaFollowInterfaceFiltersInput
+    sorting: AkashaFollowInterfaceSortingInput
+  ): AkashaFollowInterfaceConnection
+  akashaFollowInterfaceListCount(filters: AkashaFollowInterfaceFiltersInput): Int!
+  akashaFollowList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaFollowFiltersInput
+    sorting: AkashaFollowSortingInput
+  ): AkashaFollowConnection
+  akashaFollowListCount(filters: AkashaFollowFiltersInput): Int!
+  akashaIndexStreamInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaIndexStreamInterfaceFiltersInput
+    sorting: AkashaIndexStreamInterfaceSortingInput
+  ): AkashaIndexStreamInterfaceConnection
+  akashaIndexStreamInterfaceListCount(filters: AkashaIndexStreamInterfaceFiltersInput): Int!
+  akashaIndexedStream(with: WithAkashaIndexedStreamInput!): AkashaIndexedStream
+  akashaIndexedStreamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaIndexedStreamFiltersInput
+    sorting: AkashaIndexedStreamSortingInput
+  ): AkashaIndexedStreamConnection
+  akashaIndexedStreamListCount(filters: AkashaIndexedStreamFiltersInput): Int!
+  akashaInterestsStream(with: WithAkashaInterestsStreamInput!): AkashaInterestsStream
+  akashaInterestsStreamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaInterestsStreamFiltersInput
+    sorting: AkashaInterestsStreamSortingInput
+  ): AkashaInterestsStreamConnection
+  akashaInterestsStreamListCount(filters: AkashaInterestsStreamFiltersInput): Int!
+  akashaProfile: AkashaProfile
+  akashaProfileInterests: AkashaProfileInterests
+  akashaProfileInterestsInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): AkashaProfileInterestsInterfaceConnection
+  akashaProfileInterestsInterfaceListCount: Int!
+  akashaProfileInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaProfileInterfaceFiltersInput
+    sorting: AkashaProfileInterfaceSortingInput
+  ): AkashaProfileInterfaceConnection
+  akashaProfileInterfaceListCount(filters: AkashaProfileInterfaceFiltersInput): Int!
+  akashaProfileStream(with: WithAkashaProfileStreamInput!): AkashaProfileStream
+  akashaProfileStreamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaProfileStreamFiltersInput
+    sorting: AkashaProfileStreamSortingInput
+  ): AkashaProfileStreamConnection
+  akashaProfileStreamListCount(filters: AkashaProfileStreamFiltersInput): Int!
+  akashaReflectInterfaceList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaReflectInterfaceFiltersInput
+    sorting: AkashaReflectInterfaceSortingInput
+  ): AkashaReflectInterfaceConnection
+  akashaReflectInterfaceListCount(filters: AkashaReflectInterfaceFiltersInput): Int!
+  akashaReflectList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaReflectFiltersInput
+    sorting: AkashaReflectSortingInput
+  ): AkashaReflectConnection
+  akashaReflectListCount(filters: AkashaReflectFiltersInput): Int!
+  akashaReflectStream(with: WithAkashaReflectStreamInput!): AkashaReflectStream
+  akashaReflectStreamList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaReflectStreamFiltersInput
+    sorting: AkashaReflectStreamSortingInput
+  ): AkashaReflectStreamConnection
+  akashaReflectStreamListCount(filters: AkashaReflectStreamFiltersInput): Int!
+}
+
+"""A Ceramic Commit ID"""
+scalar CeramicCommitID
+@join__type(graph: COMPOSEDB)
+@specifiedBy(url: "https://cips.ceramic.network/CIPs/cip-59#commitid")
+
+"""A Ceramic Stream ID"""
+scalar CeramicStreamID
+@join__type(graph: COMPOSEDB)
+@specifiedBy(url: "https://cips.ceramic.network/CIPs/cip-59#streamid")
+
+input CreateAkashaBeamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaBeamInput!
+  options: CreateOptionsInput
+  clientMutationId: String
+}
+
+type CreateAkashaBeamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBeam!
+  clientMutationId: String
+}
+
+input CreateAkashaContentBlockInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaContentBlockInput!
+  options: CreateOptionsInput
+  clientMutationId: String
+}
+
+type CreateAkashaContentBlockPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaContentBlock!
+  clientMutationId: String
+}
+
+input CreateAkashaProfileInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaProfileInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+input CreateAkashaProfileInterestsInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaProfileInterestsInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type CreateAkashaProfileInterestsPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfileInterests!
+  clientMutationId: String
+}
+
+type CreateAkashaProfilePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfile!
+  clientMutationId: String
+}
+
+input CreateAkashaReflectInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaReflectInput!
+  options: CreateOptionsInput
+  clientMutationId: String
+}
+
+type CreateAkashaReflectPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaReflect!
+  clientMutationId: String
+}
+
+input CreateOptionsInput
+@join__type(graph: COMPOSEDB)
+{
+  """Inform indexers if they should index this document or not"""
+  shouldIndex: Boolean
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+@join__type(graph: COMPOSEDB)
+
+"""
+A field whose value conforms to the standard DID format as specified in did-core: https://www.w3.org/TR/did-core/.
+"""
+scalar DID
+@join__type(graph: COMPOSEDB)
+@specifiedBy(url: "https://www.w3.org/TR/did-core/")
+
+input DID_JWS
+@join__type(graph: STREAMS)
+{
+  payload: String!
+  signatures: [JWS_Signature!]!
+}
+
+input EnableIndexingAkashaAppInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaAppPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaApp
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaAppReleaseInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaAppReleasePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaAppRelease
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaAppsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaAppsStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaAppsStream
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaBeamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaBeamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBeam
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaBeamStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaBeamStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBeamStream
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaBlockStorageInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaBlockStoragePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBlockStorage
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaContentBlockInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaContentBlockPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaContentBlock
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaContentBlockStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaContentBlockStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaContentBlockStream
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaFollowInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaFollowPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaFollow
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaIndexedStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaIndexedStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaIndexedStream
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaInterestsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaInterestsStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaInterestsStream
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaProfileInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaProfileInterestsInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaProfileInterestsPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfileInterests
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaProfilePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfile
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaProfileStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaProfileStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfileStream
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaReflectInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaReflectPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaReflect
+  clientMutationId: String
+}
+
+input EnableIndexingAkashaReflectStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  shouldIndex: Boolean!
+  clientMutationId: String
+}
+
+type EnableIndexingAkashaReflectStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaReflectStream
+  clientMutationId: String
+}
+
+type IndexAppPayload
+@join__type(graph: STREAMS)
+{
+  document: IndexAppPayloadDocument
+}
+
+type IndexAppPayloadDocument
+@join__type(graph: STREAMS)
+{
+  applicationID: String!
+}
+
+type IndexBeamPayload
+@join__type(graph: STREAMS)
+{
+  document: IndexBeamPayloadDocument
+}
+
+type IndexBeamPayloadDocument
+@join__type(graph: STREAMS)
+{
+  beamID: String!
+}
+
+type IndexContentBlockPayload
+@join__type(graph: STREAMS)
+{
+  document: IndexContentBlockPayloadDocument
+}
+
+type IndexContentBlockPayloadDocument
+@join__type(graph: STREAMS)
+{
+  blockID: String!
+}
+
+type IndexInterestPayload
+@join__type(graph: STREAMS)
+{
+  document: IndexInterestPayloadDocument
+}
+
+type IndexInterestPayloadDocument
+@join__type(graph: STREAMS)
+{
+  labelType: String!
+  value: String!
+}
+
+type IndexProfilePayload
+@join__type(graph: STREAMS)
+{
+  document: IndexProfilePayloadDocument
+}
+
+type IndexProfilePayloadDocument
+@join__type(graph: STREAMS)
+{
+  profileID: String!
+}
+
+type IndexReflectPayload
+@join__type(graph: STREAMS)
+{
+  document: IndexReflectPayloadDocument
+}
+
+type IndexReflectPayloadDocument
+@join__type(graph: STREAMS)
+{
+  reflectionID: String!
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  COMPOSEDB @join__graph(name: "composedb", url: "http://composedb:5112/graphql")
+  STREAMS @join__graph(name: "streams", url: "http://indexing:4000/graphql")
+}
+
+input JWS_Signature
+@join__type(graph: STREAMS)
+{
+  protected: String!
+  signature: String!
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Mutation
+@join__type(graph: COMPOSEDB)
+@join__type(graph: STREAMS)
+{
+  setAkashaApp(input: SetAkashaAppInput!): SetAkashaAppPayload @join__field(graph: COMPOSEDB)
+  updateAkashaApp(input: UpdateAkashaAppInput!): UpdateAkashaAppPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaApp(input: EnableIndexingAkashaAppInput!): EnableIndexingAkashaAppPayload @join__field(graph: COMPOSEDB)
+  setAkashaAppRelease(input: SetAkashaAppReleaseInput!): SetAkashaAppReleasePayload @join__field(graph: COMPOSEDB)
+  updateAkashaAppRelease(input: UpdateAkashaAppReleaseInput!): UpdateAkashaAppReleasePayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaAppRelease(input: EnableIndexingAkashaAppReleaseInput!): EnableIndexingAkashaAppReleasePayload @join__field(graph: COMPOSEDB)
+  setAkashaAppsStream(input: SetAkashaAppsStreamInput!): SetAkashaAppsStreamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaAppsStream(input: UpdateAkashaAppsStreamInput!): UpdateAkashaAppsStreamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaAppsStream(input: EnableIndexingAkashaAppsStreamInput!): EnableIndexingAkashaAppsStreamPayload @join__field(graph: COMPOSEDB)
+  createAkashaBeam(input: CreateAkashaBeamInput!): CreateAkashaBeamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaBeam(input: UpdateAkashaBeamInput!): UpdateAkashaBeamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaBeam(input: EnableIndexingAkashaBeamInput!): EnableIndexingAkashaBeamPayload @join__field(graph: COMPOSEDB)
+  setAkashaBeamStream(input: SetAkashaBeamStreamInput!): SetAkashaBeamStreamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaBeamStream(input: UpdateAkashaBeamStreamInput!): UpdateAkashaBeamStreamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaBeamStream(input: EnableIndexingAkashaBeamStreamInput!): EnableIndexingAkashaBeamStreamPayload @join__field(graph: COMPOSEDB)
+  setAkashaBlockStorage(input: SetAkashaBlockStorageInput!): SetAkashaBlockStoragePayload @join__field(graph: COMPOSEDB)
+  updateAkashaBlockStorage(input: UpdateAkashaBlockStorageInput!): UpdateAkashaBlockStoragePayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaBlockStorage(input: EnableIndexingAkashaBlockStorageInput!): EnableIndexingAkashaBlockStoragePayload @join__field(graph: COMPOSEDB)
+  createAkashaContentBlock(input: CreateAkashaContentBlockInput!): CreateAkashaContentBlockPayload @join__field(graph: COMPOSEDB)
+  updateAkashaContentBlock(input: UpdateAkashaContentBlockInput!): UpdateAkashaContentBlockPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaContentBlock(input: EnableIndexingAkashaContentBlockInput!): EnableIndexingAkashaContentBlockPayload @join__field(graph: COMPOSEDB)
+  setAkashaContentBlockStream(input: SetAkashaContentBlockStreamInput!): SetAkashaContentBlockStreamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaContentBlockStream(input: UpdateAkashaContentBlockStreamInput!): UpdateAkashaContentBlockStreamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaContentBlockStream(input: EnableIndexingAkashaContentBlockStreamInput!): EnableIndexingAkashaContentBlockStreamPayload @join__field(graph: COMPOSEDB)
+  setAkashaFollow(input: SetAkashaFollowInput!): SetAkashaFollowPayload @join__field(graph: COMPOSEDB)
+  updateAkashaFollow(input: UpdateAkashaFollowInput!): UpdateAkashaFollowPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaFollow(input: EnableIndexingAkashaFollowInput!): EnableIndexingAkashaFollowPayload @join__field(graph: COMPOSEDB)
+  setAkashaIndexedStream(input: SetAkashaIndexedStreamInput!): SetAkashaIndexedStreamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaIndexedStream(input: UpdateAkashaIndexedStreamInput!): UpdateAkashaIndexedStreamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaIndexedStream(input: EnableIndexingAkashaIndexedStreamInput!): EnableIndexingAkashaIndexedStreamPayload @join__field(graph: COMPOSEDB)
+  setAkashaInterestsStream(input: SetAkashaInterestsStreamInput!): SetAkashaInterestsStreamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaInterestsStream(input: UpdateAkashaInterestsStreamInput!): UpdateAkashaInterestsStreamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaInterestsStream(input: EnableIndexingAkashaInterestsStreamInput!): EnableIndexingAkashaInterestsStreamPayload @join__field(graph: COMPOSEDB)
+  setAkashaProfile(input: SetAkashaProfileInput!): SetAkashaProfilePayload @join__field(graph: COMPOSEDB)
+  createAkashaProfile(input: CreateAkashaProfileInput!): CreateAkashaProfilePayload @join__field(graph: COMPOSEDB) @deprecated(reason: "Replaced by the setAkashaProfile mutation, createAkashaProfile will be removed in a future version of ComposeDB.")
+  updateAkashaProfile(input: UpdateAkashaProfileInput!): UpdateAkashaProfilePayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaProfile(input: EnableIndexingAkashaProfileInput!): EnableIndexingAkashaProfilePayload @join__field(graph: COMPOSEDB)
+  setAkashaProfileInterests(input: SetAkashaProfileInterestsInput!): SetAkashaProfileInterestsPayload @join__field(graph: COMPOSEDB)
+  createAkashaProfileInterests(input: CreateAkashaProfileInterestsInput!): CreateAkashaProfileInterestsPayload @join__field(graph: COMPOSEDB) @deprecated(reason: "Replaced by the setAkashaProfileInterests mutation, createAkashaProfileInterests will be removed in a future version of ComposeDB.")
+  updateAkashaProfileInterests(input: UpdateAkashaProfileInterestsInput!): UpdateAkashaProfileInterestsPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaProfileInterests(input: EnableIndexingAkashaProfileInterestsInput!): EnableIndexingAkashaProfileInterestsPayload @join__field(graph: COMPOSEDB)
+  setAkashaProfileStream(input: SetAkashaProfileStreamInput!): SetAkashaProfileStreamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaProfileStream(input: UpdateAkashaProfileStreamInput!): UpdateAkashaProfileStreamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaProfileStream(input: EnableIndexingAkashaProfileStreamInput!): EnableIndexingAkashaProfileStreamPayload @join__field(graph: COMPOSEDB)
+  createAkashaReflect(input: CreateAkashaReflectInput!): CreateAkashaReflectPayload @join__field(graph: COMPOSEDB)
+  updateAkashaReflect(input: UpdateAkashaReflectInput!): UpdateAkashaReflectPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaReflect(input: EnableIndexingAkashaReflectInput!): EnableIndexingAkashaReflectPayload @join__field(graph: COMPOSEDB)
+  setAkashaReflectStream(input: SetAkashaReflectStreamInput!): SetAkashaReflectStreamPayload @join__field(graph: COMPOSEDB)
+  updateAkashaReflectStream(input: UpdateAkashaReflectStreamInput!): UpdateAkashaReflectStreamPayload @join__field(graph: COMPOSEDB)
+  enableIndexingAkashaReflectStream(input: EnableIndexingAkashaReflectStreamInput!): EnableIndexingAkashaReflectStreamPayload @join__field(graph: COMPOSEDB)
+  indexProfile(jws: DID_JWS, capability: CACAO_CAPABILITY): IndexProfilePayload @join__field(graph: STREAMS)
+  indexBeam(jws: DID_JWS, capability: CACAO_CAPABILITY): IndexBeamPayload @join__field(graph: STREAMS)
+  indexReflection(jws: DID_JWS, capability: CACAO_CAPABILITY): IndexReflectPayload @join__field(graph: STREAMS)
+  indexContentBlock(jws: DID_JWS, capability: CACAO_CAPABILITY): IndexContentBlockPayload @join__field(graph: STREAMS)
+  indexInterest(jws: DID_JWS, capability: CACAO_CAPABILITY): IndexInterestPayload @join__field(graph: STREAMS)
+  indexApp(jws: DID_JWS, capability: CACAO_CAPABILITY): IndexAppPayload @join__field(graph: STREAMS)
+}
+
+"""An object with an ID"""
+interface Node
+@join__type(graph: COMPOSEDB)
+{
+  """The id of the object."""
+  id: ID!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo
+@join__type(graph: COMPOSEDB)
+{
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+input PartialAkashaAppInput
+@join__type(graph: COMPOSEDB)
+{
+  meta: [AppProviderValueInput]
+  links: [AppLinkSourceInput]
+  gallery: [AppImageSourceInput]
+  logoImage: AppImageSourceInput
+  coverImage: AppImageSourceInput
+  description: String
+  contributors: [DID]
+  applicationType: AkashaAppApplicationType
+}
+
+input PartialAkashaAppReleaseInput
+@join__type(graph: COMPOSEDB)
+{
+  meta: [AppProviderValueInput]
+}
+
+input PartialAkashaAppsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean
+  status: AkashaAppsStreamModerationStatus
+}
+
+input PartialAkashaBeamInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: Boolean
+  active: Boolean
+}
+
+input PartialAkashaBeamStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean
+  status: AkashaBeamStreamModerationStatus
+}
+
+input PartialAkashaBlockStorageInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: AkashaBlockStorageBlockDef
+  active: Boolean
+}
+
+input PartialAkashaContentBlockInput
+@join__type(graph: COMPOSEDB)
+{
+  kind: AkashaContentBlockBlockDef
+  active: Boolean
+}
+
+input PartialAkashaContentBlockStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean
+  status: AkashaContentBlockStreamModerationStatus
+}
+
+input PartialAkashaFollowInput
+@join__type(graph: COMPOSEDB)
+{
+  isFollowing: Boolean
+}
+
+input PartialAkashaIndexedStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean
+  status: AkashaIndexedStreamModerationStatus
+  streamType: AkashaIndexedStreamStreamType
+}
+
+input PartialAkashaInterestsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean
+  status: AkashaInterestsStreamModerationStatus
+}
+
+input PartialAkashaProfileInput
+@join__type(graph: COMPOSEDB)
+{
+  name: String
+  links: [ProfileLinkSourceInput]
+  avatar: ProfileImageVersionsInput
+  background: ProfileImageVersionsInput
+  description: String
+}
+
+input PartialAkashaProfileInterestsInput
+@join__type(graph: COMPOSEDB)
+{
+  topics: [ProfileLabeledInput]
+}
+
+input PartialAkashaProfileStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean
+  status: AkashaProfileStreamModerationStatus
+}
+
+input PartialAkashaReflectInput
+@join__type(graph: COMPOSEDB)
+{
+  nsfw: Boolean
+  active: Boolean
+}
+
+input PartialAkashaReflectStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  active: Boolean
+  beamID: CeramicStreamID
+  status: AkashaReflectStreamModerationStatus
+  isReply: Boolean
+  replyTo: CeramicStreamID
+}
+
+type ProfileImageSource
+@join__type(graph: COMPOSEDB)
+{
+  src: URI!
+  width: Int!
+  height: Int!
+}
+
+input ProfileImageSourceInput
+@join__type(graph: COMPOSEDB)
+{
+  src: URI!
+  width: Int!
+  height: Int!
+}
+
+type ProfileImageVersions
+@join__type(graph: COMPOSEDB)
+{
+  default: ProfileImageSource!
+  alternatives: [ProfileImageSource]
+}
+
+input ProfileImageVersionsInput
+@join__type(graph: COMPOSEDB)
+{
+  default: ProfileImageSourceInput!
+  alternatives: [ProfileImageSourceInput]
+}
+
+type ProfileLabeled
+@join__type(graph: COMPOSEDB)
+{
+  value: String!
+  labelType: String!
+}
+
+input ProfileLabeledInput
+@join__type(graph: COMPOSEDB)
+{
+  value: String!
+  labelType: String!
+}
+
+type ProfileLinkSource
+@join__type(graph: COMPOSEDB)
+{
+  href: URI!
+  label: String
+}
+
+input ProfileLinkSourceInput
+@join__type(graph: COMPOSEDB)
+{
+  href: URI!
+  label: String
+}
+
+type Query
+@join__type(graph: COMPOSEDB)
+@join__type(graph: STREAMS)
+{
+  """Fetches objects given their IDs"""
+  nodes(
+    """The IDs of objects"""
+    ids: [ID!]!
+  ): [Node]! @join__field(graph: COMPOSEDB)
+
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node @join__field(graph: COMPOSEDB)
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount @join__field(graph: COMPOSEDB)
+  akashaAppIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppFiltersInput
+    sorting: AkashaAppSortingInput
+  ): AkashaAppConnection @join__field(graph: COMPOSEDB)
+  akashaAppCount(filters: AkashaAppFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaAppInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppInterfaceFiltersInput
+    sorting: AkashaAppInterfaceSortingInput
+  ): AkashaAppInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaAppInterfaceCount(filters: AkashaAppInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaAppReleaseIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppReleaseFiltersInput
+    sorting: AkashaAppReleaseSortingInput
+  ): AkashaAppReleaseConnection @join__field(graph: COMPOSEDB)
+  akashaAppReleaseCount(filters: AkashaAppReleaseFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaAppReleaseInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppReleaseInterfaceFiltersInput
+    sorting: AkashaAppReleaseInterfaceSortingInput
+  ): AkashaAppReleaseInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaAppReleaseInterfaceCount(filters: AkashaAppReleaseInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaAppsStreamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaAppsStreamFiltersInput
+    sorting: AkashaAppsStreamSortingInput
+  ): AkashaAppsStreamConnection @join__field(graph: COMPOSEDB)
+  akashaAppsStreamCount(filters: AkashaAppsStreamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaBeamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBeamFiltersInput
+    sorting: AkashaBeamSortingInput
+  ): AkashaBeamConnection @join__field(graph: COMPOSEDB)
+  akashaBeamCount(filters: AkashaBeamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaBeamInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBeamInterfaceFiltersInput
+    sorting: AkashaBeamInterfaceSortingInput
+  ): AkashaBeamInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaBeamInterfaceCount(filters: AkashaBeamInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaBeamStreamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBeamStreamFiltersInput
+    sorting: AkashaBeamStreamSortingInput
+  ): AkashaBeamStreamConnection @join__field(graph: COMPOSEDB)
+  akashaBeamStreamCount(filters: AkashaBeamStreamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaBlockStorageIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaBlockStorageFiltersInput
+    sorting: AkashaBlockStorageSortingInput
+  ): AkashaBlockStorageConnection @join__field(graph: COMPOSEDB)
+  akashaBlockStorageCount(filters: AkashaBlockStorageFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaContentBlockIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaContentBlockFiltersInput
+    sorting: AkashaContentBlockSortingInput
+  ): AkashaContentBlockConnection @join__field(graph: COMPOSEDB)
+  akashaContentBlockCount(filters: AkashaContentBlockFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaContentBlockInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaContentBlockInterfaceFiltersInput
+    sorting: AkashaContentBlockInterfaceSortingInput
+  ): AkashaContentBlockInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaContentBlockInterfaceCount(filters: AkashaContentBlockInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaContentBlockStreamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaContentBlockStreamFiltersInput
+    sorting: AkashaContentBlockStreamSortingInput
+  ): AkashaContentBlockStreamConnection @join__field(graph: COMPOSEDB)
+  akashaContentBlockStreamCount(filters: AkashaContentBlockStreamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaFollowIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaFollowFiltersInput
+    sorting: AkashaFollowSortingInput
+  ): AkashaFollowConnection @join__field(graph: COMPOSEDB)
+  akashaFollowCount(filters: AkashaFollowFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaFollowInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaFollowInterfaceFiltersInput
+    sorting: AkashaFollowInterfaceSortingInput
+  ): AkashaFollowInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaFollowInterfaceCount(filters: AkashaFollowInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaIndexStreamInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaIndexStreamInterfaceFiltersInput
+    sorting: AkashaIndexStreamInterfaceSortingInput
+  ): AkashaIndexStreamInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaIndexStreamInterfaceCount(filters: AkashaIndexStreamInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaIndexedStreamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaIndexedStreamFiltersInput
+    sorting: AkashaIndexedStreamSortingInput
+  ): AkashaIndexedStreamConnection @join__field(graph: COMPOSEDB)
+  akashaIndexedStreamCount(filters: AkashaIndexedStreamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaInterestsStreamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaInterestsStreamFiltersInput
+    sorting: AkashaInterestsStreamSortingInput
+  ): AkashaInterestsStreamConnection @join__field(graph: COMPOSEDB)
+  akashaInterestsStreamCount(filters: AkashaInterestsStreamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaProfileIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaProfileFiltersInput
+    sorting: AkashaProfileSortingInput
+  ): AkashaProfileConnection @join__field(graph: COMPOSEDB)
+  akashaProfileCount(filters: AkashaProfileFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaProfileInterestsIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): AkashaProfileInterestsConnection @join__field(graph: COMPOSEDB)
+  akashaProfileInterestsCount: Int! @join__field(graph: COMPOSEDB)
+  akashaProfileInterestsInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): AkashaProfileInterestsInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaProfileInterestsInterfaceCount: Int! @join__field(graph: COMPOSEDB)
+  akashaProfileInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaProfileInterfaceFiltersInput
+    sorting: AkashaProfileInterfaceSortingInput
+  ): AkashaProfileInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaProfileInterfaceCount(filters: AkashaProfileInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaProfileStreamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaProfileStreamFiltersInput
+    sorting: AkashaProfileStreamSortingInput
+  ): AkashaProfileStreamConnection @join__field(graph: COMPOSEDB)
+  akashaProfileStreamCount(filters: AkashaProfileStreamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaReflectIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaReflectFiltersInput
+    sorting: AkashaReflectSortingInput
+  ): AkashaReflectConnection @join__field(graph: COMPOSEDB)
+  akashaReflectCount(filters: AkashaReflectFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaReflectInterfaceIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaReflectInterfaceFiltersInput
+    sorting: AkashaReflectInterfaceSortingInput
+  ): AkashaReflectInterfaceConnection @join__field(graph: COMPOSEDB)
+  akashaReflectInterfaceCount(filters: AkashaReflectInterfaceFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  akashaReflectStreamIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: AkashaReflectStreamFiltersInput
+    sorting: AkashaReflectStreamSortingInput
+  ): AkashaReflectStreamConnection @join__field(graph: COMPOSEDB)
+  akashaReflectStreamCount(filters: AkashaReflectStreamFiltersInput): Int! @join__field(graph: COMPOSEDB)
+  serviceStatus: String @join__field(graph: STREAMS)
+}
+
+type ReflectProviderValue
+@join__type(graph: COMPOSEDB)
+{
+  label: String!
+  value: String!
+  propertyType: String!
+}
+
+input ReflectProviderValueInput
+@join__type(graph: COMPOSEDB)
+{
+  label: String!
+  value: String!
+  propertyType: String!
+}
+
+input SetAkashaAppInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaAppInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaAppPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaApp!
+  clientMutationId: String
+}
+
+input SetAkashaAppReleaseInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaAppReleaseInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaAppReleasePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaAppRelease!
+  clientMutationId: String
+}
+
+input SetAkashaAppsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaAppsStreamInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaAppsStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaAppsStream!
+  clientMutationId: String
+}
+
+input SetAkashaBeamStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaBeamStreamInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaBeamStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBeamStream!
+  clientMutationId: String
+}
+
+input SetAkashaBlockStorageInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaBlockStorageInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaBlockStoragePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBlockStorage!
+  clientMutationId: String
+}
+
+input SetAkashaContentBlockStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaContentBlockStreamInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaContentBlockStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaContentBlockStream!
+  clientMutationId: String
+}
+
+input SetAkashaFollowInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaFollowInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaFollowPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaFollow!
+  clientMutationId: String
+}
+
+input SetAkashaIndexedStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaIndexedStreamInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaIndexedStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaIndexedStream!
+  clientMutationId: String
+}
+
+input SetAkashaInterestsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaInterestsStreamInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaInterestsStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaInterestsStream!
+  clientMutationId: String
+}
+
+input SetAkashaProfileInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaProfileInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+input SetAkashaProfileInterestsInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaProfileInterestsInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaProfileInterestsPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfileInterests!
+  clientMutationId: String
+}
+
+type SetAkashaProfilePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfile!
+  clientMutationId: String
+}
+
+input SetAkashaProfileStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaProfileStreamInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaProfileStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfileStream!
+  clientMutationId: String
+}
+
+input SetAkashaReflectStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  content: AkashaReflectStreamInput!
+  options: SetOptionsInput
+  clientMutationId: String
+}
+
+type SetAkashaReflectStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaReflectStream!
+  clientMutationId: String
+}
+
+input SetOptionsInput
+@join__type(graph: COMPOSEDB)
+{
+  """Inform indexers if they should index this document or not"""
+  shouldIndex: Boolean
+
+  """
+  Maximum amount of time to lookup the stream over the network, in seconds - see https://developers.ceramic.network/reference/typescript/interfaces/_ceramicnetwork_common.CreateOpts.html#syncTimeoutSeconds
+  """
+  syncTimeout: Int
+}
+
+enum SortOrder
+@join__type(graph: COMPOSEDB)
+{
+  ASC @join__enumValue(graph: COMPOSEDB)
+  DESC @join__enumValue(graph: COMPOSEDB)
+}
+
+input StringValueFilterInput
+@join__type(graph: COMPOSEDB)
+{
+  isNull: Boolean
+  equalTo: String
+  notEqualTo: String
+  in: [String!]
+  notIn: [String!]
+  lessThan: String
+  lessThanOrEqualTo: String
+  greaterThan: String
+  greaterThanOrEqualTo: String
+}
+
+input UpdateAkashaAppInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaAppInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaAppPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaApp!
+  clientMutationId: String
+}
+
+input UpdateAkashaAppReleaseInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaAppReleaseInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaAppReleasePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaAppRelease!
+  clientMutationId: String
+}
+
+input UpdateAkashaAppsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaAppsStreamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaAppsStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaAppsStream!
+  clientMutationId: String
+}
+
+input UpdateAkashaBeamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaBeamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaBeamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBeam!
+  clientMutationId: String
+}
+
+input UpdateAkashaBeamStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaBeamStreamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaBeamStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBeamStream!
+  clientMutationId: String
+}
+
+input UpdateAkashaBlockStorageInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaBlockStorageInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaBlockStoragePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaBlockStorage!
+  clientMutationId: String
+}
+
+input UpdateAkashaContentBlockInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaContentBlockInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaContentBlockPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaContentBlock!
+  clientMutationId: String
+}
+
+input UpdateAkashaContentBlockStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaContentBlockStreamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaContentBlockStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaContentBlockStream!
+  clientMutationId: String
+}
+
+input UpdateAkashaFollowInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaFollowInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaFollowPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaFollow!
+  clientMutationId: String
+}
+
+input UpdateAkashaIndexedStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaIndexedStreamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaIndexedStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaIndexedStream!
+  clientMutationId: String
+}
+
+input UpdateAkashaInterestsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaInterestsStreamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaInterestsStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaInterestsStream!
+  clientMutationId: String
+}
+
+input UpdateAkashaProfileInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaProfileInput!
+  clientMutationId: String
+}
+
+input UpdateAkashaProfileInterestsInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaProfileInterestsInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaProfileInterestsPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfileInterests!
+  clientMutationId: String
+}
+
+type UpdateAkashaProfilePayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfile!
+  clientMutationId: String
+}
+
+input UpdateAkashaProfileStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaProfileStreamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaProfileStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaProfileStream!
+  clientMutationId: String
+}
+
+input UpdateAkashaReflectInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaReflectInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaReflectPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaReflect!
+  clientMutationId: String
+}
+
+input UpdateAkashaReflectStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  id: ID!
+  options: UpdateOptionsInput
+  content: PartialAkashaReflectStreamInput!
+  clientMutationId: String
+}
+
+type UpdateAkashaReflectStreamPayload
+@join__type(graph: COMPOSEDB)
+{
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: AkashaReflectStream!
+  clientMutationId: String
+}
+
+input UpdateOptionsInput
+@join__type(graph: COMPOSEDB)
+{
+  """
+  Fully replace the document contents instead of performing a shallow merge
+  """
+  replace: Boolean = false
+
+  """Inform indexers if they should index this document or not"""
+  shouldIndex: Boolean
+
+  """Only perform mutation if the document matches the provided version"""
+  version: CeramicCommitID
+}
+
+"""
+A field whose value conforms to the standard Uniform Resource Identifier (URI) format as specified in RFC3986.
+"""
+scalar URI
+@join__type(graph: COMPOSEDB)
+@specifiedBy(url: "https://www.ietf.org/rfc/rfc3986.txt")
+
+input WithAkashaAppInput
+@join__type(graph: COMPOSEDB)
+{
+  name: String!
+}
+
+input WithAkashaAppReleaseInput
+@join__type(graph: COMPOSEDB)
+{
+  applicationID: CeramicStreamID!
+  version: String!
+}
+
+input WithAkashaAppsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  applicationID: CeramicStreamID!
+}
+
+input WithAkashaBeamStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  beamID: CeramicStreamID!
+}
+
+input WithAkashaBlockStorageInput
+@join__type(graph: COMPOSEDB)
+{
+  blockID: CeramicStreamID!
+}
+
+input WithAkashaContentBlockStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  blockID: CeramicStreamID!
+}
+
+input WithAkashaFollowInput
+@join__type(graph: COMPOSEDB)
+{
+  profileID: CeramicStreamID!
+}
+
+input WithAkashaIndexedStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  stream: CeramicStreamID!
+  indexType: String!
+  indexValue: String!
+}
+
+input WithAkashaInterestsStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  labelType: String!
+  value: String!
+}
+
+input WithAkashaProfileStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  profileID: CeramicStreamID!
+}
+
+input WithAkashaReflectStreamInput
+@join__type(graph: COMPOSEDB)
+{
+  reflectionID: CeramicStreamID!
+}
