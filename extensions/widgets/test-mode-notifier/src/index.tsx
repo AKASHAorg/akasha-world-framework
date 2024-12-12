@@ -5,8 +5,5 @@ export const register = (opts: IntegrationRegistrationOptions): WidgetInterface 
   return {
     mountsIn: opts.layoutSlots?.cookieWidgetSlotId,
     loadingFn: () => import('./components'),
-    activeWhen: () => {
-      return true;
-    },
   };
 };

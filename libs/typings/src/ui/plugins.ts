@@ -139,7 +139,7 @@ export type LocalReleaseData = {
   source: string;
   appName: string;
   applicationType: AkashaAppApplicationType;
-  appId: string;
+  applicationID: string;
 };
 
 /**
@@ -160,6 +160,8 @@ export interface ITestModeLoaderPlugin {
   subscribe(
     listener: (status: { currentStatus?: symbol; errorStatus?: symbol }) => void,
   ): () => void;
+
+  getTestSessionKey(): string;
 }
 
 export type CorePlugins = {
