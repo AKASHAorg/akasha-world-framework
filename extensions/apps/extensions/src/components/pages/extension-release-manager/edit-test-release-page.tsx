@@ -10,18 +10,16 @@ import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import ExtensionReleasePublishForm from '@akashaorg/design-system-components/lib/components/ExtensionReleasePublishForm';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../../constants';
-import { useGetAppsByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
 import { NetworkStatus } from '@apollo/client';
-import {
-  selectAppId,
-  selectApplicationType,
-  selectAppName,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
 type EditTestReleasePageProps = {
   extensionId: string;
+  networkStatus: NetworkStatus;
+  extensionName?: string;
+  extensionType?: AkashaAppApplicationType;
 };
 
 const getDraftExtension = (extensionId: string, authenticatedDID: string) => {
@@ -38,7 +36,12 @@ const getDraftExtension = (extensionId: string, authenticatedDID: string) => {
   }
 };
 
-export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extensionId }) => {
+export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
+  extensionId,
+  extensionName,
+  extensionType,
+  networkStatus,
+}) => {
   const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
 
@@ -48,7 +51,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
   const [isLoadingTestMode, setIsLoadingTestMode] = useState(false);
 
   const {
-    data: { authenticatedDID, isAuthenticating },
+    data: { authenticatedDID },
   } = useAkashaStore();
 
   const showErrorNotification = React.useCallback((title: string) => {
@@ -74,14 +77,6 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
   const draftExtension = getDraftExtension(extensionId, authenticatedDID);
   const draftExtensionError = draftExtension instanceof Error || false;
 
-  const extensionDataReq = useGetAppsByIdQuery({
-    variables: {
-      id: extensionId,
-    },
-    fetchPolicy: 'cache-first',
-    skip: !authenticatedDID && isAuthenticating,
-  });
-
   const baseAppInfo = useMemo(() => {
     if (draftExtension) {
       return {
@@ -90,16 +85,15 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({ extens
         applicationType: draftExtension.applicationType,
       };
     }
-
-    if (extensionDataReq.networkStatus === NetworkStatus.ready && extensionDataReq.data) {
-      // select app data
+    // if a published extension exists for this id use the data from it
+    if (networkStatus === NetworkStatus.ready && extensionName && extensionType) {
       return {
-        id: selectAppId(extensionDataReq.data),
-        name: selectAppName(extensionDataReq.data),
-        applicationType: selectApplicationType(extensionDataReq.data),
+        id: extensionId,
+        name: extensionName,
+        applicationType: extensionType,
       };
     }
-  }, [draftExtension, extensionDataReq.data, extensionDataReq.networkStatus]);
+  }, [draftExtension, networkStatus, extensionName, extensionType, extensionId]);
 
   useEffect(() => {
     if (draftExtensionError) {

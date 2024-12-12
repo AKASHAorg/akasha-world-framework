@@ -14,9 +14,8 @@ import ExtensionEditPublishedForm, {
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { useNavigate } from '@tanstack/react-router';
 import getSDK from '@akashaorg/core-sdk';
-import { ExtType } from '../../app-routes';
 import { selectAppData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
-import { MAX_GALLERY_IMAGES } from '../../../constants';
+import { ExtType, MAX_GALLERY_IMAGES } from '../../../constants';
 import { AtomContext, formDefaultData } from './main-page';
 import { useAtom } from 'jotai';
 import { AppImageSource } from '@akashaorg/typings/lib/sdk/graphql-types-new';

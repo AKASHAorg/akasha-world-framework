@@ -262,7 +262,13 @@ export const MyExtensionsPage: React.FC<unknown> = () => {
               const extensionData = allMyExtensions[itemIndex];
               return (
                 <ExtensionElement
-                  extensionData={extensionData}
+                  extensionId={extensionData?.id}
+                  extensionName={extensionData?.name}
+                  extensionDisplayName={extensionData?.displayName}
+                  extensionDescription={extensionData?.description}
+                  extensionApplicationType={extensionData?.applicationType}
+                  extensionLogoImage={extensionData?.logoImage}
+                  isExtensionLocalDraft={extensionData?.localDraft}
                   showDivider={itemIndex < allMyExtensions.length - 1}
                   filter={selectedStatus}
                   filterShowAllOptionValue={extensionStatusMenuItems[0]}
