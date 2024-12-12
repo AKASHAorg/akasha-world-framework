@@ -149,7 +149,6 @@ export class TestModeLoader implements ITestModeLoaderPlugin {
         try {
           if (!extensions.find(ext => ext.appName === localReleaseData.appName)) {
             extensions.push(localReleaseData);
-            console.log(extensions, '<<< exts');
             sessionStorage.setItem(this.getTestSessionKey(), JSON.stringify(extensions));
           }
         } catch (err) {
