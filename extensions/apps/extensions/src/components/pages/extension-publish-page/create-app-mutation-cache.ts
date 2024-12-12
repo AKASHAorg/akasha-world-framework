@@ -32,6 +32,7 @@ export async function createAppMutationCache({ cache, authenticatedDID, document
       gallery: null,
       meta: null,
       links: [],
+      nsfw: false,
       createdAt: new Date().toISOString(),
     },
     ...apps,

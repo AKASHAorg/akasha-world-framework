@@ -12,6 +12,7 @@ import ExtensionReleasePublishForm from '@akashaorg/design-system-components/lib
 import { useSetAppReleaseMutation } from '@akashaorg/ui-awf-hooks/lib/generated';
 import getSDK from '@akashaorg/core-sdk';
 import { PROPERTY, PROVIDER } from '../../../constants';
+import { createReleaseMutationCache } from './create-release-mutation-cache';
 
 type ExtensionReleasePublishPageProps = {
   extensionId: string;
@@ -34,6 +35,20 @@ export const ExtensionReleasePublishPage: React.FC<ExtensionReleasePublishPagePr
 
   const [setAppReleaseMutation, { loading }] = useSetAppReleaseMutation({
     context: { source: sdk.current.services.gql.contextSources.composeDB },
+    update: (
+      cache,
+      {
+        data: {
+          setAkashaAppRelease: { document },
+        },
+      },
+    ) => {
+      createReleaseMutationCache({
+        cache,
+        document,
+        applicationID: extensionId,
+      });
+    },
     onCompleted: data => {
       navigate({
         to: `/release-manager/$extensionId/release-info/$releaseId`,
