@@ -41,7 +41,7 @@ export type TextProps = PropsWithChildren<
       selectable: boolean;
       customStyle: string;
     } & AriaAttributes &
-      Omit<HTMLAttributes<Heading>, 'color'>
+      Omit<HTMLAttributes<Heading>, 'color' | 'onClick'>
   >
 >;
 
