@@ -35,11 +35,11 @@ export const settingsItems: ISettingsItem[] = [
     label: 'NSFW Content',
     clickable: true,
   },
+  {
+    label: 'Notifications',
+    clickable: true,
+  },
   // disable these until they are used
-  // {
-  //  label: 'Notifications',
-  //  clickable: true,
-  // },
   // {
   //   label: 'Integrations',
   //   clickable: false,

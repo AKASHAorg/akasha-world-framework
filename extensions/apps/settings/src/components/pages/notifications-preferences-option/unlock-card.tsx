@@ -4,9 +4,7 @@ import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
-import {
-  Lock,
-} from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+import { Lock } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 
 export interface IUnlockCardProps {

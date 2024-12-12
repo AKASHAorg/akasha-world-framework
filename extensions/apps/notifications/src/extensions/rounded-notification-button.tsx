@@ -1,28 +1,32 @@
 import React from 'react';
 import ReactDOMClient from 'react-dom/client';
 import singleSpaReact from 'single-spa-react';
-import { useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useNotifications, useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { BellAlert } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
+
 import {
   NotificationEvents,
   type IRootComponentProps,
   type UIEventData,
 } from '@akashaorg/typings/lib/ui';
 import {
-  BellAlertIcon,
   BellIcon,
   BellSnoozeIcon,
   ExclamationTriangleIcon,
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
+import getSDK from '@akashaorg/core-sdk';
+import { NOTIFICATION_EVENTS } from '@akashaorg/typings/lib/sdk';
 
 const RoundedNotificationButton = () => {
+  const sdk = getSDK();
+
   const { getCorePlugins, uiEvents } = useRootComponentProps();
   const navigateTo = React.useRef(getCorePlugins().routing.navigateTo);
   const uiEventsRef = React.useRef(uiEvents);
   const [snoozeNotifications, setSnoozeNotifications] = React.useState(false);
-  // Not implemented yet.
-  const hasNewNotifications = false;
+  const [hasNewNotifications, setHasNewNotifications] = React.useState(false);
   // check if snooze notification option has already been set
   React.useEffect(() => {
     if (window.localStorage) {
@@ -49,6 +53,50 @@ const RoundedNotificationButton = () => {
     };
   }, []);
 
+  // Check new notificaitons and set up listener for upcoming notificaitons
+  React.useEffect(() => {
+    let subSDK;
+    const init = async () => {
+      await sdk.services.common.notification.initialize({ readonly: true }); // Init client
+
+      const notifications = await sdk.services.common.notification.getNotifications(
+        1,
+        1,
+        undefined,
+        false,
+      );
+
+      const hasNew = notifications?.some(n => n.isUnread);
+      setHasNewNotifications(hasNew);
+
+      subSDK = sdk.api.globalChannel.subscribe({
+        next: resp => {
+          switch (resp.event) {
+            case NOTIFICATION_EVENTS.UNREAD_NOTIFICATIONS_CLEARED:
+              setHasNewNotifications(false);
+              break;
+
+            case NOTIFICATION_EVENTS.NEW_NOTIFICATIONS:
+              setHasNewNotifications(true);
+              break;
+            default:
+              break;
+          }
+        },
+      });
+
+      await sdk.services.common.notification.listenToNotificationEvents();
+    };
+
+    init();
+
+    return () => {
+      if (subSDK) {
+        subSDK.unsubscribe();
+      }
+    };
+  }, [sdk.api.globalChannel, sdk.services.common.notification]);
+
   const handleNotificationClick = React.useCallback(() => {
     navigateTo.current({
       appName: '@akashaorg/app-notifications',
@@ -60,7 +108,7 @@ const RoundedNotificationButton = () => {
     if (snoozeNotifications) {
       return <BellSnoozeIcon />;
     }
-    return hasNewNotifications ? <BellAlertIcon /> : <BellIcon />;
+    return hasNewNotifications ? <BellAlert /> : <BellIcon />;
   }, [hasNewNotifications, snoozeNotifications]);
 
   return (

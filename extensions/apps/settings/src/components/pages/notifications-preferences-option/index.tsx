@@ -10,13 +10,14 @@ import appRoutes, { PREFERENCES } from '../../../routes';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import getSDK from '@akashaorg/core-sdk';
-import { UserSettingType } from '@akashaorg/core-sdk/src/common/notification/notification-schemas';
 import { UserSetting } from '@pushprotocol/restapi/src/lib';
 import AntennaSetting from './antenna-setting';
 import UnlockCard from './unlock-card';
 import ProfileSetting from './profile-setting';
 import EnableAllSetting from './enable-all-setting';
 import { findAppIndex, preferencesObjectFactory } from './utils';
+import LoadingSettingsPlaceholder from './loading-settings-placeholder';
+import { UserSettingType } from '@akashaorg/typings/lib/sdk';
 
 export enum AppName {
   ANTENNA = 'Antenna App',
@@ -24,13 +25,14 @@ export enum AppName {
   VIBES = 'Vibes App',
 }
 
-const DEFAULT_PREFERENCES: UserSettingType[] = preferencesObjectFactory(true); // Default setting on
+const DEFAULT_PREFERENCES: UserSettingType[] = preferencesObjectFactory(false);
 const ANTENNA_ARR_INDEX = findAppIndex(AppName.ANTENNA, DEFAULT_PREFERENCES);
 const PROFILE_ARR_INDEX = findAppIndex(AppName.PROFILE, DEFAULT_PREFERENCES);
 
 const NotificationsPreferencesOption: React.FC = () => {
   const sdk = getSDK();
-  const { notificationsEnabled, waitingForSignature, enableNotifications } = useNotifications();
+  const { notificationsEnabled, waitingForSignature, readOnlyMode, enableNotifications } =
+    useNotifications();
   const { baseRouteName, uiEvents, getCorePlugins } = useRootComponentProps();
   const _uiEvents = React.useRef(uiEvents);
   const navigateTo = getCorePlugins().routing.navigateTo;
@@ -43,16 +45,18 @@ const NotificationsPreferencesOption: React.FC = () => {
   const [preferences, setPreferences] = useState<UserSettingType[]>(DEFAULT_PREFERENCES);
   const [enableAllChecked, setEnableAllChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (notificationsEnabled) {
-      sdk.services.common.notification.getSettingsOfUser().then(preferences => {
-        if (preferences) {
-          setPreferences(preferences);
+    if ((notificationsEnabled || readOnlyMode) && initialLoading) {
+      sdk.services.common.notification.getSettingsOfUser().then(fetchedPreferences => {
+        if (fetchedPreferences) {
+          setPreferences(fetchedPreferences);
         }
+        setInitialLoading(false);
       });
     }
-  }, [notificationsEnabled]);
+  }, [sdk.services.common.notification, notificationsEnabled, readOnlyMode, initialLoading]);
 
   useEffect(() => {
     setEnableAllChecked(
@@ -92,7 +96,7 @@ const NotificationsPreferencesOption: React.FC = () => {
 
   const handleSetPreference = (value: boolean, index: number) => {
     setPreferences(prevState =>
-      prevState.map((item, idx) => (idx === index ? { ...item, enabled: value } : item)),
+      prevState?.map((item, idx) => (idx === index ? { ...item, enabled: value } : item)),
     );
   };
 
@@ -157,15 +161,21 @@ const NotificationsPreferencesOption: React.FC = () => {
           />
           <Text variant="h6">{t('Default Extensions')}</Text>
 
-          <ProfileSetting
-            isSelected={preferences[PROFILE_ARR_INDEX].enabled}
-            onChange={e => handleSetPreference(e.target.checked, PROFILE_ARR_INDEX)}
-          />
+          {initialLoading ? (
+            <LoadingSettingsPlaceholder />
+          ) : (
+            <>
+              <ProfileSetting
+                isSelected={preferences[PROFILE_ARR_INDEX].enabled}
+                onChange={e => handleSetPreference(e.target.checked, PROFILE_ARR_INDEX)}
+              />
 
-          <AntennaSetting
-            isSelected={preferences[ANTENNA_ARR_INDEX].enabled}
-            onChange={e => handleSetPreference(e.target.checked, ANTENNA_ARR_INDEX)}
-          />
+              <AntennaSetting
+                isSelected={preferences[ANTENNA_ARR_INDEX].enabled}
+                onChange={e => handleSetPreference(e.target.checked, ANTENNA_ARR_INDEX)}
+              />
+            </>
+          )}
         </Stack>
 
         {/* Buttons */}

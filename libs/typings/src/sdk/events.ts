@@ -26,6 +26,8 @@ export enum WEB3_EVENTS {
 
 export enum NOTIFICATION_EVENTS {
   SUBSCRIPTION_NOT_ACCEPTED = '#notification#subscriptionNotAccepted',
+  UNREAD_NOTIFICATIONS_CLEARED = '#unreadNotificationsCleared',
+  NEW_NOTIFICATIONS = '#newNotifications',
 }
 
 export enum PROFILE_EVENTS {
