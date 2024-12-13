@@ -275,7 +275,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
           )}
           <Stack direction="row" align="center" spacing="gap-x-1.5">
             <Stack
-              customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status)}`}
+              customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(isExtensionLocalDraft, appStreamStatus)}`}
             />
             <Text variant="footnotes2" weight="normal">
               {getExtensionStatus(isExtensionLocalDraft, appStreamStatus)}
