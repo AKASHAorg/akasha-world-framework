@@ -12,12 +12,13 @@ import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
 import { useAkashaStore, useDismissedCard, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import {
-  useGetAppsByIdQuery,
-  useGetAppsReleasesQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated';
+import { useGetAppsReleasesQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../../constants';
-import { SortOrder } from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import {
+  AkashaAppApplicationType,
+  AppImageSource,
+  SortOrder,
+} from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
 import { ExtensionElement } from '../my-extensions/extension-element';
 import {
@@ -29,15 +30,32 @@ import { formatDate } from '@akashaorg/design-system-core/lib/utils';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import { ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
+import { ApolloError, NetworkStatus } from '@apollo/client';
 
 const ENTRY_HEIGHT = 82;
 
 type ExtensionReleaseManagerPageProps = {
   extensionId: string;
+  extensionName?: string;
+  extensionDisplayName?: string;
+  extensionDescription?: string;
+  extensionApplicationType?: AkashaAppApplicationType;
+  extensionLogoImage?: AppImageSource;
+  networkStatus?: NetworkStatus;
+  extensionDataReqErr?: ApolloError;
+  extensionDataReqLoading?: boolean;
 };
 
 export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPageProps> = ({
   extensionId,
+  extensionName,
+  extensionDisplayName,
+  extensionDescription,
+  extensionApplicationType,
+  extensionLogoImage,
+  networkStatus,
+  extensionDataReqErr,
+  extensionDataReqLoading,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('app-extensions');
@@ -91,24 +109,32 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
     }
   }, [authenticatedDID, extensionId, showErrorNotification]);
 
-  const {
-    data: appsByIdReq,
-    loading: loadingAppsByIdQuery,
-    error: appsByIdError,
-  } = useGetAppsByIdQuery({
-    variables: { id: extensionId },
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-    skip: draftExtension.loaded && !!draftExtension.data,
-  });
-
-  const extensionData = useMemo(() => {
-    const publishedAppData = appsByIdReq?.node;
-    if (publishedAppData && 'applicationType' in publishedAppData) {
-      return publishedAppData;
+  const baseAppInfo = useMemo(() => {
+    // if a published extension exists for this id use the data from it
+    if (networkStatus === NetworkStatus.ready && extensionName && extensionApplicationType) {
+      return {
+        id: extensionId,
+        name: extensionName,
+        displayName: extensionDisplayName,
+        description: extensionDescription,
+        logoImage: extensionLogoImage,
+        applicationType: extensionApplicationType,
+        localDraft: false,
+      };
     }
-    return draftExtension.data;
-  }, [appsByIdReq?.node, draftExtension]);
+    if (draftExtension?.data) {
+      return draftExtension.data;
+    }
+  }, [
+    networkStatus,
+    extensionName,
+    extensionApplicationType,
+    draftExtension,
+    extensionId,
+    extensionDisplayName,
+    extensionDescription,
+    extensionLogoImage,
+  ]);
 
   const draftReleases = useMemo(() => {
     try {
@@ -191,15 +217,17 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
   };
 
   const handleClickPublishReleaseButton = () => {
-    appsByIdReq?.node ? handlePublishReleaseNav() : setShowModal(true);
+    networkStatus === NetworkStatus.ready && extensionName
+      ? handlePublishReleaseNav()
+      : setShowModal(true);
   };
 
-  if (appsByIdError) {
+  if (extensionDataReqErr) {
     return (
       <ErrorLoader
         type="script-error"
         title={t('Error loading extension data')}
-        details={appsByIdError.message}
+        details={extensionDataReqErr.message}
       />
     );
   }
@@ -258,14 +286,22 @@ export const ExtensionReleaseManagerPage: React.FC<ExtensionReleaseManagerPagePr
           {t('Release Manager')}
         </Text>
         <Card padding={8} background={{ light: 'grey9', dark: 'grey2' }}>
-          {loadingAppsByIdQuery && (
+          {extensionDataReqLoading && (
             <Stack align="center" justify="center" fullWidth customStyle="h-full">
               <Spinner />
             </Stack>
           )}
-          {!loadingAppsByIdQuery && (
+          {!extensionDataReqLoading && (
             <Stack customStyle="w-0 min-w-full" padding={0}>
-              <ExtensionElement extensionData={extensionData as Extension} />
+              <ExtensionElement
+                extensionId={baseAppInfo?.id}
+                extensionName={baseAppInfo?.name}
+                extensionDisplayName={baseAppInfo?.displayName}
+                extensionDescription={baseAppInfo?.description}
+                extensionApplicationType={baseAppInfo?.applicationType}
+                extensionLogoImage={baseAppInfo?.logoImage}
+                isExtensionLocalDraft={baseAppInfo?.localDraft}
+              />
             </Stack>
           )}
         </Card>

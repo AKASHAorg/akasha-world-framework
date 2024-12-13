@@ -1,5 +1,12 @@
-import React from 'react';
-import { createRoute, createRouter, redirect, CatchBoundary } from '@tanstack/react-router';
+import React, { Suspense } from 'react';
+import {
+  createRoute,
+  createRouter,
+  redirect,
+  CatchBoundary,
+  defer,
+  Await,
+} from '@tanstack/react-router';
 import { ICreateRouter, IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import {
   ExplorePage,
@@ -12,14 +19,6 @@ import {
   PostExtensionCreationPage,
   InstallExtensionPage,
 } from '../pages';
-import {
-  ExtensionEditMainPage,
-  ExtensionEditStep1Page,
-  ExtensionEditStep2Page,
-  ExtensionEditStep3Page,
-  ExtensionEditContributorsPage,
-  ExtensionGalleryManagerPage,
-} from '../pages/extension-edit-page';
 import { ExtensionPublishPage } from '../pages/extension-publish-page';
 import {
   ExtensionReleaseManagerPage,
@@ -29,14 +28,24 @@ import {
 } from '../pages/extension-release-manager';
 import { PostPublishPage } from '../pages/post-publish-page';
 
-import { DEV_MODE_KEY } from '../../constants';
+import { DEV_MODE_KEY, ExtSearch, ExtType } from '../../constants';
 import { ExtensionInstallTerms } from '../pages/install-extension/install-terms-conditions';
 import { NotFoundComponent } from './not-found-component';
 import { RouteErrorComponent } from './error-component';
 import { rootRoute } from '../root-route';
 import infoRoutes from '../pages/info-page/routes';
+import editLocalExtRoutes from '../pages/extension-edit-page/routes';
 import { EditPublishedExtensionPage } from '../pages/extension-edit-published-page/edit-published-extension-page';
 import { ExtensionEditPublishedMainPage } from '../pages/extension-edit-published-page/main-page';
+import { ExtensionGalleryManagerPage } from '../pages/extension-edit-page';
+import { getExtensionById } from './data-loaders';
+import {
+  selectApplicationType,
+  selectAppName,
+  selectAppDisplayName,
+  selectAppLogoImage,
+  selectAppDescription,
+} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
 
 const defaultRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -181,81 +190,6 @@ const extensionEditPublishedFormRoute = createRoute({
   },
 });
 
-const extensionEditMainRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: `/edit-extension/$extensionId`,
-  notFoundComponent: () => <NotFoundComponent />,
-  component: () => {
-    const { extensionId } = extensionEditMainRoute.useParams();
-    return (
-      <CatchBoundary
-        getResetKey={() => 'edit_extension_main_reset'}
-        errorComponent={RouteErrorComponent}
-      >
-        <ExtensionEditMainPage extensionId={extensionId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const extensionEditStep1Route = createRoute({
-  getParentRoute: () => extensionEditMainRoute,
-  path: '/step1',
-  component: () => {
-    const { extensionId } = extensionEditMainRoute.useParams();
-    return (
-      <CatchBoundary
-        getResetKey={() => 'edit_extension_step1_reset'}
-        errorComponent={RouteErrorComponent}
-      >
-        <ExtensionEditStep1Page extensionId={extensionId} />
-      </CatchBoundary>
-    );
-  },
-});
-const extensionEditStep2Route = createRoute({
-  getParentRoute: () => extensionEditMainRoute,
-  path: '/step2',
-  component: () => {
-    const { extensionId } = extensionEditMainRoute.useParams();
-    return (
-      <CatchBoundary
-        getResetKey={() => 'edit_extension_step2_reset'}
-        errorComponent={RouteErrorComponent}
-      >
-        <ExtensionEditStep2Page extensionId={extensionId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-type ExtSearch = { type: ExtType };
-
-export enum ExtType {
-  LOCAL = 'local',
-  PUBLISHED = 'published',
-}
-
-const galleryManagerRoute = createRoute({
-  getParentRoute: () => extensionEditMainRoute,
-  path: '/gallery-manager',
-  validateSearch: (search: Record<string, unknown>): ExtSearch => {
-    return { type: search.type as ExtType };
-  },
-  component: () => {
-    const from = galleryManagerRoute.useSearch();
-    const { extensionId } = extensionEditMainRoute.useParams();
-    return (
-      <CatchBoundary
-        getResetKey={() => 'edit_extension_gallery_manager_reset'}
-        errorComponent={RouteErrorComponent}
-      >
-        <ExtensionGalleryManagerPage type={from.type} extensionId={extensionId} />
-      </CatchBoundary>
-    );
-  },
-});
-
 const galleryManagerPublishedExtRoute = createRoute({
   getParentRoute: () => extensionEditPublishedMainRoute,
   path: '/gallery-manager',
@@ -271,38 +205,6 @@ const galleryManagerPublishedExtRoute = createRoute({
         errorComponent={RouteErrorComponent}
       >
         <ExtensionGalleryManagerPage type={from.type} extensionId={extensionId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const extensionEditStep3Route = createRoute({
-  getParentRoute: () => extensionEditMainRoute,
-  path: '/step3',
-  component: () => {
-    const { extensionId } = extensionEditMainRoute.useParams();
-    return (
-      <CatchBoundary
-        getResetKey={() => 'edit_extension_step3_reset'}
-        errorComponent={RouteErrorComponent}
-      >
-        <ExtensionEditStep3Page extensionId={extensionId} />
-      </CatchBoundary>
-    );
-  },
-});
-
-const extensionEditContributorsRoute = createRoute({
-  getParentRoute: () => extensionEditMainRoute,
-  path: '/contributors',
-  component: () => {
-    const { extensionId } = extensionEditMainRoute.useParams();
-    return (
-      <CatchBoundary
-        getResetKey={() => 'edit_extension_contributors_reset'}
-        errorComponent={RouteErrorComponent}
-      >
-        <ExtensionEditContributorsPage extensionId={extensionId} />
       </CatchBoundary>
     );
   },
@@ -329,14 +231,40 @@ const extensionReleaseManagerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/release-manager/$extensionId`,
   notFoundComponent: () => <NotFoundComponent />,
+  loader: ({ params }) => {
+    const { extensionId } = params;
+    if (!extensionId) {
+      throw new Error('extensionId is required');
+    }
+    return {
+      extensionByIdReq: defer(getExtensionById(extensionId)),
+    };
+  },
   component: () => {
     const { extensionId } = extensionReleaseManagerRoute.useParams();
+    const { extensionByIdReq } = extensionReleaseManagerRoute.useLoaderData();
     return (
       <CatchBoundary
         getResetKey={() => 'release_manager_reset'}
         errorComponent={RouteErrorComponent}
       >
-        <ExtensionReleaseManagerPage extensionId={extensionId} />
+        <Suspense>
+          <Await promise={extensionByIdReq}>
+            {req => (
+              <ExtensionReleaseManagerPage
+                extensionId={extensionId}
+                networkStatus={req?.networkStatus}
+                extensionDataReqErr={req?.error}
+                extensionDataReqLoading={req?.loading}
+                extensionName={selectAppName(req?.data)}
+                extensionDisplayName={selectAppDisplayName(req?.data)}
+                extensionApplicationType={selectApplicationType(req?.data)}
+                extensionDescription={selectAppDescription(req?.data)}
+                extensionLogoImage={selectAppLogoImage(req?.data)}
+              />
+            )}
+          </Await>
+        </Suspense>
       </CatchBoundary>
     );
   },
@@ -363,14 +291,35 @@ const editTestReleaseRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/release-manager/$extensionId/edit-test-release`,
   notFoundComponent: () => <NotFoundComponent />,
+  loader: ({ params }) => {
+    const { extensionId } = params;
+    if (!extensionId) {
+      throw new Error('extensionId is required');
+    }
+    return {
+      extensionByIdReq: defer(getExtensionById(extensionId)),
+    };
+  },
   component: () => {
     const { extensionId } = editTestReleaseRoute.useParams();
+    const { extensionByIdReq } = editTestReleaseRoute.useLoaderData();
     return (
       <CatchBoundary
         getResetKey={() => 'edit_test_release_reset'}
         errorComponent={RouteErrorComponent}
       >
-        <EditTestReleasePage extensionId={extensionId} />
+        <Suspense>
+          <Await promise={extensionByIdReq}>
+            {req => (
+              <EditTestReleasePage
+                networkStatus={req?.networkStatus}
+                extensionName={selectAppName(req?.data)}
+                extensionType={selectApplicationType(req?.data)}
+                extensionId={extensionId}
+              />
+            )}
+          </Await>
+        </Suspense>
       </CatchBoundary>
     );
   },
@@ -380,11 +329,36 @@ const releaseInfoRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `/release-manager/$extensionId/release-info/$releaseId`,
   notFoundComponent: () => <NotFoundComponent />,
+  loader: ({ params }) => {
+    const { extensionId } = params;
+    if (!extensionId) {
+      throw new Error('extensionId is required');
+    }
+    return {
+      extensionByIdReq: defer(getExtensionById(extensionId)),
+    };
+  },
   component: () => {
     const { extensionId, releaseId } = releaseInfoRoute.useParams();
+    const { extensionByIdReq } = releaseInfoRoute.useLoaderData();
     return (
       <CatchBoundary getResetKey={() => 'release_info_reset'} errorComponent={RouteErrorComponent}>
-        <ExtensionReleaseInfoPage extensionId={extensionId} releaseId={releaseId} />
+        <Suspense>
+          <Await promise={extensionByIdReq}>
+            {req => (
+              <ExtensionReleaseInfoPage
+                extensionId={extensionId}
+                networkStatus={req?.networkStatus}
+                extensionName={selectAppName(req?.data)}
+                extensionDisplayName={selectAppDisplayName(req?.data)}
+                extensionApplicationType={selectApplicationType(req?.data)}
+                extensionDescription={selectAppDescription(req?.data)}
+                extensionLogoImage={selectAppLogoImage(req?.data)}
+                releaseId={releaseId}
+              />
+            )}
+          </Await>
+        </Suspense>
       </CatchBoundary>
     );
   },
@@ -411,6 +385,7 @@ const routeTree = rootRoute.addChildren([
   myExtensionsRoute,
   developerModeRoute,
   infoRoutes,
+  editLocalExtRoutes,
   extensionInstallRootRoute.addChildren([
     extensionInstallIndexRoute,
     extensionInstallTermsRoute,
@@ -418,13 +393,6 @@ const routeTree = rootRoute.addChildren([
   ]),
   extensionCreateRoute,
   postExtensionCreateRoute,
-  extensionEditMainRoute.addChildren([
-    extensionEditStep1Route,
-    extensionEditStep2Route,
-    extensionEditStep3Route,
-    extensionEditContributorsRoute,
-    galleryManagerRoute,
-  ]),
   extensionEditPublishedMainRoute.addChildren([
     extensionEditPublishedFormRoute,
     galleryManagerPublishedExtRoute,

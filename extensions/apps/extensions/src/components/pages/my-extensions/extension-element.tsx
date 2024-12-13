@@ -19,11 +19,21 @@ import { MenuProps } from '@akashaorg/design-system-core/lib/components/Menu';
 import { EllipsisHorizontalIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import { hasOwn, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { useGetAppsStreamQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { ExtensionStatus, Extension } from '@akashaorg/typings/lib/ui';
+import { ExtensionStatus } from '@akashaorg/typings/lib/ui';
 import { getExtensionStatus, getStatusIndicatorStyle } from '../../../utils/extension-utils';
+import {
+  AkashaAppApplicationType,
+  AppImageSource,
+} from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
 type ExtensionElement = {
-  extensionData: Extension;
+  extensionId: string;
+  extensionName?: string;
+  extensionDisplayName?: string;
+  extensionDescription?: string;
+  extensionApplicationType?: AkashaAppApplicationType;
+  extensionLogoImage?: AppImageSource;
+  isExtensionLocalDraft?: boolean;
   showDivider?: boolean;
   filter?: string;
   filterShowAllOptionValue?: string;
@@ -31,7 +41,13 @@ type ExtensionElement = {
 };
 
 export const ExtensionElement: React.FC<ExtensionElement> = ({
-  extensionData,
+  extensionId,
+  extensionName,
+  extensionDisplayName,
+  extensionDescription,
+  extensionApplicationType,
+  extensionLogoImage,
+  isExtensionLocalDraft,
   showDivider = false,
   filter,
   filterShowAllOptionValue,
@@ -51,18 +67,14 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
       filters: {
         where: {
           applicationID: {
-            equalTo: extensionData?.id,
+            equalTo: extensionId,
           },
         },
       },
     },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
-    skip:
-      !extensionData?.id ||
-      !extensionData?.id?.trim() ||
-      extensionData?.id?.length < 10 ||
-      extensionData?.localDraft,
+    skip: !extensionId || !extensionId?.trim() || extensionId?.length < 10 || isExtensionLocalDraft,
   });
 
   const appStreamData =
@@ -73,42 +85,42 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
   const handleExtensionRemove = () => {
     navigateToModal({
       name: `remove-extension-confirmation`,
-      extensionId: extensionData?.id,
+      extensionId: extensionId,
     });
   };
 
   const handleEditLocalExtension = () => {
     navigate({
       to: `/edit-extension/$extensionId/step1`,
-      params: { extensionId: extensionData?.id },
+      params: { extensionId: extensionId },
     });
   };
 
   const handleEditPublishedExtension = () => {
     navigate({
       to: `/edit-published-extension/$extensionId/form`,
-      params: { extensionId: extensionData?.id },
+      params: { extensionId: extensionId },
     });
   };
 
   const handleNavigateToExtensionInfoPage = () => {
     navigate({
       to: `/info/$appId`,
-      params: { appId: extensionData?.name },
+      params: { appId: extensionName },
     });
   };
 
   const handleExtensionSubmit = () => {
     navigate({
       to: `/publish-extension/$extensionId`,
-      params: { extensionId: extensionData?.id },
+      params: { extensionId: extensionId },
     });
   };
 
   const handleReleaseManager = () => {
     navigate({
       to: `/release-manager/$extensionId`,
-      params: { extensionId: extensionData?.id },
+      params: { extensionId: extensionId },
     });
   };
 
@@ -199,13 +211,12 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
         return true;
       }
       return (
-        filter ===
-        getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)
+        filter === getExtensionStatus(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status)
       );
     }
   };
 
-  const iconType = useMemo(() => extensionData?.applicationType, [extensionData]);
+  const iconType = useMemo(() => extensionApplicationType, [extensionApplicationType]);
 
   if (!showElement()) return null;
 
@@ -214,17 +225,17 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
       <Stack direction="row" justify="between" spacing="gap-x-8" fullWidth>
         <Stack direction="row" spacing="gap-x-3" customStyle="max-h-[60px] w-[60%]">
           <AppAvatar
-            appType={extensionData?.applicationType}
-            avatar={transformSource(extensionData?.logoImage)}
-            extensionId={extensionData?.id}
+            appType={extensionApplicationType}
+            avatar={transformSource(extensionLogoImage)}
+            extensionId={extensionId}
           />
           <Stack direction="column" justify="between" customStyle="w-0 min-w-full">
             <Stack direction="row" spacing="gap-2">
               <Text variant="button-sm" truncate>
-                {extensionData?.name}
+                {extensionName}
               </Text>
 
-              {extensionData?.applicationType && (
+              {extensionApplicationType && (
                 <Stack
                   customStyle="w-[18px] h-[18px] rounded-full shrink-0"
                   background={{ light: 'tertiaryLight', dark: 'tertiaryDark' }}
@@ -241,7 +252,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
               color={{ light: 'grey4', dark: 'grey7' }}
               truncate
             >
-              {extensionData?.description || extensionData?.displayName}
+              {extensionDescription || extensionDisplayName}
             </Text>
           </Stack>
         </Stack>
@@ -263,20 +274,17 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
                 'aria-label': 'settings',
               }}
               items={menuItems(
-                getExtensionStatus(
-                  extensionData?.localDraft,
-                  appStreamData?.edges[0]?.node?.status,
-                ),
+                getExtensionStatus(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status),
               )}
               customStyle="w-max z-99"
             />
           )}
           <Stack direction="row" align="center" spacing="gap-x-1.5">
             <Stack
-              customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}`}
+              customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status)}`}
             />
             <Text variant="footnotes2" weight="normal">
-              {getExtensionStatus(extensionData?.localDraft, appStreamData?.edges[0]?.node?.status)}
+              {getExtensionStatus(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status)}
             </Text>
           </Stack>
         </Stack>

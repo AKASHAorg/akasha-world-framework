@@ -8,11 +8,10 @@ import ExtensionEditStep2Form, {
 } from '@akashaorg/design-system-components/lib/components/ExtensionEditStep2Form';
 import { useAkashaStore, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { NotificationEvents, NotificationTypes, Extension } from '@akashaorg/typings/lib/ui';
-import { DRAFT_EXTENSIONS, MAX_GALLERY_IMAGES } from '../../../constants';
+import { DRAFT_EXTENSIONS, ExtType, MAX_GALLERY_IMAGES } from '../../../constants';
 import { useAtom } from 'jotai';
 import { AtomContext, FormData } from './main-page';
 import Stepper from '@akashaorg/design-system-core/lib/components/Stepper';
-import { ExtType } from '../../app-routes';
 
 type ExtensionEditStep2PageProps = {
   extensionId: string;
