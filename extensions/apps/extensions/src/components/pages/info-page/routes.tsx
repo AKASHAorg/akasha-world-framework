@@ -7,7 +7,7 @@ import {
   LicensePage,
   ReleasesPage,
 } from './sub-pages';
-import { getExtensionById } from '../../app-routes/data-loaders';
+import { getExtensionByName } from '../../app-routes/data-loaders';
 import {
   selectAppId,
   selectExtensionContributors,
@@ -99,7 +99,7 @@ const contributorsInfoRoute = createRoute({
       throw new Error('appId is required');
     }
     return {
-      extensionById: defer(getExtensionById(context.decodeAppName(appId))),
+      extensionById: defer(getExtensionByName(context.decodeAppName(appId))),
     };
   },
   component: () => {
@@ -135,7 +135,7 @@ const releasesRoute = createRoute({
       throw new Error('appId is required');
     }
     return {
-      extensionById: defer(getExtensionById(context.decodeAppName(appId))),
+      extensionById: defer(getExtensionByName(context.decodeAppName(appId))),
     };
   },
   component: () => {
@@ -172,7 +172,7 @@ const appLicenseInfoRoute = createRoute({
       throw new Error('appId is required');
     }
     return {
-      extensionById: defer(getExtensionById(context.decodeAppName(appId))),
+      extensionById: defer(getExtensionByName(context.decodeAppName(appId))),
     };
   },
   component: () => {
@@ -208,7 +208,7 @@ const appDescriptionRoute = createRoute({
       throw new Error('appId is required');
     }
     return {
-      extensionById: defer(getExtensionById(context.decodeAppName(appId))),
+      extensionById: defer(getExtensionByName(context.decodeAppName(appId))),
     };
   },
   component: () => {

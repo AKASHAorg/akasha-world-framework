@@ -10,21 +10,35 @@ import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { ExtensionElement } from '../my-extensions/extension-element';
 import { DRAFT_EXTENSIONS, PROPERTY, PROVIDER } from '../../../constants';
-import {
-  useGetAppReleaseByIdQuery,
-  useGetAppsByIdQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated';
+import { useGetAppReleaseByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import { formatDate } from '@akashaorg/design-system-core/lib/utils';
+import {
+  AkashaAppApplicationType,
+  AppImageSource,
+} from '@akashaorg/typings/lib/sdk/graphql-types-new';
+import { NetworkStatus } from '@apollo/client';
 
 type ExtensionReleaseInfoPageProps = {
   extensionId: string;
+  extensionName?: string;
+  extensionDisplayName?: string;
+  extensionDescription?: string;
+  extensionApplicationType?: AkashaAppApplicationType;
+  extensionLogoImage?: AppImageSource;
+  networkStatus: NetworkStatus;
   releaseId: string;
 };
 
 export const ExtensionReleaseInfoPage: React.FC<ExtensionReleaseInfoPageProps> = ({
   extensionId,
+  extensionName,
+  extensionDisplayName,
+  extensionDescription,
+  extensionApplicationType,
+  extensionLogoImage,
+  networkStatus,
   releaseId,
 }) => {
   const { t } = useTranslation('app-extensions');
@@ -57,26 +71,34 @@ export const ExtensionReleaseInfoPage: React.FC<ExtensionReleaseInfoPageProps> =
     }
   }, [authenticatedDID, showErrorNotification]);
 
-  const localExtensionData = draftExtensions.find(ext => ext.id === extensionId);
+  const draftExtension = draftExtensions.find(ext => ext.id === extensionId);
 
-  const {
-    data: appsByIdReq,
-    loading: loadingAppsByIdQuery,
-    error: appsByIdError,
-  } = useGetAppsByIdQuery({
-    variables: { id: extensionId },
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-  });
-
-  const publishedAppData = appsByIdReq?.node;
-
-  const extensionData = useMemo(() => {
-    if (publishedAppData && 'applicationType' in publishedAppData) {
-      return publishedAppData;
+  const baseAppInfo = useMemo(() => {
+    // if a published extension exists for this id use the data from it
+    if (networkStatus === NetworkStatus.ready && extensionName && extensionApplicationType) {
+      return {
+        id: extensionId,
+        name: extensionName,
+        displayName: extensionDisplayName,
+        description: extensionDescription,
+        logoImage: extensionLogoImage,
+        applicationType: extensionApplicationType,
+        localDraft: false,
+      };
     }
-    return localExtensionData;
-  }, [localExtensionData, publishedAppData]);
+    if (draftExtension) {
+      return draftExtension;
+    }
+  }, [
+    networkStatus,
+    extensionName,
+    extensionApplicationType,
+    draftExtension,
+    extensionId,
+    extensionDisplayName,
+    extensionDescription,
+    extensionLogoImage,
+  ]);
 
   const {
     data: releaseByIdReq,
@@ -139,7 +161,15 @@ export const ExtensionReleaseInfoPage: React.FC<ExtensionReleaseInfoPageProps> =
             </Stack>
           )}
           {!loadingReleaseByIdQuery && (
-            <ExtensionElement extensionData={extensionData as Extension} />
+            <ExtensionElement
+              extensionId={baseAppInfo?.id}
+              extensionName={baseAppInfo?.name}
+              extensionDisplayName={baseAppInfo?.displayName}
+              extensionDescription={baseAppInfo?.description}
+              extensionApplicationType={baseAppInfo?.applicationType}
+              extensionLogoImage={baseAppInfo?.logoImage}
+              isExtensionLocalDraft={baseAppInfo?.localDraft}
+            />
           )}
         </Card>
         <Stack direction="row" justify="between">
