@@ -17,7 +17,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { MenuProps } from '@akashaorg/design-system-core/lib/components/Menu';
 import { EllipsisHorizontalIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import { hasOwn, transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { selectAkashaAppStreamStatus } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-stream-query';
 import { useGetAppsStreamQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import { ExtensionStatus } from '@akashaorg/typings/lib/ui';
 import { getExtensionStatus, getStatusIndicatorStyle } from '../../../utils/extension-utils';
@@ -77,10 +78,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
     skip: !extensionId || !extensionId?.trim() || extensionId?.length < 10 || isExtensionLocalDraft,
   });
 
-  const appStreamData =
-    appStreamReq?.node && hasOwn(appStreamReq.node, 'akashaAppsStreamList')
-      ? appStreamReq.node.akashaAppsStreamList
-      : null;
+  const appStreamStatus = selectAkashaAppStreamStatus(appStreamReq);
 
   const handleExtensionRemove = () => {
     navigateToModal({
@@ -210,9 +208,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
       if (filter === filterShowAllOptionValue) {
         return true;
       }
-      return (
-        filter === getExtensionStatus(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status)
-      );
+      return filter === getExtensionStatus(isExtensionLocalDraft, appStreamStatus);
     }
   };
 
@@ -273,9 +269,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
                 iconOnly: true,
                 'aria-label': 'settings',
               }}
-              items={menuItems(
-                getExtensionStatus(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status),
-              )}
+              items={menuItems(getExtensionStatus(isExtensionLocalDraft, appStreamStatus))}
               customStyle="w-max z-99"
             />
           )}
@@ -284,7 +278,7 @@ export const ExtensionElement: React.FC<ExtensionElement> = ({
               customStyle={`w-2 h-2 rounded-full ${getStatusIndicatorStyle(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status)}`}
             />
             <Text variant="footnotes2" weight="normal">
-              {getExtensionStatus(isExtensionLocalDraft, appStreamData?.edges[0]?.node?.status)}
+              {getExtensionStatus(isExtensionLocalDraft, appStreamStatus)}
             </Text>
           </Stack>
         </Stack>

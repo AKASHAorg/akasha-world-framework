@@ -223,7 +223,15 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
 export default ExtensionReleasePublish;
 
 const schema = z.object({
-  versionNumber: z.string(),
+  versionNumber: z
+    .string()
+    .refine(
+      value =>
+        /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/.test(
+          value ?? '',
+        ),
+      'Version should follow Semantic Versioning standard',
+    ),
   description: z
     .string()
     .trim()
