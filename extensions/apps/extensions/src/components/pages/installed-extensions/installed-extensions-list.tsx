@@ -162,6 +162,10 @@ export const InstalledExtensionsList = () => {
               apps={installedExtensions}
               //implementation requires pagination support on installed extensions service on sdk
               onLoadMore={() => null}
+              loadErrorMessage={{
+                title: t("Couldn't Load Extension"),
+                message: t('Please try again later'),
+              }}
             />
           )}
         </Stack>
