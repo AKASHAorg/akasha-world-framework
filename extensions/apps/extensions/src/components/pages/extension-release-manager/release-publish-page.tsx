@@ -138,6 +138,12 @@ export const ExtensionReleasePublishPage: React.FC<ExtensionReleasePublishPagePr
             {t('Release Notes')}
           </Text>
           <ExtensionReleasePublishForm
+            validationLabels={{
+              version: t('Version should follow Semantic Versioning standard'),
+              descriptionMin: t('Must be at least 10 characters'),
+              descriptionMax: t('Must be less than 2000 characters'),
+              sourceURL: t('URL is required'),
+            }}
             versionNumberLabel={t('Version Number')}
             descriptionFieldLabel={t('Description')}
             descriptionPlaceholderLabel={t('A brief description about this release')}

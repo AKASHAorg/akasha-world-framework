@@ -20,7 +20,7 @@ export const getExtensionByName = async (decodedExtName: string) => {
 export const getExtensionById = async (extensionId: string) => {
   // check if the extension id is coming from a draft extension, which use the crypto.randomUUID() method
   const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  if (uuidV4Regex.test) {
+  if (uuidV4Regex.test(extensionId)) {
     return null;
   }
   const { apolloClient } = getSdk().services.gql;

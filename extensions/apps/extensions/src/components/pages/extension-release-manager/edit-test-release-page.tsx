@@ -115,7 +115,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
         ) {
           timeout = setTimeout(() => {
             navigateTo({
-              appName: baseAppInfo.name,
+              appName: baseAppInfo?.name,
             });
           }, 3000);
         }
@@ -129,7 +129,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
         clearTimeout(timeout);
       }
     };
-  }, [baseAppInfo.name, getCorePlugins, navigateTo]);
+  }, [baseAppInfo?.name, getCorePlugins, navigateTo]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -217,6 +217,12 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
                 versionNumber: '',
                 sourceURL: '',
                 description: '',
+              }}
+              validationLabels={{
+                version: t('Version should follow Semantic Versioning standard'),
+                descriptionMin: t('Must be at least 10 characters'),
+                descriptionMax: t('Must be less than 2000 characters'),
+                sourceURL: t('URL is required'),
               }}
               versionNumberLabel={t('Version Number')}
               descriptionFieldLabel={t('Description')}
