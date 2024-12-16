@@ -11,12 +11,16 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { useTranslation } from 'react-i18next';
 import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { formatDate, truncateDid } from '@akashaorg/design-system-core/lib/utils';
-import { useGetAppsQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import {
+  useGetAppsQuery,
+  useGetAppsStreamQuery,
+} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import {
   selectAkashaApp,
   selectLatestRelease,
 } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
+import { selectAkashaAppStreamStatus } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-stream-query';
 import { NetworkStatus } from '@apollo/client';
 import { AppInfoHeader } from '@akashaorg/design-system-components/lib/components/AppInfo/header';
 import Section, { DividerPosition } from '@akashaorg/design-system-core/lib/components/Section';
@@ -33,7 +37,9 @@ import { UninstallModal } from './uninstall-modal';
 import AppCoverImage from './AppCoverImage';
 import StackedAvatar from '@akashaorg/design-system-core/lib/components/StackedAvatar';
 import { AppInfoNotificationCards } from '@akashaorg/design-system-components/lib/components/AppInfo/notification-cards';
-import { getExtensionTypeLabel } from '../../../utils/extension-utils';
+import { getExtensionStatus, getExtensionTypeLabel } from '../../../utils/extension-utils';
+import getSDK from '@akashaorg/core-sdk';
+import { ExtensionStatus } from '@akashaorg/typings/lib/ui';
 
 type InfoPageProps = {
   appId: string;
@@ -41,6 +47,7 @@ type InfoPageProps = {
 
 export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
   const navigate = useNavigate();
+  const sdk = useRef(getSDK());
   const { t } = useTranslation('app-extensions');
   const { navigateToModal, decodeAppName, getDefaultExtensionNames, getCorePlugins, logger } =
     useRootComponentProps();
@@ -150,6 +157,27 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
   const appData = selectAkashaApp(appReq.data);
   const latestRelease = useMemo(() => selectLatestRelease(appReq.data), [appReq.data]);
 
+  const { data: appStreamReq } = useGetAppsStreamQuery({
+    variables: {
+      indexer: sdk.current.services.gql.indexingDID,
+      first: 1,
+      filters: {
+        where: {
+          applicationID: {
+            equalTo: appData?.id,
+          },
+        },
+      },
+    },
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
+    skip: !appData?.id || !appData?.id?.trim() || appData?.id?.length < 10,
+  });
+
+  const appStreamStatus = selectAkashaAppStreamStatus(appStreamReq);
+
+  const extStatus = getExtensionStatus(false, appStreamStatus);
+
   const coverImageSrc = useMemo(() => {
     if (appData?.coverImage?.src) {
       return transformSource(appData.coverImage)?.src;
@@ -229,6 +257,11 @@ export const InfoPage: React.FC<InfoPageProps> = ({ appId }) => {
                   isInstalled={isInstalled}
                   isInstallable={!!latestRelease}
                   defaultAppPillLabel={t('Default')}
+                  isInReview={extStatus === ExtensionStatus.InReview}
+                  isInReviewTitleLabel={t('Extension pending review')}
+                  isInReviewDescriptionLabel={t(
+                    'This extension is pending review and will be available for installation once approved.',
+                  )}
                 />
 
                 {!latestRelease && (
