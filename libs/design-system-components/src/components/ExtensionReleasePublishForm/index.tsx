@@ -34,6 +34,12 @@ export type ExtensionReleasePublishProps = {
   confirmationModalDescriptionLabel?: string;
   cancelLabel?: string;
   confirmLabel?: string;
+  validationLabels: {
+    version: string;
+    descriptionMin: string;
+    descriptionMax: string;
+    sourceURL: string;
+  };
   defaultValues?: ExtensionReleasePublishValues;
   cancelButton: ButtonType;
   nextButton: {
@@ -53,6 +59,7 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
       description: '',
       sourceURL: '',
     },
+    validationLabels,
     cancelButton,
     nextButton,
     versionNumberLabel,
@@ -69,6 +76,24 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
     cancelLabel,
     showModalFlow,
   } = props;
+
+  const schema = z.object({
+    versionNumber: z
+      .string()
+      .refine(
+        value =>
+          /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/.test(
+            value ?? '',
+          ),
+        validationLabels.version,
+      ),
+    description: z
+      .string()
+      .trim()
+      .min(10, { message: validationLabels.descriptionMin })
+      .max(2000, { message: validationLabels.descriptionMax }),
+    sourceURL: z.string().url({ message: validationLabels.sourceURL }),
+  });
 
   const {
     control,
@@ -221,13 +246,3 @@ const ExtensionReleasePublish: React.FC<ExtensionReleasePublishProps> = props =>
 };
 
 export default ExtensionReleasePublish;
-
-const schema = z.object({
-  versionNumber: z.string(),
-  description: z
-    .string()
-    .trim()
-    .min(10, { message: 'Must be at least 10 characters' })
-    .max(2000, { message: 'Must be less than 2000 characters' }),
-  sourceURL: z.string().url({ message: 'URL is required' }),
-});
