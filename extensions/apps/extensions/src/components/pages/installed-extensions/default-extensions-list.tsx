@@ -110,6 +110,10 @@ export const DefaultExtensionsList = () => {
           apps={defaultExtensions}
           //@TODO implement pagination as the list can grow
           onLoadMore={() => null}
+          loadErrorMessage={{
+            title: t("Couldn't Load Extension"),
+            message: t('Please try again later'),
+          }}
         />
       )}
     </Stack>

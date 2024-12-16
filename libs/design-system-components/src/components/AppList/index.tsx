@@ -1,9 +1,17 @@
 import React from 'react';
 import DynamicInfiniteScroll, { DynamicInfiniteScrollProps } from '../DynamicInfiniteScroll';
 import ExtensionCard, { ExtensionCardProps } from '../ExtensionCard';
+import Card from '@akashaorg/design-system-core/lib/components/Card';
+import Icon from '@akashaorg/design-system-core/lib/components/Icon';
+import { XCircleIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-solid';
+import Text from '@akashaorg/design-system-core/lib/components/Text';
 
 export type AppListProps = {
   apps: ExtensionCardProps[];
+  loadErrorMessage?: {
+    title: string;
+    message: string;
+  };
 } & Pick<DynamicInfiniteScrollProps, 'overScan' | 'hasNextPage' | 'loading' | 'onLoadMore'>;
 
 const ENTRY_HEIGHT = 92;
@@ -25,6 +33,7 @@ const AppList: React.FC<AppListProps> = ({
   hasNextPage,
   onLoadMore,
   overScan = 1,
+  loadErrorMessage,
 }) => {
   return (
     <DynamicInfiniteScroll
@@ -43,6 +52,21 @@ const AppList: React.FC<AppListProps> = ({
       }
     >
       {({ itemIndex }) => {
+        if (!apps[itemIndex]) {
+          return (
+            <Card customStyle="h-full flex flex-col justify-center items-center">
+              <Icon
+                icon={<XCircleIcon />}
+                solid={true}
+                color={{ light: 'errorLight', dark: 'errorDark' }}
+                customStyle="mb-4"
+              />
+              <Text variant="button-md">{loadErrorMessage?.title}</Text>
+              <Text variant="body2">{loadErrorMessage?.message}</Text>
+            </Card>
+          );
+        }
+
         const {
           coverImageSrc,
           displayName,
@@ -57,6 +81,7 @@ const AppList: React.FC<AppListProps> = ({
           nsfw,
           featured,
         } = apps[itemIndex];
+
         return (
           <ExtensionCard
             coverImageSrc={coverImageSrc}
