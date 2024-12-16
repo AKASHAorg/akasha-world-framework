@@ -115,7 +115,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
         ) {
           timeout = setTimeout(() => {
             navigateTo({
-              appName: baseAppInfo?.name,
+              appName: baseAppInfo.name,
             });
           }, 3000);
         }
@@ -129,7 +129,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
         clearTimeout(timeout);
       }
     };
-  }, [baseAppInfo?.name, getCorePlugins, navigateTo]);
+  }, [baseAppInfo.name, getCorePlugins, navigateTo]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
