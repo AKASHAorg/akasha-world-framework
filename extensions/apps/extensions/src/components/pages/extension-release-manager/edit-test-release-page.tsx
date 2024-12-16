@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
@@ -49,6 +49,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
   const navigateTo = getCorePlugins().routing.navigateTo;
   const uiEventsRef = React.useRef(uiEvents);
   const [isLoadingTestMode, setIsLoadingTestMode] = useState(false);
+  const testModeRedirectUrl = useRef<string>();
 
   const {
     data: { authenticatedDID },
@@ -114,9 +115,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
               .EXTENSION_TEST_LOAD_SUCCESS
         ) {
           timeout = setTimeout(() => {
-            navigateTo({
-              appName: baseAppInfo.name,
-            });
+            window.location.href = `${window.location.origin}/${testModeRedirectUrl.current}`;
           }, 3000);
         }
       });
@@ -129,7 +128,7 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
         clearTimeout(timeout);
       }
     };
-  }, [baseAppInfo.name, getCorePlugins, navigateTo]);
+  }, [baseAppInfo, getCorePlugins, navigateTo]);
 
   const handleConnectButtonClick = () => {
     navigateTo?.({
@@ -166,11 +165,12 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
     }
 
     testModeLoader.load({
-      appId: localRelease.appId,
+      applicationID: localRelease.applicationID,
       source: appReleaseFormData.sourceURL,
       appName: baseAppInfo.name,
       applicationType: baseAppInfo.applicationType,
     });
+    testModeRedirectUrl.current = `${baseAppInfo.name}`;
     setIsLoadingTestMode(true);
   };
 
@@ -214,9 +214,9 @@ export const EditTestReleasePage: React.FC<EditTestReleasePageProps> = ({
             </Text>
             <ExtensionReleasePublishForm
               defaultValues={{
-                versionNumber: '',
+                versionNumber: localRelease?.version || '',
+                description: localRelease?.description || '',
                 sourceURL: '',
-                description: '',
               }}
               validationLabels={{
                 version: t('Version should follow Semantic Versioning standard'),

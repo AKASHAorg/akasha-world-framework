@@ -6,10 +6,6 @@ import { AkashaAppEdgeNode, staticInstallStatusCodes } from './utils';
 import type AppLoader from '../index';
 import { IAppConfig, ITestModeLoaderPlugin, LocalReleaseData } from '@akashaorg/typings/lib/ui';
 
-const getTestSessionKey = (userId: string) => {
-  return `EXTENSIONS_IN_TEST_MODE_${userId}`;
-};
-
 /**
  * Plugin that handles loading extensions in test mode.
  */
@@ -72,12 +68,15 @@ export class TestModeLoader implements ITestModeLoaderPlugin {
     });
   }
 
+  getTestSessionKey = () => {
+    return `EXTENSIONS_IN_TEST_MODE_${this.#user.id}`;
+  };
   getStaticStatusCodes() {
     return staticInstallStatusCodes;
   }
 
   loadStoredExtensions() {
-    const storage = sessionStorage.getItem(getTestSessionKey(this.#user.id));
+    const storage = sessionStorage.getItem(this.getTestSessionKey());
 
     if (storage) {
       let extensions = [];
@@ -135,7 +134,7 @@ export class TestModeLoader implements ITestModeLoaderPlugin {
       if (extensionModule && typeof extensionModule.register === 'function') {
         const extensionConfig = this.#registerExtension(localReleaseData.appName, extensionModule);
 
-        const storage = sessionStorage.getItem(getTestSessionKey(this.#user.id));
+        const storage = sessionStorage.getItem(this.getTestSessionKey());
         let extensions = [];
         if (storage) {
           try {
@@ -150,7 +149,7 @@ export class TestModeLoader implements ITestModeLoaderPlugin {
         try {
           if (!extensions.find(ext => ext.appName === localReleaseData.appName)) {
             extensions.push(localReleaseData);
-            sessionStorage.setItem(getTestSessionKey(this.#user.id), JSON.stringify(extensions));
+            sessionStorage.setItem(this.getTestSessionKey(), JSON.stringify(extensions));
           }
         } catch (err) {
           this.#logger.error('failed to save extension to session storage: %s', err.message);
@@ -165,7 +164,7 @@ export class TestModeLoader implements ITestModeLoaderPlugin {
             license: '',
             releasesCount: 0,
             name: localReleaseData.appName,
-            id: localReleaseData.appId,
+            id: localReleaseData.applicationID,
             releases: {},
             author: { id: this.#user.id, isViewer: true },
           },
@@ -185,7 +184,7 @@ export class TestModeLoader implements ITestModeLoaderPlugin {
 
   // requires full page refresh
   async unload() {
-    sessionStorage.removeItem(getTestSessionKey(this.#user.id));
+    sessionStorage.removeItem(this.getTestSessionKey());
   }
 
   #notifyErrorStatus(

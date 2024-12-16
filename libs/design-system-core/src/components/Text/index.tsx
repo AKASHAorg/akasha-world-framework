@@ -1,9 +1,4 @@
-import React, {
-  AriaAttributes,
-  HTMLInputTypeAttribute,
-  LabelHTMLAttributes,
-  PropsWithChildren,
-} from 'react';
+import React, { AriaAttributes, DOMAttributes, HTMLAttributes, PropsWithChildren } from 'react';
 import { apply, tw } from '@twind/core';
 
 import { getTag } from './getTag';
@@ -45,7 +40,8 @@ export type TextProps = PropsWithChildren<
       weight: FontWeight;
       selectable: boolean;
       customStyle: string;
-    } & AriaAttributes
+    } & AriaAttributes &
+      Omit<HTMLAttributes<Heading>, 'color' | 'onClick'>
   >
 >;
 
