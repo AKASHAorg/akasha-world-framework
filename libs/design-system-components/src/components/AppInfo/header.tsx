@@ -69,7 +69,7 @@ export const AppInfoHeader: React.FC<AppInfoHeaderProps> = props => {
 
   return (
     <Stack direction="row" align="start" justify="between" padding="pb-3">
-      <Stack direction="column" spacing="gap-2">
+      <Stack direction="column" spacing="gap-6">
         <Stack direction="row" align="stretch" spacing="gap-x-2" customStyle={'flex-grow'}>
           <AppAvatar appType={extensionType} avatar={extensionAvatar} width={7} height={7} />
           <Stack justify="between" customStyle={'flex-grow'}>
