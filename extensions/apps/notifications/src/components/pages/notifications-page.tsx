@@ -31,7 +31,7 @@ const NotificationsPage: React.FC = () => {
   const { baseRouteName, uiEvents, getCorePlugins, getDefaultExtensionNames } =
     useRootComponentProps();
   const {
-    data: { authenticatedDID },
+    data: { authenticatedDID, isAuthenticating },
   } = useAkashaStore();
   const isLoggedIn = !!authenticatedDID;
 
@@ -167,7 +167,7 @@ const NotificationsPage: React.FC = () => {
     });
   };
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn && !isAuthenticating) {
     return (
       <Stack>
         <ErrorLoader
