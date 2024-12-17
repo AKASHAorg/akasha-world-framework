@@ -155,7 +155,7 @@ const NotificationsPage: React.FC = () => {
       getNavigationUrl: navRoutes => navRoutes['Notifications'],
     });
   };
-
+  /** Navigate to web3 connector */
   const handleConnectButtonClick = () => {
     navigateTo?.({
       appName: '@akashaorg/app-auth-ewa',
