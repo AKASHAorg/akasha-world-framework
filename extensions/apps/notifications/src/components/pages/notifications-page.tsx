@@ -173,7 +173,7 @@ const NotificationsPage: React.FC = () => {
         <ErrorLoader
           type={'not-authenticated'}
           title={t('Uh-oh! You are not connected!')}
-          details={t('To check notifications preferences options you must be connected ⚡️')}
+          details={t('To check notifications you must be connected ⚡️')}
         >
           <Button
             label={t('Connect')}
