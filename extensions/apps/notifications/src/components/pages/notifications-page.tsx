@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNotifications, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useNotifications, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import { Cog8ToothIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
@@ -22,12 +22,18 @@ import { UserSettingType } from '@akashaorg/typings/lib/sdk';
 
 import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
 import { selectApps } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 
 const NotificationsPage: React.FC = () => {
   const sdk = getSDK();
   const notificationService = sdk.services.common.notification;
   const { t } = useTranslation('app-notifications');
-  const { uiEvents, getCorePlugins, getDefaultExtensionNames } = useRootComponentProps();
+  const { baseRouteName, uiEvents, getCorePlugins, getDefaultExtensionNames } =
+    useRootComponentProps();
+  const {
+    data: { authenticatedDID, isAuthenticating },
+  } = useAkashaStore();
+  const isLoggedIn = !!authenticatedDID;
 
   const defaultApps = getDefaultExtensionNames();
   const indexingDid = sdk.services.common.misc.getIndexingDID();
@@ -149,6 +155,36 @@ const NotificationsPage: React.FC = () => {
       getNavigationUrl: navRoutes => navRoutes['Notifications'],
     });
   };
+  /** Navigate to web3 connector */
+  const handleConnectButtonClick = () => {
+    navigateTo?.({
+      appName: '@akashaorg/app-auth-ewa',
+      getNavigationUrl: (routes: Record<string, string>) => {
+        return `${routes.Connect}?${new URLSearchParams({
+          redirectTo: `${baseRouteName}/`,
+        }).toString()}`;
+      },
+    });
+  };
+
+  if (!isLoggedIn && !isAuthenticating) {
+    return (
+      <Stack>
+        <ErrorLoader
+          type={'not-authenticated'}
+          title={t('Uh-oh! You are not connected!')}
+          details={t('To check notifications you must be connected ⚡️')}
+        >
+          <Button
+            label={t('Connect')}
+            size="md"
+            variant="primary"
+            onClick={handleConnectButtonClick}
+          />
+        </ErrorLoader>
+      </Stack>
+    );
+  }
 
   return (
     <>
