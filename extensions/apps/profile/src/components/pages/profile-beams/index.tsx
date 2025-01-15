@@ -2,13 +2,13 @@ import React from 'react';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ScrollTopWrapper from '@akashaorg/design-system-core/lib/components/ScrollTopWrapper';
 import ScrollTopButton from '@akashaorg/design-system-core/lib/components/ScrollTopButton';
-import { useAnalytics, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAnalytics, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { BeamCard, BeamFeedByAuthor } from '@akashaorg/ui-lib-feed';
 import {
   selectBeamContent,
   selectBeamId,
   selectNsfw,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-beam-by-id-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-beam-by-id-query';
 
 type ProfileBeamsPageProps = {
   profileDID: string;

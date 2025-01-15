@@ -9,7 +9,7 @@ import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 
 import { IRootExtensionProps } from '@akashaorg/typings/lib/ui';
-import { useRootComponentProps, withProviders, useModalData } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders, useModalData } from '@akashaorg/ui-core-hooks';
 
 const LoginModal = () => {
   const { t } = useTranslation('app-profile');

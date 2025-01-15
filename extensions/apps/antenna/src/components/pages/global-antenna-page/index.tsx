@@ -15,7 +15,7 @@ import {
   hasOwn,
   useNsfwToggling,
   useDismissedCard,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { Helmet, helmetData } from '@akashaorg/design-system-core/lib/utils';
 import { IModalNavigationOptions } from '@akashaorg/typings/lib/ui';
 import { BeamContentResolver, getNsfwFiltersForBeamFeed } from '@akashaorg/ui-lib-feed';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { useRoutingEvents } from './use-routing-events';
 import { WidgetInterface, IWidgetStorePlugin } from '@akashaorg/typings/lib/ui';
 import Parcel from 'single-spa-react/parcel';

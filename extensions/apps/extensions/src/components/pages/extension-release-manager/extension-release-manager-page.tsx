@@ -10,9 +10,9 @@ import InfoCard from '@akashaorg/design-system-core/lib/components/InfoCard';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
-import { useAkashaStore, useDismissedCard, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useDismissedCard, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import { useGetAppsReleasesQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { useGetAppsReleasesQuery } from '@akashaorg/ui-core-hooks/lib/generated';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../../constants';
 import {
   AkashaAppApplicationType,
@@ -24,7 +24,7 @@ import { ExtensionElement } from '../my-extensions/extension-element';
 import {
   selectAppsReleases,
   selectAppsReleasesPageInfo,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-releases-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-releases-query';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import { formatDate } from '@akashaorg/design-system-core/lib/utils';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';

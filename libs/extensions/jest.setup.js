@@ -1,4 +1,4 @@
-import * as mediaHooks from '@akashaorg/ui-awf-hooks/lib/utils/media-utils';
+import * as mediaHooks from '@akashaorg/ui-core-hooks/lib/utils/media-utils';
 
 import '@testing-library/jest-dom';
 

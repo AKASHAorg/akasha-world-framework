@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAkashaStore, useNotifications, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useNotifications, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import { Cog8ToothIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
@@ -20,8 +20,8 @@ import NotificationSettingsCard from '@akashaorg/design-system-components/lib/co
 import { getPresentationDataFromNotification } from '../utils/notifications-util';
 import { UserSettingType } from '@akashaorg/typings/lib/sdk';
 
-import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { selectApps } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { selectApps } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 
 const NotificationsPage: React.FC = () => {

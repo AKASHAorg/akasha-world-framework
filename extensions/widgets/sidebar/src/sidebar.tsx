@@ -4,7 +4,7 @@ import singleSpaReact from 'single-spa-react';
 
 import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import { useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import { I18nextProvider } from 'react-i18next';
 import SidebarComponent from './components/sidebar-component';
 

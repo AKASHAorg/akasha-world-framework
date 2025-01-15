@@ -3,8 +3,8 @@ import ProfileAvatarButton, {
   ProfileAvatarButtonProps,
 } from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import ProfileAvatarLoading from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton/ProfileAvatarLoading';
-import { hasOwn, transformSource } from '@akashaorg/ui-awf-hooks';
-import { useGetProfileByDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { hasOwn, transformSource } from '@akashaorg/ui-core-hooks';
+import { useGetProfileByDidQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 
 export type ProfileAvatarProps = Pick<
   ProfileAvatarButtonProps,

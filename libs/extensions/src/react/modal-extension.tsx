@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Extension } from './extension';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 
 export const ModalExtension = () => {
   const { getModalFromParams } = useRootComponentProps();

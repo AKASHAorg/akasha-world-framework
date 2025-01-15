@@ -1,4 +1,4 @@
-import { useAkashaStore, useProfilesList, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useProfilesList, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { useCallback, useMemo, useRef } from 'react';
 import { DRAFT_EXTENSIONS } from '../../../../../constants';
 import {

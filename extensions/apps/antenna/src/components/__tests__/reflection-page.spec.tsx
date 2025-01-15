@@ -2,7 +2,7 @@ import React, { createRef } from 'react';
 import ReflectionPage from '../pages/entry-page/reflection-page';
 import ReflectEditor from '../reflect-editor';
 import userEvent from '@testing-library/user-event';
-import * as useAkashaStore from '@akashaorg/ui-awf-hooks/lib/store/use-akasha-store';
+import * as useAkashaStore from '@akashaorg/ui-core-hooks/lib/store/use-akasha-store';
 import {
   screen,
   renderWithAllProviders,
@@ -10,7 +10,7 @@ import {
   getAuthenticationStore,
   within,
 } from '@akashaorg/af-testing';
-import { mapReflectEntryData } from '@akashaorg/ui-awf-hooks';
+import { mapReflectEntryData } from '@akashaorg/ui-core-hooks';
 import { formatRelativeTime, truncateDid } from '@akashaorg/design-system-core/lib/utils';
 import {
   REFLECT_FEED,

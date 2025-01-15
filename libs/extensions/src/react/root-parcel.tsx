@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 
 // Using mount root parcel until this pr is merged:
 // https://github.com/single-spa/single-spa/pull/1189

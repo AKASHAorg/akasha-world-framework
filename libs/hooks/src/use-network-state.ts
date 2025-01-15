@@ -129,7 +129,7 @@ const getRequiredNetwork = async () => {
 export function useRequiredNetwork() {
   const [data, setData] = useState<{
     name: string;
-    chainId: 11155111;
+    chainId: string;
   }>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -161,7 +161,7 @@ export function useNetworkChangeListener() {
   const [currentNetwork, setCurrentNetwork] = React.useState(null);
   const globalChannel = getSDK().api.globalChannel;
   const call = globalChannel.pipe(filter(data => data.event === WEB3_EVENTS.CHAIN_CHANGED));
-  const sub = call.subscribe((event: GlobalEventBusData<{ chainId: number }>) => {
+  const sub = call.subscribe((event: GlobalEventBusData<{ chainId: number | string }>) => {
     if (!currentNetwork || currentNetwork.chainId !== event.data?.chainId) {
       setCurrentNetwork(event.data);
     }

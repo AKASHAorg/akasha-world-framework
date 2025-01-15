@@ -3,9 +3,9 @@ import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/Pr
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import FollowProfileButton from '../follow-profile-button';
 import { AkashaProfile, IModalNavigationOptions } from '@akashaorg/typings/lib/ui';
-import { useGetProfileByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-id-query';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useGetProfileByIdQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { selectProfileData } from '@akashaorg/ui-core-hooks/lib/selectors/get-profile-by-id-query';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 
 type EngagementsEntryProps = {
   profileID: string;

@@ -13,7 +13,7 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import { ButtonType } from '@akashaorg/design-system-components/lib/components/types/common.types';
 import UnsavedChangesModal from '@akashaorg/design-system-components/lib/components/UnsavedChangesModal';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 
 export type EditInterestsProps = {
   title: string;

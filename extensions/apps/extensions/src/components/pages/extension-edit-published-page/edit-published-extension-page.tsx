@@ -1,8 +1,8 @@
 import React, { useContext, useMemo, useRef } from 'react';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import { useTranslation } from 'react-i18next';
-import { transformSource, useRootComponentProps, useSaveImage } from '@akashaorg/ui-awf-hooks';
-import { useGetAppsByIdQuery, useUpdateAppMutation } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { transformSource, useRootComponentProps, useSaveImage } from '@akashaorg/ui-core-hooks';
+import { useGetAppsByIdQuery, useUpdateAppMutation } from '@akashaorg/ui-core-hooks/lib/generated';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
@@ -14,7 +14,7 @@ import ExtensionEditPublishedForm, {
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { useNavigate } from '@tanstack/react-router';
 import getSDK from '@akashaorg/core-sdk';
-import { selectAppData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
+import { selectAppData } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-id-query';
 import { ExtType, MAX_GALLERY_IMAGES } from '../../../constants';
 import { AtomContext, formDefaultData } from './main-page';
 import { useAtom } from 'jotai';

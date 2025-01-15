@@ -6,7 +6,7 @@ import {
   AkashaAppApplicationType,
   AppImageSource,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { transformSource } from '@akashaorg/ui-awf-hooks/lib/utils/media-utils';
+import { transformSource } from '@akashaorg/ui-core-hooks/lib/utils/media-utils';
 
 export type ExtensionHeaderProps = {
   pageTitle?: string;

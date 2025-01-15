@@ -14,7 +14,7 @@ import {
   transformSource,
   useAkashaStore,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useGalleryImages } from './use-gallery-image';

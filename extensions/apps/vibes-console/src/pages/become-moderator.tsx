@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { BMConfirmation, BMDetails, BMIntro } from '../components/applications/become-moderator';
 import { BMIntroSubtitles } from '../utils';
 import routes, { HOME } from '../routes';

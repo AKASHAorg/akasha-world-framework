@@ -17,9 +17,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { MenuProps } from '@akashaorg/design-system-core/lib/components/Menu';
 import { EllipsisHorizontalIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import { selectAkashaAppStreamStatus } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-stream-query';
-import { useGetAppsStreamQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-core-hooks';
+import { selectAkashaAppStreamStatus } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-stream-query';
+import { useGetAppsStreamQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { ExtensionStatus } from '@akashaorg/typings/lib/ui';
 import { getExtensionStatus, getStatusIndicatorStyle } from '../../../utils/extension-utils';
 import {

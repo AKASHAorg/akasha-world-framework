@@ -8,13 +8,13 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import { ProfileImageVersions } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-core-hooks';
+import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-core-hooks/lib/generated';
 import getSDK from '@akashaorg/core-sdk';
 import {
   selectApps,
   selectPageInfo,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import { NetworkStatus } from '@apollo/client';

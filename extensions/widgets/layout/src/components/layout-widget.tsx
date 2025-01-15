@@ -6,7 +6,7 @@ import {
   usePlaformHealthCheck,
   useRootComponentProps,
   useTheme,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import {
   startMobileSidebarHidingBreakpoint,
   startWidgetsTogglingBreakpoint,

@@ -16,11 +16,11 @@ import {
   NotificationEvents,
   NotificationTypes,
 } from '@akashaorg/typings/lib/ui';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import {
   useCreateFollowMutation,
   useUpdateFollowMutation,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { updateFollowMutationCache } from './update-follow-mutation-cache';
 
 export type FollowButtonProps = Pick<DuplexButtonProps, 'activeVariant' | 'inactiveVariant'> & {

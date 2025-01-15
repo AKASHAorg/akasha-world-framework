@@ -1,8 +1,8 @@
 import React from 'react';
 import Tooltip from '@akashaorg/design-system-core/lib/components/Tooltip';
 import { useTranslation } from 'react-i18next';
-import { useGetFollowDocumentsByDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { hasOwn, useAkashaStore } from '@akashaorg/ui-awf-hooks';
+import { useGetFollowDocumentsByDidQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { hasOwn, useAkashaStore } from '@akashaorg/ui-core-hooks';
 import { FollowButton, FollowButtonProps } from './follow-button';
 
 export type FollowProfileButtonProps = Omit<

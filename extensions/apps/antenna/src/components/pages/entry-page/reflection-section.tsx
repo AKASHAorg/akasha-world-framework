@@ -8,7 +8,7 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import routes, { REFLECT } from '../../../routes';
 import { useTranslation } from 'react-i18next';
 import { ReflectionData } from '@akashaorg/typings/lib/ui';
-import { transformSource } from '@akashaorg/ui-awf-hooks';
+import { transformSource } from '@akashaorg/ui-core-hooks';
 import { useRouterState } from '@tanstack/react-router';
 
 export type ReflectionSectionProps = {

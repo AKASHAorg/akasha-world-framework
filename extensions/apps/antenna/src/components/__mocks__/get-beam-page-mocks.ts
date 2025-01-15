@@ -8,7 +8,7 @@ import {
   GetProfileByDidDocument,
   GetContentBlockByIdDocument,
   GetAppsByIdDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { AUTHENTICATED_DID, BEAM_ID, BEAM_SECTION } from './constants';
 
 export function getBeamSectionMocks() {

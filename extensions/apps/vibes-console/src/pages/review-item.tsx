@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { ReviewItem } from '../components/dashboard';
 import routes, { DASHBOARD, VIEW_ALL_REPORTS } from '../routes';
 

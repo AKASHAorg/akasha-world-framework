@@ -7,10 +7,10 @@ import React, {
   useState,
 } from 'react';
 import { ParcelConfigObject } from 'single-spa';
-import { hasOwn, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { hasOwn, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { BlockInstanceMethods, ContentBlockModes } from '@akashaorg/typings/lib/ui';
 import { GetContentBlockByIdQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
-import { useGetContentBlockByIdLazyQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetContentBlockByIdLazyQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { RenderError } from './render-error';
 import { RenderBlock } from './render-block';
 import { BlockError } from '../block-error-card';

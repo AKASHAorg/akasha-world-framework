@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import { Outlet } from '@tanstack/react-router';
 

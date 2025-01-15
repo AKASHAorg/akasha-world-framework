@@ -7,10 +7,10 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import routes, { REFLECT } from '../../../routes';
 import { ReflectEditorProps } from '../../reflect-editor';
 import { useTranslation } from 'react-i18next';
-import { transformSource } from '@akashaorg/ui-awf-hooks';
+import { transformSource } from '@akashaorg/ui-core-hooks';
 import { useRouterState } from '@tanstack/react-router';
 import { GetBeamByIdQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
-import { selectBeamId } from '@akashaorg/ui-awf-hooks/lib/selectors/get-beam-by-id-query';
+import { selectBeamId } from '@akashaorg/ui-core-hooks/lib/selectors/get-beam-by-id-query';
 
 export type BeamSectionProps = {
   isActive: boolean;

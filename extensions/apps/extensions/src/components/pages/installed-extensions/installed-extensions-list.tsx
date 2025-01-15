@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next';
 import {
   type InstalledExtension,
   useInstalledExtensions,
-} from '@akashaorg/ui-awf-hooks/lib/use-installed-extensions';
-import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks/lib/use-installed-extensions';
+import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { useNavigate } from '@tanstack/react-router';
 import { getExtensionTypeLabel } from '../../../utils/extension-utils';
 

@@ -1,5 +1,5 @@
 import { genProfileByDID } from '@akashaorg/af-testing';
-import { CreateProfileDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { CreateProfileDocument } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 
 type IGetProfileInfoMocks = {
   profileDID: string;

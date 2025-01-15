@@ -1,7 +1,7 @@
 import React from 'react';
 import { BlockInstanceMethods, ContentBlockRootProps } from '@akashaorg/typings/lib/ui';
 import ReadOnlyEditor from '@akashaorg/design-system-components/lib/components/ReadOnlyEditor';
-import { decodeb64SlateContent, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { decodeb64SlateContent, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 
 export const SlateReadonlyBlock = (

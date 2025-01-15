@@ -1,7 +1,7 @@
 import singleSpaReact from 'single-spa-react';
 import * as React from 'react';
 import ReactDOMClient from 'react-dom/client';
-import { useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import CookieWidget from './cookie-widget';
 import { I18nextProvider } from 'react-i18next';

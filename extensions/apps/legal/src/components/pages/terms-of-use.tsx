@@ -1,6 +1,6 @@
 import React from 'react';
 import { TOU } from '../../routes';
-import { useLegalDoc } from '@akashaorg/ui-awf-hooks';
+import { useLegalDoc } from '@akashaorg/ui-core-hooks';
 import { LEGAL_DOCS } from '@akashaorg/typings/lib/ui';
 
 import PageRenderer from './page-renderer';

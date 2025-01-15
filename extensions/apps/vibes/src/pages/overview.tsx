@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import VibesIntroCard from '@akashaorg/design-system-components/lib/components/VibesIntroCard';
 import VibesValuesCard from '@akashaorg/design-system-components/lib/components/VibesValuesCard';

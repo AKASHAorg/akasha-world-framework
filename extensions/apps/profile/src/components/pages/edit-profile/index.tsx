@@ -10,8 +10,8 @@ import {
   useCreateProfileMutation,
   useGetProfileByDidSuspenseQuery,
   useUpdateProfileMutation,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { transformSource, useRootComponentProps, useSaveImage } from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { transformSource, useRootComponentProps, useSaveImage } from '@akashaorg/ui-core-hooks';
 import { PartialAkashaProfileInput } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import {
   NotificationEvents,
@@ -19,7 +19,7 @@ import {
   PublishProfileData,
 } from '@akashaorg/typings/lib/ui';
 import { getAvatarImage, getCoverImage } from './get-profile-images';
-import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
+import { selectProfileData } from '@akashaorg/ui-core-hooks/lib/selectors/get-profile-by-did-query';
 import EditProfile from '../../edit-profile';
 
 type EditProfilePageProps = {

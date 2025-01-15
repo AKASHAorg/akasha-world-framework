@@ -9,12 +9,12 @@ import routes, { FOLLOWERS } from '../../../routes';
 import {
   useGetFollowersListByDidQuery,
   useGetProfileByDidQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { useRootComponentProps, useAkashaStore, useNsfwToggling } from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { useRootComponentProps, useAkashaStore, useNsfwToggling } from '@akashaorg/ui-core-hooks';
 import { useTranslation } from 'react-i18next';
 import { ENTRY_PER_PAGE, ITEM_SPACING } from '../constants';
-import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
-import { selectPageInfo } from '@akashaorg/ui-awf-hooks/lib/selectors/get-followers-list-by-did-query';
+import { selectProfileData } from '@akashaorg/ui-core-hooks/lib/selectors/get-profile-by-did-query';
+import { selectPageInfo } from '@akashaorg/ui-core-hooks/lib/selectors/get-followers-list-by-did-query';
 
 type FollowersPageProps = {
   profileDID: string;

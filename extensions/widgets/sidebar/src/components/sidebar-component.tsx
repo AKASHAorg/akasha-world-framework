@@ -6,7 +6,7 @@ import {
   useAkashaStore,
   useDismissedCard,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { startMobileSidebarHidingBreakpoint } from '@akashaorg/design-system-core/lib/utils/breakpoints';
 import Link from '@akashaorg/design-system-core/lib/components/Link';
 import Button from '@akashaorg/design-system-core/lib/components/Button';

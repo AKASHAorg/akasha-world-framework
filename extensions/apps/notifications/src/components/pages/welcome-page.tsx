@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRootComponentProps, useAkashaStore, useNotifications } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, useAkashaStore, useNotifications } from '@akashaorg/ui-core-hooks';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import NotificationSettingsCard from '@akashaorg/design-system-components/lib/components/NotificationSettingsCard';

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOMClient from 'react-dom/client';
 import singleSpaReact from 'single-spa-react';
-import { useNotifications, useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useNotifications, useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import { BellAlert } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 
 import {
