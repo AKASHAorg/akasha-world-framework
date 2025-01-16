@@ -1,0 +1,28 @@
+{
+  "name": "@akashaorg/ui",
+  "version": "0.1.0",
+  "author": "AKASHA <hello@akasha.world> (https://akasha.org/)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AKASHAorg/akasha-core.git"
+  },
+  "files": [
+    "lib"
+  ],
+  "directories": {
+    "lib": "lib"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
