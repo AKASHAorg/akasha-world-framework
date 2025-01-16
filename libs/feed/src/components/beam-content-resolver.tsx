@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import BeamCard from './cards/beam-card';
 import EntryCardLoading from '@akashaorg/design-system-components/lib/components/Entry/EntryCardLoading';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import { useGetBeamByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
+import { useGetBeamByIdQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { IModalNavigationOptions } from '@akashaorg/typings/lib/ui';
 import {
   selectBeamId,
   selectNsfw,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-beam-by-id-query';
-import { isNodeWithId } from '@akashaorg/ui-awf-hooks/lib/selectors/selector-utils';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-beam-by-id-query';
+import { isNodeWithId } from '@akashaorg/ui-core-hooks/lib/selectors/selector-utils';
 import { NetworkErrorCard } from './cards/network-error-card';
 import { useTranslation } from 'react-i18next';
 

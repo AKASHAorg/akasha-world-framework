@@ -4,7 +4,7 @@ import { TranslationPlugin } from './translation';
 
 export const register = (): LayoutWidgetInterface => {
   return {
-    rootComponent: () => import('./components/layout-widget'),
+    rootComponent: () => import('./components'),
     /*loadingFn: () => import('./components'),*/
     mountsIn: 'root',
     extensionSlots: {

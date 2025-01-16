@@ -1,6 +1,6 @@
 {
   "name": "@akashaorg/composedb-models",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "type": "module",
   "description": "ComposeDB models used in akasha-core",
   "author": "AKASHA Foundation <hello@akasha.org> (https://akasha.org/)",

@@ -8,8 +8,8 @@ import {
   hasOwn,
   useAkashaStore,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
-import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks';
+import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import {
   EventTypes,
   ExtensionStatus,

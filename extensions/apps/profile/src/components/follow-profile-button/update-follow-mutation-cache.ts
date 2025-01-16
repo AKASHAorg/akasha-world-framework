@@ -1,7 +1,7 @@
 import { GetFollowDocumentsByDidQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
 import { AkashaProfile } from '@akashaorg/typings/lib/ui';
-import { GetFollowDocumentsByDidDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { selectFollowDocuments } from '@akashaorg/ui-awf-hooks/lib/selectors/get-follow-documents-by-did-query';
+import { GetFollowDocumentsByDidDocument } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { selectFollowDocuments } from '@akashaorg/ui-core-hooks/lib/selectors/get-follow-documents-by-did-query';
 import { ApolloCache } from '@apollo/client';
 
 interface IUpdateCache {

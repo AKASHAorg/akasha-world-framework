@@ -4,7 +4,7 @@ import ReactDOMClient from 'react-dom/client';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import FollowProfileButton from '../components/follow-profile-button';
 import { I18nextProvider } from 'react-i18next';
-import { useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import { IModalNavigationOptions, IRootExtensionProps } from '@akashaorg/typings/lib/ui';
 import { FollowButtonProps } from '../components/follow-profile-button/follow-button';
 

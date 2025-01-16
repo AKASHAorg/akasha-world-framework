@@ -1,7 +1,7 @@
 import React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { RouterProvider } from '@tanstack/react-router';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { router } from './widget-routes';
 
 declare module '@tanstack/react-router' {

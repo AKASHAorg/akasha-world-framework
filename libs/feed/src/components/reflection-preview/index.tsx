@@ -3,7 +3,7 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import ReflectionCard from '../cards/reflection-card';
-import { useGetReflectReflectionsQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetReflectReflectionsQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { EntityTypes, IContentClickDetails } from '@akashaorg/typings/lib/ui';
 import { useTranslation } from 'react-i18next';
 import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';

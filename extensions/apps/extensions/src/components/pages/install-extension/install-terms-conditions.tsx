@@ -18,16 +18,16 @@ import {
   SortOrder,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
-import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-core-hooks/lib/generated';
 import getSDK from '@akashaorg/core-sdk';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import {
   selectAkashaApp,
   selectAppDisplayName,
   selectAppLogoImage,
   selectPublisherName,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 
 enum TermsFields {

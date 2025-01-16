@@ -1,7 +1,7 @@
 import twindConfig from '@akashaorg/design-system-core/src/twind/twind.config';
-import * as useRootComponentProps from '@akashaorg/ui-awf-hooks/lib/use-root-props';
-import * as useAkashaStore from '@akashaorg/ui-awf-hooks/lib/store/use-akasha-store';
-import * as useAnalytics from '@akashaorg/ui-awf-hooks/lib/use-analytics';
+import * as useRootComponentProps from '@akashaorg/ui-core-hooks/lib/use-root-props';
+import * as useAkashaStore from '@akashaorg/ui-core-hooks/lib/store/use-akasha-store';
+import * as useAnalytics from '@akashaorg/ui-core-hooks/lib/use-analytics';
 import { genAppProps, getUserInfo, getAuthenticationStore } from '@akashaorg/af-testing';
 import { install } from '@twind/core';
 import '@testing-library/jest-dom';

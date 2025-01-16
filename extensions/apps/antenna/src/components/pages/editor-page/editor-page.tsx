@@ -4,7 +4,7 @@ import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoade
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import { useTranslation } from 'react-i18next';
 import { Extension } from '@akashaorg/ui-lib-extensions/lib/react/extension';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 const EditorPage: React.FC<unknown> = () => {

@@ -3,7 +3,7 @@ import {
   GetAppsReleasesQuery,
 } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
 import { SortOrder } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { GetAppsReleasesDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { GetAppsReleasesDocument } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { ApolloCache } from '@apollo/client';
 
 interface IUpdateCache {

@@ -8,7 +8,7 @@ import {
   useRootComponentProps,
   useListenForMutationEvents,
   filterEvent,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import {
   IRootExtensionProps,
   MenuItemAreaType,

@@ -1,7 +1,7 @@
 import getSDK from '@akashaorg/core-sdk';
 import { ContentBlockModes } from '@akashaorg/typings/lib/ui';
 import { MatchingBlock } from './common.types';
-import { hasOwn } from '@akashaorg/ui-awf-hooks';
+import { hasOwn } from '@akashaorg/ui-core-hooks';
 
 interface IResolveConfigs {
   matchingBlocks: MatchingBlock[];

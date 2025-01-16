@@ -1,4 +1,3 @@
-import 'systemjs-webpack-interop/auto-public-path';
 // these hooks should remain
 export * from './use-root-props';
 export * from './use-analytics';

@@ -2,7 +2,7 @@ import { genReflectionData } from '@akashaorg/af-testing';
 import {
   CreateReflectDocument,
   GetFollowingListByDidDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 
 interface IGetReflectEditorMocks {
   reflectionId: string;

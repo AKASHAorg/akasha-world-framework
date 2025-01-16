@@ -4,7 +4,7 @@ import singleSpaReact from 'single-spa-react';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import App from './App';
 import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
-import { withProviders } from '@akashaorg/ui-awf-hooks';
+import { withProviders } from '@akashaorg/ui-core-hooks';
 
 const reactLifecycles = singleSpaReact({
   React,

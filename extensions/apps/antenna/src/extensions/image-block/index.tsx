@@ -2,7 +2,7 @@ import * as React from 'react';
 import singleSpaReact from 'single-spa-react';
 import ReactDOMClient from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
-import { useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import {
   BlockInstanceMethods,

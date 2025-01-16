@@ -4,7 +4,7 @@ import { BlockInstanceMethods, ContentBlockRootProps } from '@akashaorg/typings/
 import ImageBlockGallery from '@akashaorg/design-system-components/lib/components/ImageBlockGallery';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import { transformSource } from '@akashaorg/ui-awf-hooks';
+import { transformSource } from '@akashaorg/ui-core-hooks';
 
 export const ImageReadonlyBlock = (
   props: ContentBlockRootProps & { blockRef?: React.RefObject<BlockInstanceMethods> },

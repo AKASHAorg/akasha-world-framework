@@ -2,7 +2,7 @@ import { genInterestsByDID } from '@akashaorg/af-testing';
 import {
   CreateInterestsDocument,
   UpdateInterestsDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { AUTHENTICATED_DID } from './constants';
 
 interface IGetSubscriptionsMocks {

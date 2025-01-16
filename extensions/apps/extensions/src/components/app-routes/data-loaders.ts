@@ -1,5 +1,5 @@
 import getSdk from '@akashaorg/core-sdk';
-import { GetAppsByIdDocument, GetAppsDocument } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { GetAppsByIdDocument, GetAppsDocument } from '@akashaorg/ui-core-hooks/lib/generated';
 import {
   GetAppsByIdQuery,
   GetAppsQuery,

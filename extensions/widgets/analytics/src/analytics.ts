@@ -4,7 +4,7 @@ import {
   AnalyticsEventTypes,
   IRootComponentProps,
 } from '@akashaorg/typings/lib/ui';
-import { filterEvents } from '@akashaorg/ui-awf-hooks';
+import { filterEvents } from '@akashaorg/ui-core-hooks';
 
 export interface CustomSingleSpaEvent extends Event {
   detail: SingleSpaCustomEventDetail;

@@ -21,7 +21,7 @@ import {
   useMentions,
   useProfilesList,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { useTranslation } from 'react-i18next';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import { useNavigate } from '@tanstack/react-router';

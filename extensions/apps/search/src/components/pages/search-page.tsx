@@ -13,7 +13,7 @@ import {
   useRootComponentProps,
   transformSource,
   useAkashaStore,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import EntryCardRenderer from './entry-renderer';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';

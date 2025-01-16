@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { useEffect } from 'react';
 
 type ProfileWithAuthorizationProps = {

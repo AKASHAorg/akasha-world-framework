@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PublishProfileData } from '@akashaorg/typings/lib/ui';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { InputType, NSFW } from '@akashaorg/design-system-components/lib/components/NSFW';

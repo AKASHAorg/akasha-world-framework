@@ -6,14 +6,14 @@ import TrendingWidgetLoadingCard from '@akashaorg/design-system-components/lib/c
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import { useTranslation } from 'react-i18next';
-import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import {
   useGetInterestsByDidQuery,
   useGetInterestsStreamQuery,
   useGetProfileStreamQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { LatestProfiles, LatestTopics } from './cards';
-import { useGetIndexingDID } from '@akashaorg/ui-awf-hooks/lib/use-settings';
+import { useGetIndexingDID } from '@akashaorg/ui-core-hooks/lib/use-settings';
 import { SortOrder } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 
 const TrendingWidgetComponent: React.FC<unknown> = () => {

@@ -14,12 +14,12 @@ import {
   useProfileStats,
   useRootComponentProps,
   withProviders,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import {
   useGetBeamByIdQuery,
   useGetProfileByDidQuery,
   useGetReflectionByIdQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { Extension } from '@akashaorg/ui-lib-extensions/lib/react/extension';
 import {
   createRootRoute,

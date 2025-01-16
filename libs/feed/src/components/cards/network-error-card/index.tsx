@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import InlineNotification from '@akashaorg/design-system-core/lib/components/InlineNotification';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { useTranslation } from 'react-i18next';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { Radius } from '@akashaorg/design-system-core/lib/components/types/common.types';

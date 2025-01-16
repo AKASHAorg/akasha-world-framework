@@ -4,7 +4,7 @@ import { RootParcel } from '../root-parcel';
 import { MatchingBlock } from './common.types';
 import { BlockInstanceMethods, ContentBlockModes } from '@akashaorg/typings/lib/ui';
 import { ParcelConfigObject } from 'single-spa';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 
 export type BlockParcelProps = {
   matchingBlock: MatchingBlock & { config: ParcelConfigObject };

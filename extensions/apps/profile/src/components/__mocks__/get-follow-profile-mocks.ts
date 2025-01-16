@@ -1,4 +1,4 @@
-import { CreateFollowDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { CreateFollowDocument } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { genProfileByDID } from '@akashaorg/af-testing';
 
 interface IGetFollowProfileMocks {

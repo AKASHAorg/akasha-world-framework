@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, ChangeEvent, KeyboardEvent, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { type ContentBlock } from '@akashaorg/typings/lib/ui';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
@@ -16,7 +16,7 @@ import { Header } from './header';
 import { Footer } from './footer';
 import { BlockHeader } from '@akashaorg/design-system-components/lib/components/BlockHeader';
 import { useBlocksPublishing } from './use-blocks-publishing';
-import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { EditorUIState } from './types';
 
 export const BeamEditor: React.FC = () => {

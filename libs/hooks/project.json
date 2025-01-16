@@ -1,5 +1,5 @@
 {
-  "name": "@akashaorg/ui-awf-hooks",
+  "name": "@akashaorg/ui-core-hooks",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/hooks/src",
   "projectType": "application",
@@ -26,6 +26,21 @@
         "{projectRoot}/lib",
         "{workspaceRoot}/dist/libs/hooks"
       ]
+    },
+    "prepare-publish": {
+      "dependsOn": ["extract-package-json"],
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "libs/hooks",
+        "command": "tsc -p tsconfig.publish.json"
+      }
+    },
+    "extract-package-json": {
+      "executor": "@akashaorg/package-utils-plugin:extract-dependencies",
+      "options": {
+        "outputPath":  "{workspaceRoot}/dist/npm/hooks",
+        "cwd": "libs/hooks"
+      }
     }
   },
   "tags": ["scope:extension", "type:lib"]

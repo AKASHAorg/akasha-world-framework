@@ -1,20 +1,18 @@
 import { inject, injectable } from 'inversify';
-import { BrowserProvider, ethers } from 'ethers';
-import {
-  // EthProviders,
-  // EthProvidersSchema,
-  PROVIDER_ERROR_CODES,
-  TYPES,
-  WEB3_EVENTS,
-} from '@akashaorg/typings/lib/sdk';
+import { BrowserProvider, Eip1193Provider, ethers } from 'ethers';
+import { PROVIDER_ERROR_CODES, TYPES, WEB3_EVENTS } from '@akashaorg/typings/lib/sdk';
 import Logging from '../logging';
 import EventBus from './event-bus';
 import pino from 'pino';
 import { createFormattedValue } from '../helpers/observable';
 import { validate } from './validator';
 import { z } from 'zod';
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers';
 import AWF_Config from './config';
+
+import { AppKit, createAppKit } from '@reown/appkit';
+import { EthersAdapter } from '@reown/appkit-adapter-ethers';
+import { sepolia } from '@reown/appkit/networks';
+import type { ConnectMethod } from '@reown/appkit-core';
 
 @injectable()
 class Web3Connector {
@@ -23,20 +21,21 @@ class Web3Connector {
   #web3Instance: ethers.BrowserProvider | undefined | null;
   #globalChannel: EventBus;
   #wallet: ethers.Wallet | null;
-  #w3modal: ReturnType<typeof createWeb3Modal>;
+  #w3modal: AppKit;
   #currentProviderType: string | undefined | null;
   readonly network = 'sepolia';
   #networkId = '0xaa36a7';
   // mapping for network name and ids
   readonly networkId = Object.freeze({
-    mainnet: 1,
-    ropsten: 3,
-    rinkeby: 4,
-    goerli: 5,
-    kovan: 42,
-    sepolia: 11155111,
+    mainnet: 'eip155:1',
+    ropsten: 'eip155:3',
+    rinkeby: 'eip155:4',
+    goerli: 'eip155:5',
+    kovan: 'eip155:42',
+    sepolia: 'eip155:11155111',
   });
   private _config: AWF_Config;
+
   /*
    * Web3Connector constructor
    *
@@ -72,42 +71,33 @@ class Web3Connector {
     if (!projectId) {
       throw new Error('WALLETCONNECT_PROJECT_ID is not set');
     }
-    const chains = [
-      {
-        chainId: this.networkId.sepolia,
-        name: 'Ethereum',
-        currency: 'ETH',
-        explorerUrl: 'https://sepolia.etherscan.io/',
-        rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
-      },
-    ];
-
-    const ethersConfig = defaultConfig({
-      metadata: {
-        name: 'AKASHA World',
-        description: 'AKASHA Web3Modal',
-        url: 'https://akasha.world',
-        icons: ['https://avatars.githubusercontent.com/u/9638191'],
-      },
-      defaultChainId: this.networkId.sepolia,
-      rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
-      enableCoinbase: true,
-    });
-
-    this.#w3modal = createWeb3Modal({
-      defaultChain: chains[0],
-      ethersConfig,
+    const metadata = {
+      name: 'AKASHA World',
+      description: 'AKASHA Web3Modal',
+      url: 'https://akasha.world',
+      icons: ['https://avatars.githubusercontent.com/u/9638191'],
+    };
+    this.#w3modal = createAppKit({
+      adapters: [new EthersAdapter()],
+      networks: [sepolia],
+      metadata,
       projectId,
-      chains,
       themeMode: 'light',
       themeVariables: {
         '--w3m-font-family': 'Inter, Content-font, Roboto, sans-serif',
         '--w3m-color-mix': '#7222d2',
         '--w3m-accent': '#4e71ff',
       },
+      features: {
+        analytics: true,
+      },
       privacyPolicyUrl: 'https://akasha.org/privacy-policy/',
       termsConditionsUrl: 'https://akasha.org/legal/',
+      defaultNetwork: sepolia,
+      enableCoinbase: true,
+      enableAuthLogger: false,
     });
+    this.setConnectionFeatures();
     this.#_registerWalletChangeEvents();
   }
 
@@ -129,12 +119,12 @@ class Web3Connector {
    * If already connected, resolves returning current connected state.
    */
   async connect(): Promise<{ connected: boolean; unsubscribe?: () => void }> {
-    if (!this.#w3modal.getIsConnected()) {
+    if (!this.#w3modal.getIsConnectedState()) {
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async resolve => {
-        const unsubscribe = this.#w3modal.subscribeProvider(state => {
-          if (state.provider && state.isConnected && state.address) {
-            resolve({ connected: true, unsubscribe });
+        this.#w3modal.subscribeAccount(state => {
+          if (state.isConnected && state.address) {
+            resolve({ connected: true });
             if (this.#w3modal.getState().open) {
               this.#w3modal.close();
             }
@@ -144,7 +134,16 @@ class Web3Connector {
         await this.#w3modal.open();
       });
     }
-    return Promise.resolve({ connected: this.#w3modal.getIsConnected() });
+    return Promise.resolve({ connected: this.#w3modal.getIsConnectedState() });
+  }
+
+  /**
+   * Sets the order of connection methods for the Web3Modal.
+   *
+   * @param connectionFeatures - An array of connection methods to set the order for. Defaults to `['wallet']`.
+   */
+  setConnectionFeatures(connectionFeatures: ConnectMethod[] = ['wallet']) {
+    this.#w3modal.setConnectMethodsOrder(connectionFeatures);
   }
 
   /*
@@ -191,9 +190,9 @@ class Web3Connector {
    * This allows reacting to changes in wallet connection state.
    */
   #_registerWalletChangeEvents() {
-    this.#w3modal.subscribeProvider(event => {
-      if (event.isConnected) {
-        const provider = this.#w3modal.getWalletProvider();
+    this.#w3modal.subscribeProviders(() => {
+      if (this.#w3modal.getIsConnectedState()) {
+        const provider = this.#w3modal.getWalletProvider() as Eip1193Provider;
         if (provider) {
           this.#web3Instance = new BrowserProvider(provider);
         }
@@ -205,10 +204,6 @@ class Web3Connector {
         if (this.#web3Instance) {
           // need to find a different way
           //this.#_registerProviderChangeEvents(this.#web3Instance);
-        }
-      } else {
-        if (this.#web3Instance) {
-          this.#web3Instance.removeAllListeners(['accountsChanged', 'chainChanged']);
         }
       }
     });
@@ -226,7 +221,7 @@ class Web3Connector {
   get state() {
     return {
       providerType: this.#currentProviderType,
-      connected: this.#w3modal.getIsConnected(),
+      connected: this.#w3modal.getIsConnectedState(),
       address: this.#w3modal.getAddress(),
       chainId: this.#w3modal.getChainId(),
     };
@@ -260,7 +255,7 @@ class Web3Connector {
   async disconnect(): Promise<void> {
     this.#web3Instance = null;
     this.#currentProviderType = null;
-    if (this.#w3modal && this.#w3modal.getIsConnected()) {
+    if (this.#w3modal && this.#w3modal.getIsConnectedState()) {
       await this.#w3modal?.disconnect();
     }
     this.#globalChannel.next({
@@ -347,7 +342,7 @@ class Web3Connector {
    * Ensures that the web3 provider is connected to the specified network
    */
   async #_checkCurrentNetwork() {
-    if (!this.#w3modal.getIsConnected()) {
+    if (!this.#w3modal.getIsConnectedState()) {
       throw new Error('Must connect first to a provider!');
     }
     const network = this.#w3modal.getState();

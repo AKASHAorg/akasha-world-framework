@@ -3,16 +3,16 @@ import InstallApp, {
   InstallAppProps,
 } from '@akashaorg/design-system-components/lib/components/InstallApp';
 import { useTranslation } from 'react-i18next';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
-import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-core-hooks/lib/generated';
 import {
   selectAppDisplayName,
   selectAppPublisher,
   selectAppLogoImage,
   selectAppType,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import getSDK from '@akashaorg/core-sdk';
 import { AkashaAppApplicationType, SortOrder } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { getReportedError, getReportedProgress } from './utils';
