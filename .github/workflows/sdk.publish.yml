@@ -41,6 +41,9 @@ jobs:
           NODE_ENV: production
         run: |
           yarn install --immutable
+      - name: Add missing deps
+        run: |
+          yarn add @akashaorg/typings @akashaorg/composedb-models @akashaorg/core-sdk
       - run: echo "${GITHUB_WORKSPACE}/node_modules/.bin" >> $GITHUB_PATH
       - run: nx run-many --target=prepare-publish --all --verbose
       - name: Publish @akashaorg/typings
@@ -66,6 +69,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
       - name: Publish @akashaorg/ui-core-hooks
         working-directory: dist/npm/hooks
-        run: npm publish --provenance --access public
+        run: |
+          yarn add @akashaorg/core-sdk
+          npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
