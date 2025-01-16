@@ -11,9 +11,6 @@ import { AkashaBeam } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { type EntryData, EntityTypes, NavigateToParams } from '@akashaorg/typings/lib/ui';
 import { ListItem } from '@akashaorg/design-system-core/lib/components/List';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
-import ErrorBoundary, {
-  ErrorBoundaryProps,
-} from '@akashaorg/design-system-core/lib/components/ErrorBoundary';
 
 type BeamProps = {
   sortedContents: AkashaBeam['content'];
@@ -119,13 +116,6 @@ const EntryCard: React.FC<EntryCardProps> = props => {
     ? `${getColorClasses({ light: 'grey9/60', dark: 'grey3' }, 'hover:bg')} ${hoverStyleLastEntry}`
     : '';
 
-  const errorBoundaryProps: Pick<ErrorBoundaryProps, 'errorObj' | 'logger'> = {
-    errorObj: {
-      type: 'script-error',
-      title: 'Error in beam rendering',
-    },
-  };
-
   const entryCardUi = (
     <Card
       type="plain"
@@ -167,82 +157,80 @@ const EntryCard: React.FC<EntryCardProps> = props => {
           />
         )}
         {entryData.active && (
-          <ErrorBoundary {...errorBoundaryProps}>
-            <Card
-              type="plain"
-              customStyle={`flex flex-col justify-start items-center w-full overflow-hidden grow ${showHiddenStyle} ${contentClickableStyle}`}
-              /**
-               * attach onClick handler if
-               * 'showNSFWContent' and 'noWrapperCard' are both true
-               */
-              {...(showNSFWContent && noWrapperCard && { onClick: onContentClick })}
-            >
-              {/* show the overlay in two cases: the user not logged in, or the beam is nsfw and
+          <Card
+            type="plain"
+            customStyle={`flex flex-col justify-start items-center w-full overflow-hidden grow ${showHiddenStyle} ${contentClickableStyle}`}
+            /**
+             * attach onClick handler if
+             * 'showNSFWContent' and 'noWrapperCard' are both true
+             */
+            {...(showNSFWContent && noWrapperCard && { onClick: onContentClick })}
+          >
+            {/* show the overlay in two cases: the user not logged in, or the beam is nsfw and
               the nsfw setting is off */}
-              {((showNSFWCard && !nsfwUserSetting && !showNSFWContent) ||
-                (!isLoggedIn && showNSFWCard)) && (
-                <NSFW
-                  {...nsfw}
-                  onClickToView={event => {
-                    event.stopPropagation();
-                    if (!isLoggedIn) {
-                      if (showLoginModal && typeof showLoginModal === 'function') {
-                        showLoginModal(
-                          null,
-                          'To view explicit or sensitive content, please connect to confirm your consent.',
-                        );
-                      }
-                    } else {
-                      setShowNSFWContent(true);
+            {((showNSFWCard && !nsfwUserSetting && !showNSFWContent) ||
+              (!isLoggedIn && showNSFWCard)) && (
+              <NSFW
+                {...nsfw}
+                onClickToView={event => {
+                  event.stopPropagation();
+                  if (!isLoggedIn) {
+                    if (showLoginModal && typeof showLoginModal === 'function') {
+                      showLoginModal(
+                        null,
+                        'To view explicit or sensitive content, please connect to confirm your consent.',
+                      );
                     }
-                  }}
-                />
-              )}
-              {/*
-               * display the content in case: the content is not nsfw or, the showNSFWContent flag
-               * is true or, the nsfw setting is on and the user is logged in.
-               */}
-              {(!entryData.nsfw || showNSFWContent || (nsfwUserSetting && isLoggedIn)) && (
-                <Stack
-                  justifySelf="start"
-                  alignSelf="start"
-                  align="start"
-                  spacing="gap-y-2"
-                  customStyle="grow"
-                  fullWidth={true}
-                >
-                  {(props as ReflectProps).content ||
-                    (props as BeamProps).sortedContents?.map(item => (
-                      <Fragment key={item.blockID}>
-                        {(props as BeamProps).children({ blockID: item.blockID })}
-                      </Fragment>
-                    ))}
-                </Stack>
-              )}
-              {showHiddenContent && entryData.tags?.length > 0 && (
-                <Stack
-                  justify="start"
-                  direction="row"
-                  spacing="gap-2"
-                  customStyle="flex-wrap mt-auto"
-                  fullWidth
-                >
-                  {entryData.tags?.map((tag, index) => (
-                    <Pill
-                      key={index}
-                      label={tag}
-                      onPillClick={() => {
-                        if (typeof onTagClick === 'function') {
-                          onTagClick(tag);
-                        }
-                      }}
-                      type="action"
-                    />
+                  } else {
+                    setShowNSFWContent(true);
+                  }
+                }}
+              />
+            )}
+            {/*
+             * display the content in case: the content is not nsfw or, the showNSFWContent flag
+             * is true or, the nsfw setting is on and the user is logged in.
+             */}
+            {(!entryData.nsfw || showNSFWContent || (nsfwUserSetting && isLoggedIn)) && (
+              <Stack
+                justifySelf="start"
+                alignSelf="start"
+                align="start"
+                spacing="gap-y-2"
+                customStyle="grow"
+                fullWidth={true}
+              >
+                {(props as ReflectProps).content ||
+                  (props as BeamProps).sortedContents?.map(item => (
+                    <Fragment key={item.blockID}>
+                      {(props as BeamProps).children({ blockID: item.blockID })}
+                    </Fragment>
                   ))}
-                </Stack>
-              )}
-            </Card>
-          </ErrorBoundary>
+              </Stack>
+            )}
+            {showHiddenContent && entryData.tags?.length > 0 && (
+              <Stack
+                justify="start"
+                direction="row"
+                spacing="gap-2"
+                customStyle="flex-wrap mt-auto"
+                fullWidth
+              >
+                {entryData.tags?.map((tag, index) => (
+                  <Pill
+                    key={index}
+                    label={tag}
+                    onPillClick={() => {
+                      if (typeof onTagClick === 'function') {
+                        onTagClick(tag);
+                      }
+                    }}
+                    type="action"
+                  />
+                ))}
+              </Stack>
+            )}
+          </Card>
         )}
         {!hideActionButtons && (
           <CardActions
