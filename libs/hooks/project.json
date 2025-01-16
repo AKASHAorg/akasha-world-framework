@@ -28,7 +28,7 @@
       ]
     },
     "prepare-publish": {
-      "dependsOn": ["extract-package-json"],
+      "dependsOn": ["@akashaorg/core-sdk:prepare","extract-package-json"],
       "executor": "nx:run-commands",
       "options": {
         "cwd": "libs/hooks",
