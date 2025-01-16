@@ -6,6 +6,7 @@ import {
   usePlaformHealthCheck,
   useRootComponentProps,
   useTheme,
+  withProviders,
 } from '@akashaorg/ui-awf-hooks';
 import {
   startMobileSidebarHidingBreakpoint,
@@ -284,4 +285,4 @@ const LayoutWidget = () => {
   );
 };
 
-export default React.memo(LayoutWidget);
+export default withProviders(LayoutWidget);

@@ -33,7 +33,7 @@ import { PhotoIcon } from '@akashaorg/design-system-core/lib/components/Icon/her
  */
 
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   mountsIn: opts.layoutSlots?.applicationSlotId,
 
   /**

@@ -10,7 +10,7 @@ import { GlobeAltIcon } from '@akashaorg/design-system-core/lib/components/Icon/
 
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => {
   return {
-    loadingFn: () => import('./components'),
+    rootComponent: () => import('./components'),
     mountsIn: opts.layoutSlots?.applicationSlotId,
     i18nNamespace: ['app-auth-ewa'],
     // allow other apps to navigate to this app

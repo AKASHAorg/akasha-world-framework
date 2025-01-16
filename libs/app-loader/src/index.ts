@@ -18,7 +18,7 @@ import {
   getUserInstalledExtensions,
   getWorldDefaultExtensions,
 } from './extensions';
-import getSDK, { SDK_Services, SDK_API } from '@akashaorg/core-sdk';
+import getSDK, { SDK_API, SDK_Services } from '@akashaorg/core-sdk';
 import { InstalledExtensionSchema } from '@akashaorg/core-sdk/lib/db/installed-extensions.schema';
 import {
   CorePlugins,
@@ -46,6 +46,7 @@ import { ExtensionInstaller } from './plugins/extension-installer';
 import { SystemModuleType } from './type-utils';
 import { RoutingPlugin } from './plugins/routing-plugin';
 import { TestModeLoader } from './plugins/test-mode-loader';
+import { createLoadingFunction } from './loading-functions';
 
 const isWindow = window && typeof window !== 'undefined';
 const encodeAppName = (name: string) => (isWindow ? encodeURIComponent(name) : name);
@@ -668,12 +669,17 @@ export default class AppLoader {
     return extensionConfigs;
   };
 
-  renderLayout = () => {
+  renderLayout = async () => {
     const layoutConf = this.layoutConfig;
     const logger = this.parentLogger.create(this.worldConfig.layout);
+
+    if (!layoutConf.rootComponent || typeof layoutConf.rootComponent !== 'function') {
+      logger.error('Layout module does not have a root component!');
+    }
+
     singleSpa.registerApplication({
       name: this.worldConfig.layout,
-      app: layoutConf.loadingFn,
+      app: () => createLoadingFunction(layoutConf.rootComponent, layoutConf.UILib, { logger }),
       activeWhen: () => true,
       customProps: {
         domElement: getDomElement(layoutConf, this.worldConfig.layout, logger),
@@ -710,8 +716,12 @@ export default class AppLoader {
 
   singleSpaRegister = (extensionConfigs: Map<string, IAppConfig & { name: string }>) => {
     for (const [name, conf] of extensionConfigs) {
+      const logger = this.parentLogger.create(name);
       if (singleSpa.getAppNames().includes(name)) continue;
-      if (!conf.loadingFn || typeof conf.loadingFn !== 'function') continue;
+      if (!conf.rootComponent || typeof conf.rootComponent !== 'function') {
+        logger.error('%s extension config does not have a root component!', name);
+        continue;
+      }
 
       const extensionData = this.extensionData.find(m => m.name === name);
 
@@ -748,7 +758,7 @@ export default class AppLoader {
       };
       singleSpa.registerApplication({
         name,
-        app: conf.loadingFn,
+        app: () => createLoadingFunction(conf.rootComponent, conf.UILib, { logger }),
         activeWhen,
         customProps: {
           ...customProps,
