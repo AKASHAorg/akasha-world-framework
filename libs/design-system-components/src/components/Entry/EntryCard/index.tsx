@@ -4,10 +4,7 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import EntryCardRemoved from '../EntryCardRemoved';
 import CardActions from './card-actions';
 import InlineNotification from '@akashaorg/design-system-core/lib/components/InlineNotification';
-import {
-  EllipsisHorizontalIcon,
-  FlagIcon,
-} from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
+import { EllipsisHorizontalIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import ReadOnlyEditor from '../../ReadOnlyEditor';
 import NSFW, { NSFWProps } from '../NSFW';
 import Menu from '@akashaorg/design-system-core/lib/components/Menu';
@@ -20,7 +17,6 @@ import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import ErrorBoundary, {
   ErrorBoundaryProps,
 } from '@akashaorg/design-system-core/lib/components/ErrorBoundary';
-import { TrashIcon } from '@heroicons/react/24/outline';
 
 type BeamProps = {
   sortedContents: AkashaBeam['content'];
@@ -36,7 +32,6 @@ type ReflectProps = {
 export type EntryCardProps = {
   entryData: EntryData;
   profileAvatar: ReactNode;
-  flagAsLabel?: string;
   moderatedContentLabel?: string;
   ctaLabel?: string;
   removeEntryLabel?: string;
@@ -70,6 +65,7 @@ export type EntryCardProps = {
   customStyle?: string;
   ref?: Ref<HTMLDivElement>;
   dataTestId?: string;
+  menuItems: ListItem[];
   onReflect?: () => void;
   onTagClick?: (tag: string) => void;
   onMentionClick?: (profileId: string) => void;
@@ -85,11 +81,9 @@ const EntryCard: React.FC<EntryCardProps> = props => {
     entryData,
     profileAvatar,
     ref,
-    flagAsLabel,
     removed,
     nsfw,
     reflectAnchorLink,
-    disableReporting,
     isViewer,
     isLoggedIn,
     disableActions = false,
@@ -106,12 +100,10 @@ const EntryCard: React.FC<EntryCardProps> = props => {
     customStyle = '',
     onTagClick,
     onContentClick,
-    onEntryFlag,
     onReflect,
     showLoginModal,
-    removeEntryLabel,
-    onEntryRemove,
     dataTestId,
+    menuItems,
     ...rest
   } = props;
 
@@ -125,29 +117,6 @@ const EntryCard: React.FC<EntryCardProps> = props => {
   const contentClickableStyle =
     contentClickable && !showNSFWCard ? 'cursor-pointer' : 'cursor-default';
 
-  const menuItems: ListItem[] = [
-    ...(!isViewer && flagAsLabel
-      ? [
-          {
-            icon: <FlagIcon />,
-            label: flagAsLabel,
-            color: { light: 'errorLight', dark: 'errorDark' } as const,
-            disabled: disableReporting,
-            onClick: onEntryFlag,
-          },
-        ]
-      : []),
-    ...(isViewer && removeEntryLabel && rest.itemType === EntityTypes.BEAM
-      ? [
-          {
-            icon: <TrashIcon />,
-            label: removeEntryLabel,
-            color: { light: 'errorLight', dark: 'errorDark' } as const,
-            onClick: onEntryRemove,
-          },
-        ]
-      : []),
-  ];
   const hoverStyleLastEntry = lastEntry ? 'rounded-b-2xl' : '';
   const hoverStyle = hover
     ? `${getColorClasses({ light: 'grey9/60', dark: 'grey3' }, 'hover:bg')} ${hoverStyleLastEntry}`
