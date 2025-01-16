@@ -1,10 +1,20 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./lib",
-    "rootDir": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "types": ["node"],
+    "lib": [
+      "dom",
+      "es2022"
+    ],
+    "module": "es2020",
+    "target": "es2020",
+    "outDir": "./lib",
+    "rootDir": "./src",
     "jsx": "react"
   },
   "include": [
