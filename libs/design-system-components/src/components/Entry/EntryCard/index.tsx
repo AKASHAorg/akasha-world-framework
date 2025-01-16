@@ -3,13 +3,10 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import EntryCardRemoved from '../EntryCardRemoved';
 import CardActions from './card-actions';
-import InlineNotification from '@akashaorg/design-system-core/lib/components/InlineNotification';
 import { EllipsisHorizontalIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import ReadOnlyEditor from '../../ReadOnlyEditor';
 import NSFW, { NSFWProps } from '../NSFW';
 import Menu from '@akashaorg/design-system-core/lib/components/Menu';
 import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
-import { Descendant } from 'slate';
 import { AkashaBeam } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { type EntryData, EntityTypes, NavigateToParams } from '@akashaorg/typings/lib/ui';
 import { ListItem } from '@akashaorg/design-system-core/lib/components/List';
@@ -25,9 +22,10 @@ type BeamProps = {
 };
 
 type ReflectProps = {
+  content?: ReactNode;
   itemType: EntityTypes.REFLECT;
   navigateTo?: (args: NavigateToParams) => void;
-} & ({ slateContent: Descendant[] } | { errorTitle: string; errorMessage: string });
+};
 
 export type EntryCardProps = {
   entryData: EntryData;
@@ -104,7 +102,6 @@ const EntryCard: React.FC<EntryCardProps> = props => {
     showLoginModal,
     dataTestId,
     menuItems,
-    ...rest
   } = props;
 
   /**
@@ -214,33 +211,12 @@ const EntryCard: React.FC<EntryCardProps> = props => {
                   customStyle="grow"
                   fullWidth={true}
                 >
-                  {rest.itemType === EntityTypes.REFLECT ? (
-                    <>
-                      {'slateContent' in rest && (
-                        <ReadOnlyEditor
-                          content={rest.slateContent}
-                          disabled={entryData.nsfw}
-                          handleMentionClick={rest.onMentionClick}
-                          handleLinkClick={url => {
-                            rest.navigateTo?.({ getNavigationUrl: () => url });
-                          }}
-                        />
-                      )}
-                      {'errorTitle' in rest && (
-                        <InlineNotification
-                          title={rest.errorTitle}
-                          message={rest.errorMessage}
-                          type="error"
-                        />
-                      )}
-                    </>
-                  ) : (
-                    rest.sortedContents?.map(item => (
+                  {(props as ReflectProps).content ||
+                    (props as BeamProps).sortedContents?.map(item => (
                       <Fragment key={item.blockID}>
-                        {rest.children({ blockID: item.blockID })}
+                        {(props as BeamProps).children({ blockID: item.blockID })}
                       </Fragment>
-                    ))
-                  )}
+                    ))}
                 </Stack>
               )}
               {showHiddenContent && entryData.tags?.length > 0 && (

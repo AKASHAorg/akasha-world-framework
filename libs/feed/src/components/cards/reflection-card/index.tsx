@@ -10,6 +10,10 @@ import { EntityTypes, ReflectionData } from '@akashaorg/typings/lib/ui';
 import { decodeb64SlateContent, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
 import { Trans, useTranslation } from 'react-i18next';
 import { canDecodeContent } from '../../../utils/can-decode-content';
+import ReadOnlyEditor from '@akashaorg/design-system-components/lib/components/ReadOnlyEditor';
+import InlineNotification from '@akashaorg/design-system-core/lib/components/InlineNotification';
+import { ListItem } from '@akashaorg/design-system-core/lib/components/List';
+import { FlagIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 
 export type ReflectionCardProps = Pick<
   EntryCardProps,
@@ -54,22 +58,49 @@ const ReflectionCard: React.FC<ReflectionCardProps> = props => {
       getNavigationUrl: () => `/report/reflection/${reflectionData.id}`,
     });
   };
+  const content = (
+    <>
+      {canDecodeContent(reflectionData.content) ? (
+        <ReadOnlyEditor
+          content={reflectionData.content.flatMap(item => decodeb64SlateContent(item.value))}
+          disabled={reflectionData.nsfw}
+          handleMentionClick={handleMentionClick}
+          handleLinkClick={url => {
+            navigateTo?.({ getNavigationUrl: () => url });
+          }}
+        />
+      ) : (
+        <InlineNotification
+          title={t('Reflection can’t be loaded')}
+          message={t('Unable to decode reflection content.')}
+          type="error"
+        />
+      )}
+    </>
+  );
+
+  const isViewer = authenticatedDID === reflectionData.authorId;
+  console.log({ isViewer });
+  const menuItems: ListItem[] = !isViewer
+    ? [
+        {
+          icon: <FlagIcon />,
+          label: t('Flag'),
+          color: { light: 'errorLight', dark: 'errorDark' } as const,
+          disabled: false,
+          onClick: handleFlagReflection,
+        },
+      ]
+    : [];
 
   return (
     <EntryCard
+      menuItems={menuItems}
+      content={content}
       dataTestId={pending ? 'pending-reflection-card' : 'reflection-card'}
       entryData={reflectionData}
       reflectAnchorLink="/@akashaorg/app-antenna/reflection"
-      {...(canDecodeContent(reflectionData.content)
-        ? {
-            slateContent: reflectionData.content.flatMap(item => decodeb64SlateContent(item.value)),
-          }
-        : {
-            errorTitle: t('Reflection can’t be loaded'),
-            errorMessage: t('Unable to decode reflection content.'),
-          })}
       noWrapperCard={true}
-      flagAsLabel={t('Flag')}
       isViewer={authenticatedDID === reflectionData.authorId}
       isLoggedIn={isLoggedIn}
       removed={{

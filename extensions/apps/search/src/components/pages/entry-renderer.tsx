@@ -13,6 +13,11 @@ import {
 import { Extension } from '@akashaorg/ui-lib-extensions/lib/react/extension';
 import { AkashaBeam } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import { mapBeamEntryData, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { ListItem } from '@akashaorg/design-system-core/lib/components/List';
+import {
+  FlagIcon,
+  TrashIcon,
+} from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 
 export type EntryCardRendererProps = {
   itemData?: AkashaBeam;
@@ -69,17 +74,42 @@ const EntryCardRenderer = (props: EntryCardRendererProps) => {
 
   const hideActionButtons = React.useMemo(() => itemType === EntityTypes.REFLECT, [itemType]);
 
+  const isViewer = authenticatedDID === itemData.author.id;
+  const menuItems: ListItem[] = [
+    ...(!isViewer
+      ? [
+          {
+            icon: <FlagIcon />,
+            label: t('Flag'),
+            color: { light: 'errorLight', dark: 'errorDark' } as const,
+            disabled: undefined, //disableReporting, - missing prop
+            onClick: handleFlag,
+          },
+        ]
+      : []),
+    ...(isViewer && itemType === EntityTypes.BEAM
+      ? [
+          {
+            icon: <TrashIcon />,
+            label: t('Delete Post'),
+            color: { light: 'errorLight', dark: 'errorDark' } as const,
+            onClick: handleEntryRemove,
+          },
+        ]
+      : []),
+  ];
+
   return (
     <>
       {itemData && itemData.author?.id && (
         <Stack customStyle="mb-2">
           {!itemData.nsfw && itemData.active && (
             <EntryCard
+              menuItems={menuItems}
               entryData={mapBeamEntryData(itemData)}
               sortedContents={sortBy(itemData.content, 'order')}
               itemType={EntityTypes.BEAM}
               onContentClick={handleContentClick}
-              flagAsLabel={t('Flag')}
               moderatedContentLabel={t('This content has been moderated')}
               reflectAnchorLink={`/@akashaorg/app-antenna/${
                 itemType === EntityTypes.REFLECT ? 'reflection' : 'beam'
