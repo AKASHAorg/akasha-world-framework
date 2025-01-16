@@ -14,7 +14,7 @@ import { MagnifyingGlassIcon } from '@akashaorg/design-system-core/lib/component
  * All the plugins must export an object like this:
  */
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   i18nNamespace: ['app-search'],
   mountsIn: opts.layoutSlots?.applicationSlotId,
   menuItems: {

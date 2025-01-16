@@ -1,12 +1,8 @@
 import React from 'react';
-import ReactDOMClient from 'react-dom/client';
-import singleSpaReact from 'single-spa-react';
-import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import ErrorBoundary from '@akashaorg/design-system-core/lib/components/ErrorBoundary';
 import MiniProfileCard from '@akashaorg/design-system-components/lib/components/MiniProfileCard';
 import MiniProfileWidgetLoader from '@akashaorg/design-system-components/lib/components/Loaders/mini-profile-widget-loader';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
 import {
   hasOwn,
   transformSource,
@@ -166,27 +162,4 @@ const Wrapped = () => {
   return <RouterProvider router={createRouter({ routeTree })} />;
 };
 
-const reactLifecycles = singleSpaReact({
-  React,
-  ReactDOMClient,
-  rootComponent: withProviders(Wrapped),
-  errorBoundary: (err, errorInfo, props: IRootComponentProps) => {
-    if (props.logger) {
-      props.logger.error(`${JSON.stringify(errorInfo)}, ${errorInfo}`);
-    }
-    return (
-      <ErrorLoader
-        type="script-error"
-        title="Error in mini profile widget"
-        details={err.message}
-        customStyle="mb-4"
-      />
-    );
-  },
-});
-
-export const bootstrap = reactLifecycles.bootstrap;
-
-export const mount = reactLifecycles.mount;
-
-export const unmount = reactLifecycles.unmount;
+export default withProviders(Wrapped);

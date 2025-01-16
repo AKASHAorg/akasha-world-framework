@@ -11,7 +11,7 @@ import { Cog8ToothIcon } from '@akashaorg/design-system-core/lib/components/Icon
 import routes from './routes';
 
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   i18nNamespace: ['app-settings-ewa'],
   mountsIn: opts.layoutSlots?.applicationSlotId,
   menuItems: {

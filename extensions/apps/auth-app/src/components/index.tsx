@@ -4,7 +4,7 @@ import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import { Helmet, helmetData } from '@akashaorg/design-system-core/lib/utils';
 import { RouterProvider } from '@tanstack/react-router';
-import { router } from './app-routes/index';
+import { router } from './app-routes';
 import { useApolloClient } from '@apollo/client';
 
 const Application: React.FC<unknown> = () => {

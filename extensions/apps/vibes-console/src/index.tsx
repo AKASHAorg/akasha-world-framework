@@ -11,7 +11,7 @@ import routes, { HOME, DASHBOARD } from './routes';
 import { Squares2X2Icon } from '@heroicons/react/24/outline';
 
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   mountsIn: opts.layoutSlots?.applicationSlotId,
   i18nNamespace: ['app-vibes-console'],
   routes: {

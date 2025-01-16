@@ -4,6 +4,6 @@ import { IntegrationRegistrationOptions, WidgetInterface } from '@akashaorg/typi
 export const register = (opts: IntegrationRegistrationOptions): WidgetInterface => {
   return {
     mountsIn: opts.layoutSlots?.cookieWidgetSlotId,
-    loadingFn: () => import('./components'),
+    rootComponent: () => import('./components'),
   };
 };

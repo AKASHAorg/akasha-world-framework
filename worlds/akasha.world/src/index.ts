@@ -63,24 +63,24 @@ declare const __LOAD_LOCAL_SOURCES__: boolean;
     // define pre-installed apps,
     // homepageApp is always loaded by default
     defaultApps: [
-      /*'@akashaorg/app-vibes',
+      '@akashaorg/app-vibes',
       '@akashaorg/app-auth-ewa',
       '@akashaorg/app-search',
       '@akashaorg/app-profile',
       '@akashaorg/app-notifications',
       '@akashaorg/app-settings-ewa',
-      '@akashaorg/app-legal',*/
+      '@akashaorg/app-legal',
       // '@akashaorg/app-vibes-console',
     ],
     // pre-installed widgets;
     // layout widget is always loaded by default
     defaultWidgets: [
-      /*'@akashaorg/ui-widget-topbar',
+      '@akashaorg/ui-widget-topbar',
       '@akashaorg/ui-widget-trending',
       '@akashaorg/ui-widget-analytics',
       '@akashaorg/ui-widget-sidebar',
       '@akashaorg/ui-widget-mini-profile',
-      '@akashaorg/ui-widget-test-mode-notifier',*/
+      '@akashaorg/ui-widget-test-mode-notifier',
     ],
     analytics: {
       trackerUrl: process.env.MATOMO_TRACKER_URL || '',

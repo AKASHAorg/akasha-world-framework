@@ -13,7 +13,7 @@ import routes, { BEAMS, EDIT, FOLLOWERS, FOLLOWING, INTERESTS } from './routes';
  */
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
   mountsIn: opts.layoutSlots?.applicationSlotId,
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   i18nNamespace: ['app-profile', 'ui-lib-feed'],
   menuItems: [
     {
