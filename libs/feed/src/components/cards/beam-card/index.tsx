@@ -25,6 +25,8 @@ import {
   selectReflectionsCount,
 } from '@akashaorg/ui-awf-hooks/lib/selectors/get-beam-by-id-query';
 import getSDK from '@akashaorg/core-sdk';
+import { FlagIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 type BeamCardProps = Pick<
   EntryCardProps,
@@ -111,12 +113,41 @@ const BeamCard: React.FC<BeamCardProps> = props => {
     return [];
   }, [beamData]);
 
+  const isSelectBeamActive = selectBeamActive(beamData);
+  const isViewer = authenticatedDID === beamAuthor.id;
+  const flagAsLabel = t('Flag');
+  const removeEntryLabel = t('Remove');
+  const menuItems = [
+    ...(!isViewer && flagAsLabel
+      ? [
+          {
+            icon: <FlagIcon />,
+            label: flagAsLabel,
+            color: { light: 'errorLight', dark: 'errorDark' } as const,
+            disabled: false,
+            onClick: handleFlagBeam,
+          },
+        ]
+      : []),
+    ...(isViewer && removeEntryLabel
+      ? [
+          {
+            icon: <TrashIcon />,
+            label: t('Remove'),
+            color: { light: 'errorLight', dark: 'errorDark' } as const,
+            onClick: handleEntryRemove,
+          },
+        ]
+      : []),
+  ];
+
   return (
     <EntryCard
       dataTestId="beam-card"
+      nsfwText={t('To view explicit or sensitive content, please connect to confirm your consent.')}
       entryData={{
         id: beamId,
-        active: selectBeamActive(beamData),
+        active: isSelectBeamActive,
         authorId: selectBeamAuthor(beamData).id,
         createdAt: selectCreatedAt(beamData),
         nsfw: selectNsfw(beamData),
@@ -125,7 +156,7 @@ const BeamCard: React.FC<BeamCardProps> = props => {
       reflectionsCount={reflectionsCount}
       reflectAnchorLink="/@akashaorg/app-antenna/beam"
       sortedContents={sortedEntryContent}
-      isViewer={authenticatedDID === beamAuthor.id}
+      isViewer={isViewer}
       removed={{
         author: (
           <Trans
@@ -210,13 +241,9 @@ const BeamCard: React.FC<BeamCardProps> = props => {
           createdAt={selectCreatedAt(beamData)}
         />
       }
-      // add these props only when beam is active
-      {...(selectBeamActive(beamData) && {
-        flagAsLabel: t('Flag'),
-        removeEntryLabel: t('Remove'),
-        onEntryFlag: handleFlagBeam,
-        onEntryRemove: handleEntryRemove,
-        actionsRight: (
+      menuItems={isSelectBeamActive && menuItems}
+      actionsRight={
+        isSelectBeamActive && (
           <ActionButtons
             appId={selectAppId(beamData)}
             showBlockName={showBlockName}
@@ -225,8 +252,8 @@ const BeamCard: React.FC<BeamCardProps> = props => {
               setShowBlockName(!showBlockName);
             }}
           />
-        ),
-      })}
+        )
+      }
       {...rest}
     >
       {({ blockID }) => (
