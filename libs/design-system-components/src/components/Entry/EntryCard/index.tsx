@@ -61,6 +61,7 @@ export type EntryCardProps = {
   ref?: Ref<HTMLDivElement>;
   dataTestId?: string;
   menuItems: ListItem[];
+  nsfwText: string;
   onReflect?: () => void;
   onTagClick?: (tag: string) => void;
   onMentionClick?: (profileId: string) => void;
@@ -93,6 +94,7 @@ const EntryCard: React.FC<EntryCardProps> = props => {
     actionsRight,
     reflectionsCount,
     customStyle = '',
+    nsfwText,
     onTagClick,
     onContentClick,
     onReflect,
@@ -176,10 +178,7 @@ const EntryCard: React.FC<EntryCardProps> = props => {
                   event.stopPropagation();
                   if (!isLoggedIn) {
                     if (showLoginModal && typeof showLoginModal === 'function') {
-                      showLoginModal(
-                        null,
-                        'To view explicit or sensitive content, please connect to confirm your consent.',
-                      );
+                      showLoginModal(null, nsfwText);
                     }
                   } else {
                     setShowNSFWContent(true);

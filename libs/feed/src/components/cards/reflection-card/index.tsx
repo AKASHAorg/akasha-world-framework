@@ -96,6 +96,7 @@ const ReflectionCard: React.FC<ReflectionCardProps> = props => {
   return (
     <EntryCard
       menuItems={menuItems}
+      nsfwText={t('To view explicit or sensitive content, please connect to confirm your consent.')}
       content={content}
       dataTestId={pending ? 'pending-reflection-card' : 'reflection-card'}
       entryData={reflectionData}

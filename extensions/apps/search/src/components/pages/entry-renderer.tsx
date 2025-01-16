@@ -105,6 +105,9 @@ const EntryCardRenderer = (props: EntryCardRendererProps) => {
         <Stack customStyle="mb-2">
           {!itemData.nsfw && itemData.active && (
             <EntryCard
+              nsfwText={t(
+                'To view explicit or sensitive content, please connect to confirm your consent.',
+              )}
               menuItems={menuItems}
               entryData={mapBeamEntryData(itemData)}
               sortedContents={sortBy(itemData.content, 'order')}

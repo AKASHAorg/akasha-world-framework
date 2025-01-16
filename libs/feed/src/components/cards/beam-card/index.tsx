@@ -144,6 +144,7 @@ const BeamCard: React.FC<BeamCardProps> = props => {
   return (
     <EntryCard
       dataTestId="beam-card"
+      nsfwText={t('To view explicit or sensitive content, please connect to confirm your consent.')}
       entryData={{
         id: beamId,
         active: isSelectBeamActive,
