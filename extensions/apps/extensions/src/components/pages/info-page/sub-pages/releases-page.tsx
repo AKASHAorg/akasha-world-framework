@@ -11,7 +11,7 @@ import {
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import InfoSubRouteHeader from '../InfoSubroutePageHeader';
 import DynamicInfiniteScroll from '@akashaorg/design-system-components/lib/components/DynamicInfiniteScroll';
-import { useGetAppsReleasesQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
+import { useGetAppsReleasesQuery } from '@akashaorg/ui-core-hooks/lib/generated';
 import { formatDate } from '@akashaorg/design-system-core/lib/utils';
 import { NetworkStatus } from '@apollo/client';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
@@ -20,7 +20,7 @@ import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import {
   selectAppsReleases,
   selectAppsReleasesPageInfo,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-releases-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-releases-query';
 import DefaultEmptyCard from '@akashaorg/design-system-components/lib/components/DefaultEmptyCard';
 
 type ReleasesPageProps = {

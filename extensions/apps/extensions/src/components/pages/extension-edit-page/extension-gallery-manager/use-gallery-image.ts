@@ -1,6 +1,6 @@
 import { Image } from '@akashaorg/design-system-components/lib/components/ExtensionGalleryManager';
 import { type Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
-import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { selectDraftExtensions } from '../../../../utils/selectors/get-draft-extensions';

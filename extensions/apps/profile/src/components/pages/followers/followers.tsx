@@ -6,7 +6,7 @@ import InfoCard from '@akashaorg/design-system-core/lib/components/InfoCard';
 import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
 import { ENTRY_HEIGHT, ITEM_SPACING } from '../constants';
 import { GetFollowersListByDidQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
-import { selectFollowers } from '@akashaorg/ui-awf-hooks/lib/selectors/get-followers-list-by-did-query';
+import { selectFollowers } from '@akashaorg/ui-core-hooks/lib/selectors/get-followers-list-by-did-query';
 import { EngagementsEntry } from '../engagements-entry';
 
 export type FollowersProps = {

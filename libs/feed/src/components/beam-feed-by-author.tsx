@@ -18,11 +18,11 @@ import {
   AkashaBeamSortingInput,
   SortOrder,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { hasOwn, useAkashaStore } from '@akashaorg/ui-awf-hooks';
+import { hasOwn, useAkashaStore } from '@akashaorg/ui-core-hooks';
 import {
   useGetBeamsByAuthorDidLazyQuery,
   GetBeamStreamDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { useApolloClient } from '@apollo/client';
 import {
   GetBeamByIdQuery,

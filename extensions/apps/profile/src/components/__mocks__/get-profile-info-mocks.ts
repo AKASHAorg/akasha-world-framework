@@ -3,7 +3,7 @@ import { genProfileByDID, genFollowDocumentByDid } from '@akashaorg/af-testing';
 import {
   GetProfileByDidDocument,
   GetFollowDocumentsByDidDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 
 type IGetProfileInfoMocks = {
   profileDID: string;

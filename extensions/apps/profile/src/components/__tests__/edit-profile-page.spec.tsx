@@ -1,7 +1,7 @@
 import React from 'react';
 import EditProfilePage from '../pages/edit-profile';
 import userEvent from '@testing-library/user-event';
-import * as mediaUtils from '@akashaorg/ui-awf-hooks/lib/utils/media-utils';
+import * as mediaUtils from '@akashaorg/ui-core-hooks/lib/utils/media-utils';
 import { screen, renderWithAllProviders, waitFor } from '@akashaorg/af-testing';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { InMemoryCache } from '@apollo/client';

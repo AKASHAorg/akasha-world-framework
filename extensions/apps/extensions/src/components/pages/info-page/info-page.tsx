@@ -9,18 +9,18 @@ import {
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { useTranslation } from 'react-i18next';
-import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { formatDate, truncateDid } from '@akashaorg/design-system-core/lib/utils';
 import {
   useGetAppsQuery,
   useGetAppsStreamQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import {
   selectAkashaApp,
   selectLatestRelease,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
-import { selectAkashaAppStreamStatus } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-stream-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-query';
+import { selectAkashaAppStreamStatus } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-stream-query';
 import { NetworkStatus } from '@apollo/client';
 import { AppInfoHeader } from '@akashaorg/design-system-components/lib/components/AppInfo/header';
 import Section, { DividerPosition } from '@akashaorg/design-system-core/lib/components/Section';
@@ -32,7 +32,7 @@ import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import CopyToClipboard from '@akashaorg/design-system-core/lib/components/CopyToClipboard';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
-import { useInstalledExtensions } from '@akashaorg/ui-awf-hooks/lib/use-installed-extensions';
+import { useInstalledExtensions } from '@akashaorg/ui-core-hooks/lib/use-installed-extensions';
 import { UninstallModal } from './uninstall-modal';
 import AppCoverImage from './AppCoverImage';
 import StackedAvatar from '@akashaorg/design-system-core/lib/components/StackedAvatar';

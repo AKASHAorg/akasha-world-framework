@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { hasOwn, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import {
   useGetIndexedStreamCountQuery,
   useGetInterestsByDidQuery,
   useCreateInterestsMutation,
   useUpdateInterestsMutation,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { AkashaIndexedStreamStreamType } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import {
   IModalNavigationOptions,

@@ -11,8 +11,8 @@ import {
   AkashaIndexedStreamSortingInput,
   AkashaIndexedStreamFiltersInput,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { hasOwn, useAkashaStore } from '@akashaorg/ui-awf-hooks';
-import { useGetIndexedStreamLazyQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { hasOwn, useAkashaStore } from '@akashaorg/ui-core-hooks';
+import { useGetIndexedStreamLazyQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 
 export type TagFeedProps = {
   dataTestId?: string;

@@ -8,7 +8,7 @@ import {
   GetAppsByIdDocument,
   GetIndexedStreamCountDocument,
   GetInterestsByDidDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { AUTHENTICATED_DID } from './constants';
 
 interface IGetTagFeedPageMocks {

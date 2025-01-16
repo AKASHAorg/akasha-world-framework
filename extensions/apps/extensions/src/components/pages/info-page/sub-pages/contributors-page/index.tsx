@@ -9,12 +9,12 @@ import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoade
 import ExtensionSubRouteHeader from '../../InfoSubroutePageHeader';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import {
   AkashaAppApplicationType,
   AppImageSource,
 } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { selectExtensionContributors } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
+import { selectExtensionContributors } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-query';
 import { useContributors } from './use-contributors';
 import { ChevronRightIcon } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 

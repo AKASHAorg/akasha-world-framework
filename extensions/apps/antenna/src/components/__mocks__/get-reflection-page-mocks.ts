@@ -10,7 +10,7 @@ import {
   GetBeamStreamDocument,
   GetContentBlockByIdDocument,
   GetProfileByDidDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { BEAM_FEED, BEAM_SECTION, REFLECTION_ID, REFLECTION_SECTION } from './constants';
 
 export interface IGetReflectionSectionMocks {

@@ -37,7 +37,7 @@ import {
   selectReflectionActiveField,
   selectReflectionNode,
 } from './data-loaders';
-import { mapReflectEntryData } from '@akashaorg/ui-awf-hooks';
+import { mapReflectEntryData } from '@akashaorg/ui-core-hooks';
 import { NotFoundComponent } from './not-found-component';
 import { EditorActions } from '@akashaorg/design-system-components/lib/components/Editor';
 

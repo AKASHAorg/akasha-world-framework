@@ -1,5 +1,5 @@
 import React from 'react';
-import { transformSource } from '@akashaorg/ui-awf-hooks';
+import { transformSource } from '@akashaorg/ui-core-hooks';
 import { Moderator } from '@akashaorg/typings/lib/ui';
 import Avatar from '@akashaorg/design-system-core/lib/components/Avatar';
 import Button from '@akashaorg/design-system-core/lib/components/Button';

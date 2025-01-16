@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';

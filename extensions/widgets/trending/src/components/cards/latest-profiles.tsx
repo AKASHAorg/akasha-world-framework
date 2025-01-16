@@ -3,9 +3,9 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import ProfileAvatarButton from '@akashaorg/design-system-core/lib/components/ProfileAvatarButton';
 import TrendingWidgetItemLoader from '@akashaorg/design-system-components/lib/components/TrendingWidgetLoadingCard/trending-widget-item-loader';
 import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
-import { hasOwn, transformSource, useNsfwToggling } from '@akashaorg/ui-awf-hooks';
+import { hasOwn, transformSource, useNsfwToggling } from '@akashaorg/ui-core-hooks';
 import { Extension } from '@akashaorg/ui-lib-extensions/lib/react/extension';
-import { useGetProfileByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetProfileByIdQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 
 export type LatestProfilesProps = {
   // data

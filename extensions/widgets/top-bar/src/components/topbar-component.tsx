@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useRouterState } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { EventTypes, UIEventData } from '@akashaorg/typings/lib/ui';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import ErrorBoundary from '@akashaorg/design-system-core/lib/components/ErrorBoundary';
 import Topbar from './topbar';
 import {

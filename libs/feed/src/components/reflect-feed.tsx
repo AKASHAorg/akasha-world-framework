@@ -16,9 +16,9 @@ import {
 import {
   GetReflectionStreamDocument,
   useGetReflectionStreamLazyQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { hasOwn, mapReflectEntryData, useAkashaStore } from '@akashaorg/ui-awf-hooks';
-import { usePendingReflections } from '@akashaorg/ui-awf-hooks/lib/use-pending-reflections';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { hasOwn, mapReflectEntryData, useAkashaStore } from '@akashaorg/ui-core-hooks';
+import { usePendingReflections } from '@akashaorg/ui-core-hooks/lib/use-pending-reflections';
 import { GetReflectionStreamQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
 import { PendingReflect } from './pending-reflect';
 import { useApolloClient } from '@apollo/client';

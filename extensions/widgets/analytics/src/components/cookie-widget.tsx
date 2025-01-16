@@ -8,7 +8,7 @@ import {
   registerEventBusSubscriber,
   uninstallPageTacking,
 } from '../analytics';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { EventTypes } from '@akashaorg/typings/lib/ui';
 
 import CookieCard from '@akashaorg/design-system-components/lib/components/CookieCard';

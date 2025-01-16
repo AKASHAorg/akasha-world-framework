@@ -11,9 +11,9 @@ import {
   useAkashaStore,
   useNsfwToggling,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { useTranslation } from 'react-i18next';
-import { useGetProfileByDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetProfileByDidQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 
 type AuthorProfileAvatarProps = {
   authorId: string;

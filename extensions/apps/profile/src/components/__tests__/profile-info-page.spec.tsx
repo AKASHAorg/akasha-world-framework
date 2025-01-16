@@ -1,8 +1,8 @@
 import React from 'react';
 import ProfileInfoPage from '../pages/profile-info';
 import userEvent from '@testing-library/user-event';
-import * as useAkashaStore from '@akashaorg/ui-awf-hooks/lib/store/use-akasha-store';
-import * as useProfileStats from '@akashaorg/ui-awf-hooks/lib/use-profile-stats';
+import * as useAkashaStore from '@akashaorg/ui-core-hooks/lib/store/use-akasha-store';
+import * as useProfileStats from '@akashaorg/ui-core-hooks/lib/use-profile-stats';
 import {
   screen,
   renderWithAllProviders,

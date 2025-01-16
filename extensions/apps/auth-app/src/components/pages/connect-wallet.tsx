@@ -8,7 +8,7 @@ import {
   useNetworkChangeListener,
   useRequiredNetwork,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import IndicatorDots from '@akashaorg/design-system-components/lib/components/IndicatorDots';
 import AppIcon from '@akashaorg/design-system-core/lib/components/AppIcon';
 import ConnectErrorCard from '@akashaorg/design-system-components/lib/components/ConnectErrorCard';
@@ -64,7 +64,7 @@ const ConnectWallet: React.FC = () => {
   useEffect(() => {
     if (
       requiredNetworkQuery.isSuccess &&
-      +changedNetwork?.chainId === requiredNetworkQuery.data.chainId &&
+      changedNetwork?.chainId === requiredNetworkQuery.data.chainId &&
       !connectWalletCall.isSuccess &&
       !connectWalletCall.isLoading
     ) {

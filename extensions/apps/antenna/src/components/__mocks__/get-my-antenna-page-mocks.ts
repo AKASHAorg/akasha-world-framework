@@ -1,7 +1,7 @@
-import { GetInterestsByDidDocument } from '@akashaorg/ui-awf-hooks/src/generated';
+import { GetInterestsByDidDocument } from '@akashaorg/ui-core-hooks/src/generated';
 import { AUTHENTICATED_DID } from './constants';
 import { genExtensionData, genInterestsByDID } from '@akashaorg/af-testing';
-import { GetAppsByIdDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { GetAppsByIdDocument } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { genBeamData } from '@akashaorg/af-testing/lib/data-generator/beam';
 
 export function getMyAntennaPageMocks() {

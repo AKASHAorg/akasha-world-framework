@@ -5,7 +5,7 @@ import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Toggle from '@akashaorg/design-system-core/lib/components/Toggle';
 import PageLayout from './base-layout';
-import { useAkashaStore, useNsfwToggling, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useNsfwToggling, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 
 const NsfwOption: React.FC = () => {
   const { t } = useTranslation('app-settings-ewa');

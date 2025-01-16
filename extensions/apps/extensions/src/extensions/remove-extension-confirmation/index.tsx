@@ -6,12 +6,12 @@ import {
   withProviders,
   useModalData,
   useAkashaStore,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { EventTypes, Extension, IRootExtensionProps } from '@akashaorg/typings/lib/ui';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { useUpdateAppMutation } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useUpdateAppMutation } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import getSDK from '@akashaorg/core-sdk';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES } from '../../constants';

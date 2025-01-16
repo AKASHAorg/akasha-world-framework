@@ -8,7 +8,7 @@ import {
   useAnalytics,
   useNsfwToggling,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { EntityTypes } from '@akashaorg/typings/lib/ui';
 import { useTranslation } from 'react-i18next';
 import { ReflectionPreview } from '@akashaorg/ui-lib-feed';
@@ -16,7 +16,7 @@ import { AkashaBeamStreamModerationStatus } from '@akashaorg/typings/lib/sdk/gra
 import { useNavigate } from '@tanstack/react-router';
 import { EditableReflectionResolver, ReflectFeed } from '@akashaorg/ui-lib-feed';
 import { GetBeamByIdQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
-import { selectBeamActive } from '@akashaorg/ui-awf-hooks/lib/selectors/get-beam-by-id-query';
+import { selectBeamActive } from '@akashaorg/ui-core-hooks/lib/selectors/get-beam-by-id-query';
 
 type BeamPageProps = {
   beamId: string;

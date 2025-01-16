@@ -2,7 +2,7 @@ import React, { createRef } from 'react';
 import BeamPage from '../pages/entry-page/beam-page';
 import ReflectEditor from '../reflect-editor';
 import userEvent from '@testing-library/user-event';
-import * as useAkashaStore from '@akashaorg/ui-awf-hooks/lib/store/use-akasha-store';
+import * as useAkashaStore from '@akashaorg/ui-core-hooks/lib/store/use-akasha-store';
 import {
   screen,
   renderWithAllProviders,

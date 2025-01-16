@@ -1,6 +1,6 @@
 import React from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './app-routes/index';

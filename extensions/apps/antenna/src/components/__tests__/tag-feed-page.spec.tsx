@@ -1,7 +1,7 @@
 import React from 'react';
 import TagFeedPage from '../pages/tag-feed-page/tag-feed-page';
 import userEvent from '@testing-library/user-event';
-import * as useAkashaStore from '@akashaorg/ui-awf-hooks/lib/store/use-akasha-store';
+import * as useAkashaStore from '@akashaorg/ui-core-hooks/lib/store/use-akasha-store';
 import {
   screen,
   renderWithAllProviders,

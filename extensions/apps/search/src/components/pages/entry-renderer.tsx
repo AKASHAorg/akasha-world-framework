@@ -12,7 +12,7 @@ import {
 } from '@akashaorg/typings/lib/ui';
 import { Extension } from '@akashaorg/ui-lib-extensions/lib/react/extension';
 import { AkashaBeam } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { mapBeamEntryData, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { mapBeamEntryData, useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 
 export type EntryCardRendererProps = {
   itemData?: AkashaBeam;

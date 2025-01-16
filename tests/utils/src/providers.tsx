@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import i18n from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { AnalyticsProvider } from '@akashaorg/ui-awf-hooks/lib/use-analytics';
+import { AnalyticsProvider } from '@akashaorg/ui-core-hooks/lib/use-analytics';
 import { genAppProps } from './data-generator';
 
 const getI18nInstance = () => {

@@ -4,7 +4,7 @@ import { Outlet } from '@tanstack/react-router';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 import appRoutes, { EDIT_PUBLISHED_EXTENSION } from '../../../routes';
 import { useTranslation } from 'react-i18next';
-import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { AppImageSource, AppLinkSource } from '@akashaorg/typings/lib/sdk/graphql-types-new';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Button from '@akashaorg/design-system-core/lib/components/Button';

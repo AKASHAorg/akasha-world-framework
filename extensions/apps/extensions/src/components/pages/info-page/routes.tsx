@@ -18,7 +18,7 @@ import {
   selectExtensionName,
   selectExtensionType,
   selectReleasesCount,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-query';
 import { Await, CatchBoundary, createRoute, defer, Outlet } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
 import { RouteErrorComponent } from '../../app-routes/error-component';

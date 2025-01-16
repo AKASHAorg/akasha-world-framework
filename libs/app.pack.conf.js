@@ -4,7 +4,7 @@ module.exports = {
       '@akashaorg/core-sdk': '@akashaorg/core-sdk',
     },
     {
-      '@akashaorg/ui-awf-hooks': '@akashaorg/ui-awf-hooks',
+      '@akashaorg/ui-core-hooks': '@akashaorg/ui-core-hooks',
     },
     {
       'single-spa': 'single-spa',

@@ -30,6 +30,7 @@ import { validate } from '../common/validator';
 import { DIDSession } from 'did-session';
 import type { DagJWS } from 'dids';
 import type { JWE } from 'did-jwt';
+import { Eip1193Provider } from 'ethers';
 
 // in memory atm
 const devKeys: { pubKey: string; addedAt: string; name?: string }[] = [];
@@ -109,7 +110,7 @@ class AWF_Auth {
     }),
   )
   async signIn(args: {
-    provider?: EthProviders;
+    provider?: EthProviders | Eip1193Provider;
     checkRegistered: boolean;
     resumeSignIn?: boolean;
   }) {
@@ -142,7 +143,11 @@ class AWF_Auth {
    * - null if error
    */
   private async _signIn(
-    args: { provider?: EthProviders; checkRegistered: boolean; resumeSignIn?: boolean } = {
+    args: {
+      provider?: EthProviders | Eip1193Provider;
+      checkRegistered: boolean;
+      resumeSignIn?: boolean;
+    } = {
       provider: EthProviders.Web3Injected,
       checkRegistered: true,
     },

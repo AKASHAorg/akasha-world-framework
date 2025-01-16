@@ -11,7 +11,7 @@ import {
   GetBeamStreamDocument,
   GetContentBlockByIdDocument,
   GetProfileByDidDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { BEAM_FEED, BEAM_ID } from './constants';
 
 export function getBeamFeedMocks() {

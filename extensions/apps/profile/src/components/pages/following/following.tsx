@@ -6,7 +6,7 @@ import DynamicInfiniteScroll, {
 import { getColorClasses } from '@akashaorg/design-system-core/lib/utils';
 import { ENTRY_HEIGHT, ITEM_SPACING } from '../constants';
 import { GetFollowingListByDidQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
-import { selectFollowings } from '@akashaorg/ui-awf-hooks/lib/selectors/get-followings-list-by-did-query';
+import { selectFollowings } from '@akashaorg/ui-core-hooks/lib/selectors/get-followings-list-by-did-query';
 import { EngagementsEntry } from '../engagements-entry';
 
 export type FollowingProps = {

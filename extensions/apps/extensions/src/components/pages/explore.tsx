@@ -3,7 +3,7 @@ import Button from '@akashaorg/design-system-core/lib/components/Button';
 import routes, { DEVELOPER_MODE, EXTENSIONS } from '../../routes';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import { transformSource, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { transformSource, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { ArrowLongRightIcon } from '@heroicons/react/24/outline';
 import { Explore } from '../explore';
 import { AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';

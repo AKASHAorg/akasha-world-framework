@@ -11,8 +11,8 @@ import {
   useRootComponentProps,
   useMentions,
   useAkashaStore,
-} from '@akashaorg/ui-awf-hooks';
-import { useCreateReflectMutation } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks';
+import { useCreateReflectMutation } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { useTranslation } from 'react-i18next';
 import {
   AnalyticsCategories,
@@ -24,7 +24,7 @@ import {
 import {
   usePendingReflections,
   PENDING_REFLECTION_PREFIX,
-} from '@akashaorg/ui-awf-hooks/lib/use-pending-reflections';
+} from '@akashaorg/ui-core-hooks/lib/use-pending-reflections';
 import { useCloseActions } from '@akashaorg/design-system-core/lib/utils';
 import { isEditorEmpty } from '@akashaorg/design-system-components/lib/components/Editor/helpers';
 

@@ -12,7 +12,7 @@ import {
   useAkashaStore,
   useAnalytics,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { useTranslation } from 'react-i18next';
 import { ReflectionPreview } from '@akashaorg/ui-lib-feed';
 import { useNavigate } from '@tanstack/react-router';
@@ -20,7 +20,7 @@ import { EditableReflectionResolver, ReflectFeed } from '@akashaorg/ui-lib-feed'
 import {
   useGetBeamByIdQuery,
   useGetBeamStreamQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { selectBeamActiveField } from '../../app-routes/data-loaders';
 
 type ReflectionPageProps = {

@@ -50,7 +50,7 @@
       "path": "./extensions/widgets/analytics"
     },
     {
-      "path": "./extensions/widgets/test-mode"
+      "path": "./extensions/widgets/test-mode-notifier"
     },
     {
       "path": "./extensions/apps/extensions"

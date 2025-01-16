@@ -6,7 +6,7 @@ import DidField from '@akashaorg/design-system-core/lib/components/DidField';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import { Profile } from '@akashaorg/typings/lib/ui';
-import { transformSource } from '@akashaorg/ui-awf-hooks';
+import { transformSource } from '@akashaorg/ui-core-hooks';
 
 export type ModeratorListItemProps = {
   assignButtonLabel: string;

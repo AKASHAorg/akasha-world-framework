@@ -1,7 +1,7 @@
 import React from 'react';
 import { COC } from '../../routes';
 import { LEGAL_DOCS } from '@akashaorg/typings/lib/ui';
-import { useLegalDoc } from '@akashaorg/ui-awf-hooks';
+import { useLegalDoc } from '@akashaorg/ui-core-hooks';
 
 import PageRenderer from './page-renderer';
 

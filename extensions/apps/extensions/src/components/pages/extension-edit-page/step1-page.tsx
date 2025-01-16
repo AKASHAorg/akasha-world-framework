@@ -12,7 +12,7 @@ import {
   useRootComponentProps,
   useSaveImage,
   useValidateUniqueExtensionProp,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import { DRAFT_EXTENSIONS } from '../../../constants';
 import { useAtom } from 'jotai';

@@ -1,7 +1,7 @@
 import { GetAppsByPublisherDidQuery } from '@akashaorg/typings/lib/sdk/graphql-operation-types-new';
 import { SortOrder } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { GetAppsByPublisherDidDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { selectApps } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+import { GetAppsByPublisherDidDocument } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { selectApps } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import { ApolloCache } from '@apollo/client';
 
 interface IUpdateCache {
