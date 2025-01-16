@@ -6,7 +6,7 @@ import {
   useRootComponentProps,
   useMentions,
   useAkashaStore,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { useTranslation } from 'react-i18next';
 import {
   ContentBlockModes,
@@ -25,9 +25,9 @@ import {
 import {
   useCreateContentBlockMutation,
   useGetAppsByPublisherDidQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import getSDK from '@akashaorg/core-sdk';
-import { selectLatestAppVersionId } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+import { selectLatestAppVersionId } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 
 export const SlateEditorBlock = (
   props: ContentBlockRootProps & { blockRef?: RefObject<BlockInstanceMethods> },

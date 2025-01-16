@@ -1,12 +1,12 @@
 import singleSpaReact from 'single-spa-react';
 import ReactDOMClient from 'react-dom/client';
 import React from 'react';
-import { useRootComponentProps, withProviders, useModalData } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders, useModalData } from '@akashaorg/ui-core-hooks';
 import { IRootExtensionProps } from '@akashaorg/typings/lib/ui';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import Modal from '@akashaorg/design-system-core/lib/components/Modal';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { useUpdateBeamMutation } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useUpdateBeamMutation } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import getSDK from '@akashaorg/core-sdk';
 

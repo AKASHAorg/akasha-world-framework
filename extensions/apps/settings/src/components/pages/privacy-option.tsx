@@ -13,7 +13,7 @@ import {
   useRootComponentProps,
   COOKIE_CONSENT_NAME,
   CookieConsentTypes,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { EventTypes, UIEventData } from '@akashaorg/typings/lib/ui';
 
 const PrivacyOption: React.FC = () => {

@@ -14,14 +14,14 @@ import {
   useAkashaStore,
   useProfilesList,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { Extension, NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import getSDK from '@akashaorg/core-sdk';
 import {
   useCreateAppMutation,
   useGetAppsByPublisherDidQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated';
-import { selectAkashaApp } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+} from '@akashaorg/ui-core-hooks/lib/generated';
+import { selectAkashaApp } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 import appRoutes, { SUBMIT_EXTENSION } from '../../../routes';
 import { DRAFT_EXTENSIONS, DRAFT_RELEASES, MAX_CONTRIBUTORS_DISPLAY } from '../../../constants';
 import { createAppMutationCache } from './create-app-mutation-cache';

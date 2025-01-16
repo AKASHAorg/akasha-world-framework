@@ -3,7 +3,7 @@ import ReactDOMClient from 'react-dom/client';
 import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
 import singleSpaReact from 'single-spa-react';
 import ProfileAvatar, { ProfileAvatarProps } from './profile-avatar';
-import { useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import { IRootExtensionProps } from '@akashaorg/typings/lib/ui';
 import { I18nextProvider } from 'react-i18next';
 

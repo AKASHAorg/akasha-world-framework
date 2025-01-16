@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "prepare": {
-      "dependsOn": ["@akashaorg/ui-awf-hooks:prepare", "@akashaorg/typings:prepare"],
+      "dependsOn": ["@akashaorg/ui-core-hooks:prepare", "@akashaorg/typings:prepare"],
       "executor": "nx:run-commands",
       "options": {
         "cwd": "tests/utils",

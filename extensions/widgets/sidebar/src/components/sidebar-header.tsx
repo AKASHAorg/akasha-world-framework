@@ -5,9 +5,9 @@ import DidField from '@akashaorg/design-system-core/lib/components/DidField';
 import ProfileNameField from '@akashaorg/design-system-core/lib/components/ProfileNameField';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import { transformSource, hasOwn } from '@akashaorg/ui-awf-hooks';
+import { transformSource, hasOwn } from '@akashaorg/ui-core-hooks';
 import { useTranslation } from 'react-i18next';
-import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import {
   PowerIcon,
   XMarkIcon,

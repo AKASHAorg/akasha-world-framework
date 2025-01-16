@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRoutingEvents } from './use-routing-events';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { ExtensionPointInterface, IExtensionPointStorePlugin } from '@akashaorg/typings/lib/ui';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { RootParcel } from './root-parcel';

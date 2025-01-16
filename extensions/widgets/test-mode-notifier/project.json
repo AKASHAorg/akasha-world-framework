@@ -1,12 +1,12 @@
 {
-  "name": "@akashaorg/ui-widget-test-mode",
+  "name": "@akashaorg/ui-widget-test-mode-notifier",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "extensions/widgets/test-mode-notifier/src",
   "projectType": "application",
   "targets": {
     "prepare": {
       "dependsOn": [
-        "@akashaorg/ui-awf-hooks:build",
+        "@akashaorg/ui-core-hooks:build",
         "@akashaorg/design-system-components:prepare",
         "@akashaorg/core-sdk:build",
         "@akashaorg/ui-lib-extensions:prepare",

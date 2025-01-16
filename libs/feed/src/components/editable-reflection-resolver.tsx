@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import EntryCardLoading from '@akashaorg/design-system-components/lib/components/Entry/EntryCardLoading';
 import ReflectionCard from '../components/cards/reflection-card';
-import { useGetReflectionByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetReflectionByIdQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { useTranslation } from 'react-i18next';
 import { NetworkErrorCard } from '../components/cards/network-error-card';
 import {
@@ -12,7 +12,7 @@ import {
   selectReflectionCreatedAt,
   selectReflectionId,
   selectReflectionNsfw,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-reflection-by-id-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-reflection-by-id-query';
 
 export type EditableReflectionResolverProps = {
   reflectID: string;

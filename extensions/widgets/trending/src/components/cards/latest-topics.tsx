@@ -4,11 +4,11 @@ import isEqual from 'lodash/isEqual';
 import difference from 'lodash/difference';
 import pullAll from 'lodash/pullAll';
 import getSDK from '@akashaorg/core-sdk';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import {
   useCreateInterestsMutation,
   useUpdateInterestsMutation,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { NotificationEvents, NotificationTypes } from '@akashaorg/typings/lib/ui';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';

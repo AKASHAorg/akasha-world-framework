@@ -11,7 +11,7 @@ import {
   GetProfileByDidDocument,
   GetContentBlockByIdDocument,
   GetAppsByIdDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { BEAM_ID, TAG_FEED } from './constants';
 
 export function getTagFeedMocks() {

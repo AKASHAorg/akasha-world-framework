@@ -1,7 +1,7 @@
 import React from 'react';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { I18nextProvider } from 'react-i18next';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './app-routes';
 import { useApolloClient } from '@apollo/client';

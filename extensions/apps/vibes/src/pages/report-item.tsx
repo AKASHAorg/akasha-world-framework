@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
-import { useModerationCategory, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useModerationCategory, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { ReportItem, ReportItemConfirmation } from '../components/report';
 import routes, { HOME } from '../routes';
 import { reasons, externalLinks } from '../utils';

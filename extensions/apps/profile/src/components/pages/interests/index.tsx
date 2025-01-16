@@ -11,8 +11,8 @@ import {
   useCreateInterestsMutation,
   useUpdateInterestsMutation,
   GetInterestsByDidDocument,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { hasOwn, useRootComponentProps, useAkashaStore } from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { hasOwn, useRootComponentProps, useAkashaStore } from '@akashaorg/ui-core-hooks';
 import getSDK from '@akashaorg/core-sdk';
 import { useApolloClient } from '@apollo/client';
 import { ProfileLabeled } from '@akashaorg/typings/lib/sdk/graphql-types-new';

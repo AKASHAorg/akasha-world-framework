@@ -20,7 +20,7 @@ import {
   ScrollRestoration,
   redirect,
 } from '@tanstack/react-router';
-import { GetProfileByDidDocument } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { GetProfileByDidDocument } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { ICreateRouter, IRouterContext } from '@akashaorg/typings/lib/ui';
 import { NotFoundComponent } from './not-found-component';
 

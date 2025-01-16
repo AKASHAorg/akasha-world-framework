@@ -3,18 +3,18 @@ import NSFW from '@akashaorg/design-system-components/lib/components/Entry/NSFW'
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
-import { hasOwn, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { hasOwn, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import {
   ContentBlockExtension,
   MatchingBlock,
 } from '@akashaorg/ui-lib-extensions/lib/react/content-block';
 import { useTranslation } from 'react-i18next';
-import { useGetContentBlockByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetContentBlockByIdQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { Transition } from '@headlessui/react';
 import {
   selectBlockApp,
   selectBlockData,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-content-block-by-id-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-content-block-by-id-query';
 import { NetworkStatus } from '@apollo/client';
 
 type ContentBlockRendererProps = {

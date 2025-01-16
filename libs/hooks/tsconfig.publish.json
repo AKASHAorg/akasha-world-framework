@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": false,
+    "outDir": "../../dist/npm/hooks/lib"
+  },
+  "exclude": ["./src/sw.*", "./src/__mocks__/**", "./src/__tests__/**"]
+}

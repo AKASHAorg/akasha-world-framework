@@ -1,10 +1,10 @@
 import getSDK from '@akashaorg/core-sdk';
 import { SortOrder } from '@akashaorg/typings/lib/sdk/graphql-types-new';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
-import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
+import { useGetAppsByPublisherDidQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import { useRef } from 'react';
-import { useInstalledExtensions } from '@akashaorg/ui-awf-hooks/lib/use-installed-extensions';
-import { selectApps } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+import { useInstalledExtensions } from '@akashaorg/ui-core-hooks/lib/use-installed-extensions';
+import { selectApps } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 
 export const useInstalledAndDefaultApps = () => {
   const { getDefaultExtensionNames } = useRootComponentProps();

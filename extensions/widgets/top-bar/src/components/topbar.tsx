@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useTheme } from '@akashaorg/ui-awf-hooks';
+import { useTheme } from '@akashaorg/ui-core-hooks';
 import { ThemingEvents } from '@akashaorg/typings/lib/ui';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
@@ -13,7 +13,7 @@ import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Pill from '@akashaorg/design-system-core/lib/components/Pill';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import { startWidgetsTogglingBreakpoint } from '@akashaorg/design-system-core/lib/utils/breakpoints';
-import { useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { Extension } from '@akashaorg/ui-lib-extensions/lib/react/extension';
 
 export interface ITopbarProps {

@@ -14,7 +14,7 @@ import {
   useSaveSettings,
   useGetSettings,
   useAkashaStore,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Button from '@akashaorg/design-system-core/lib/components/Button';

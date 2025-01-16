@@ -21,9 +21,9 @@ import {
   useProfileStats,
   useRootComponentProps,
   useValidDid,
-} from '@akashaorg/ui-awf-hooks';
-import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
-import { selectProfileData } from '@akashaorg/ui-awf-hooks/lib/selectors/get-profile-by-did-query';
+} from '@akashaorg/ui-core-hooks';
+import { useGetProfileByDidSuspenseQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
+import { selectProfileData } from '@akashaorg/ui-core-hooks/lib/selectors/get-profile-by-did-query';
 
 type ProfileInfoPageProps = {
   profileDID: string;

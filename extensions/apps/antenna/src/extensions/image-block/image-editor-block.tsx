@@ -8,7 +8,7 @@ import React, {
   useMemo,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getMediaUrl, saveMediaFile, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { getMediaUrl, saveMediaFile, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import {
   type BlockInstanceMethods,
   type ContentBlockRootProps,
@@ -19,7 +19,7 @@ import {
 import {
   useCreateContentBlockMutation,
   useGetAppsByPublisherDidQuery,
-} from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+} from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import {
   AkashaContentBlockBlockDef,
   type BlockLabeledValue,
@@ -42,7 +42,7 @@ import {
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
 import getSDK from '@akashaorg/core-sdk';
 import Divider from '@akashaorg/design-system-core/lib/components/Divider';
-import { selectLatestAppVersionId } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-publisher-did-query';
+import { selectLatestAppVersionId } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-publisher-did-query';
 
 const isImgUrl = async url => {
   const response = await fetch(url, { method: 'HEAD' });

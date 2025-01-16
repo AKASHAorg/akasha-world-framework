@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import { CREATE_EXTENSION } from '../../routes';
-import { useRootComponentProps, useAkashaStore } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, useAkashaStore } from '@akashaorg/ui-core-hooks';
 import Card from '@akashaorg/design-system-core/lib/components/Card';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import InfoCard from '@akashaorg/design-system-core/lib/components/InfoCard';

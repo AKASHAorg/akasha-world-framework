@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Stack from '@akashaorg/design-system-core/lib/components/Stack';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import PageLayout from './base-layout';
-import { useAkashaStore, useRootComponentProps, useNotifications } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore, useRootComponentProps, useNotifications } from '@akashaorg/ui-core-hooks';
 import Button from '@akashaorg/design-system-core/lib/components/Button';
 import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';

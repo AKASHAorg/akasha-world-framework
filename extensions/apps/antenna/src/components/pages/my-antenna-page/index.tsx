@@ -6,13 +6,13 @@ import ScrollTopButton from '@akashaorg/design-system-core/lib/components/Scroll
 import MyAntennaIntroCard from '@akashaorg/design-system-components/lib/components/MyAntennaIntroCard';
 import { useTranslation } from 'react-i18next';
 import { IModalNavigationOptions } from '@akashaorg/typings/lib/ui';
-import { useGetInterestsByDidQuery } from '@akashaorg/ui-awf-hooks/lib/generated/apollo';
+import { useGetInterestsByDidQuery } from '@akashaorg/ui-core-hooks/lib/generated/apollo';
 import {
   hasOwn,
   useAkashaStore,
   useNsfwToggling,
   useRootComponentProps,
-} from '@akashaorg/ui-awf-hooks';
+} from '@akashaorg/ui-core-hooks';
 import { BeamContentResolver, getNsfwFiltersForTagFeed, TagFeed } from '@akashaorg/ui-lib-feed';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { AkashaIndexedStreamStreamType } from '@akashaorg/typings/lib/sdk/graphql-types-new';

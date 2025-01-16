@@ -5,9 +5,9 @@ import EntryCard, {
 import AuthorProfileAvatar from '../author-profile-avatar';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Link from '@akashaorg/design-system-core/lib/components/Link';
-import { useAkashaStore } from '@akashaorg/ui-awf-hooks';
+import { useAkashaStore } from '@akashaorg/ui-core-hooks';
 import { EntityTypes, ReflectionData } from '@akashaorg/typings/lib/ui';
-import { decodeb64SlateContent, useRootComponentProps } from '@akashaorg/ui-awf-hooks';
+import { decodeb64SlateContent, useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { Trans, useTranslation } from 'react-i18next';
 import { canDecodeContent } from '../../../utils/can-decode-content';
 

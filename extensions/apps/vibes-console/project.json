@@ -6,7 +6,7 @@
   "targets": {
     "prepare": {
       "dependsOn": [
-        "@akashaorg/ui-awf-hooks:build",
+        "@akashaorg/ui-core-hooks:build",
         "@akashaorg/design-system-core:prepare",
         "@akashaorg/design-system-components:prepare",
         "@akashaorg/core-sdk:build",

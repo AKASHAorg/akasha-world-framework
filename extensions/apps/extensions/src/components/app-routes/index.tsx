@@ -45,7 +45,7 @@ import {
   selectAppDisplayName,
   selectAppLogoImage,
   selectAppDescription,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-id-query';
 
 const defaultRoute = createRoute({
   getParentRoute: () => rootRoute,

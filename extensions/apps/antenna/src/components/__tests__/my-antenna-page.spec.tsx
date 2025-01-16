@@ -1,6 +1,6 @@
 import React from 'react';
 import MyAntennaPage from '../pages/my-antenna-page';
-import * as useAkashaStore from '@akashaorg/ui-awf-hooks/lib/store/use-akasha-store';
+import * as useAkashaStore from '@akashaorg/ui-core-hooks/lib/store/use-akasha-store';
 import {
   screen,
   renderWithAllProviders,

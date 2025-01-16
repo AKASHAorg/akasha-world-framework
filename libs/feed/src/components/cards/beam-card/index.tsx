@@ -5,9 +5,9 @@ import EntryCard, {
 import ContentBlockRenderer from './content-block-renderer';
 import ActionButtons from './action-buttons';
 import AuthorProfileAvatar from '../author-profile-avatar';
-import { sortByKey, useAkashaStore } from '@akashaorg/ui-awf-hooks';
+import { sortByKey, useAkashaStore } from '@akashaorg/ui-core-hooks';
 import { EntityTypes } from '@akashaorg/typings/lib/ui';
-import { useRootComponentProps, useNsfwToggling } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, useNsfwToggling } from '@akashaorg/ui-core-hooks';
 import { Trans, useTranslation } from 'react-i18next';
 import Text from '@akashaorg/design-system-core/lib/components/Text';
 import Link from '@akashaorg/design-system-core/lib/components/Link';
@@ -23,7 +23,7 @@ import {
   selectCreatedAt,
   selectNsfw,
   selectReflectionsCount,
-} from '@akashaorg/ui-awf-hooks/lib/selectors/get-beam-by-id-query';
+} from '@akashaorg/ui-core-hooks/lib/selectors/get-beam-by-id-query';
 import getSDK from '@akashaorg/core-sdk';
 
 type BeamCardProps = Pick<

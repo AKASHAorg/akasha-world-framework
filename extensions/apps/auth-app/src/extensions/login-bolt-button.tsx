@@ -4,7 +4,7 @@ import {
   BoltIcon,
   ExclamationTriangleIcon,
 } from '@akashaorg/design-system-core/lib/components/Icon/hero-icons-outline';
-import { useRootComponentProps, withProviders } from '@akashaorg/ui-awf-hooks';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
 import singleSpaReact from 'single-spa-react';
 import ReactDOMClient from 'react-dom/client';
 import type { IRootComponentProps } from '@akashaorg/typings/lib/ui';

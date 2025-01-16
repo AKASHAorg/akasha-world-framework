@@ -6,8 +6,8 @@ import Icon from '@akashaorg/design-system-core/lib/components/Icon';
 import { Blocks } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import { Antenna } from '@akashaorg/design-system-core/lib/components/Icon/akasha-icons';
 import { useTranslation } from 'react-i18next';
-import { useGetAppsByIdQuery } from '@akashaorg/ui-awf-hooks/lib/generated';
-import { selectAppDisplayName } from '@akashaorg/ui-awf-hooks/lib/selectors/get-apps-by-id-query';
+import { useGetAppsByIdQuery } from '@akashaorg/ui-core-hooks/lib/generated';
+import { selectAppDisplayName } from '@akashaorg/ui-core-hooks/lib/selectors/get-apps-by-id-query';
 
 type ActionButtonsProps = {
   appId: string;
