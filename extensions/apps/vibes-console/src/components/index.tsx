@@ -1,27 +1,34 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import singleSpaReact from 'single-spa-react';
+import { I18nextProvider } from 'react-i18next';
+import { RouterProvider } from '@tanstack/react-router';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import { Helmet, helmetData } from '@akashaorg/design-system-core/lib/utils';
+import { router } from './app-routes';
 
-import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
-import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import { withProviders } from '@akashaorg/ui-core-hooks';
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof router>;
+  }
+}
 
-import App from './app';
+const App: React.FC<unknown> = () => {
+  const { baseRouteName, getTranslationPlugin, worldConfig } = useRootComponentProps();
 
-const reactLifecycles = singleSpaReact({
-  React,
-  ReactDOMClient: ReactDOM,
-  rootComponent: withProviders(App),
-  errorBoundary: (error, errorInfo, props: IRootComponentProps) => {
-    if (props.logger) {
-      props.logger.error(`${JSON.stringify(error)}, ${errorInfo}`);
-    }
-    return <ErrorLoader type="script-error" title="Error in Vibes app" details={error.message} />;
-  },
-});
+  return (
+    <React.Suspense fallback={<Spinner />}>
+      <I18nextProvider i18n={getTranslationPlugin().i18n}>
+        <Helmet helmetData={helmetData}>
+          <title>Vibes Console | {worldConfig.title}</title>
+        </Helmet>
+        <RouterProvider
+          router={router({
+            baseRouteName,
+          })}
+        />
+      </I18nextProvider>
+    </React.Suspense>
+  );
+};
 
-export const bootstrap = reactLifecycles.bootstrap;
-
-export const mount = reactLifecycles.mount;
-
-export const unmount = reactLifecycles.unmount;
+export default withProviders(App);

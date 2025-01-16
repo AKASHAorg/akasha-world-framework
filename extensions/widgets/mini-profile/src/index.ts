@@ -3,6 +3,6 @@ import { IntegrationRegistrationOptions, WidgetInterface } from '@akashaorg/typi
 
 export const register = (opts: IntegrationRegistrationOptions): WidgetInterface => ({
   mountsIn: opts.layoutSlots?.contextualWidgetSlotId,
-  loadingFn: () => import('./mini-profile-widget'),
+  rootComponent: () => import('./mini-profile-widget'),
   activeWhen: ['/@akashaorg/app-antenna/reflection/', '/@akashaorg/app-antenna/beam/'],
 });

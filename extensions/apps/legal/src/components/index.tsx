@@ -1,27 +1,30 @@
-import React from 'react';
-import ReactDOMClient from 'react-dom/client';
-import singleSpaReact from 'single-spa-react';
+import * as React from 'react';
+import { I18nextProvider } from 'react-i18next';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
+import Spinner from '@akashaorg/design-system-core/lib/components/Spinner';
+import { RouterProvider } from '@tanstack/react-router';
+import { router } from './app-routes';
 
-import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
-import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import { withProviders } from '@akashaorg/ui-core-hooks';
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof router>;
+  }
+}
 
-import App from './App';
+const App: React.FC<unknown> = () => {
+  const { getTranslationPlugin, baseRouteName } = useRootComponentProps();
 
-const reactLifecycles = singleSpaReact({
-  React,
-  ReactDOMClient,
-  rootComponent: withProviders(App),
-  errorBoundary: (error, errorInfo, props: IRootComponentProps) => {
-    if (props.logger) {
-      props.logger.error(`${JSON.stringify(error)}, ${errorInfo}`);
-    }
-    return <ErrorLoader type="script-error" title="Error in legal app" details={error.message} />;
-  },
-});
+  return (
+    <React.Suspense fallback={<Spinner />}>
+      <I18nextProvider i18n={getTranslationPlugin().i18n}>
+        <RouterProvider
+          router={router({
+            baseRouteName,
+          })}
+        />
+      </I18nextProvider>
+    </React.Suspense>
+  );
+};
 
-export const bootstrap = reactLifecycles.bootstrap;
-
-export const mount = reactLifecycles.mount;
-
-export const unmount = reactLifecycles.unmount;
+export default withProviders(App);

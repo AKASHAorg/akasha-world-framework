@@ -11,7 +11,7 @@ import { Vibes } from '@akashaorg/design-system-core/lib/components/Icon/akasha-
 import routes, { HISTORY, HOME, MODERATORS } from './routes';
 
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   mountsIn: opts.layoutSlots?.applicationSlotId,
   i18nNamespace: ['app-vibes'],
   routes: {

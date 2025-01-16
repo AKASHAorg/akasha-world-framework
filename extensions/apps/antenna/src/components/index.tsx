@@ -1,25 +1,30 @@
 import React from 'react';
-import ReactDOMClient from 'react-dom/client';
-import singleSpaReact from 'single-spa-react';
-import ErrorLoader from '@akashaorg/design-system-core/lib/components/ErrorLoader';
-import SocialApp from './app';
-import { IRootComponentProps } from '@akashaorg/typings/lib/ui';
-import { withProviders } from '@akashaorg/ui-core-hooks';
+import { I18nextProvider } from 'react-i18next';
+import { useRootComponentProps, withProviders } from '@akashaorg/ui-core-hooks';
+import { router } from './app-routes';
+import { RouterProvider } from '@tanstack/react-router';
+import { useApolloClient } from '@apollo/client';
 
-const reactLifecycles = singleSpaReact({
-  React,
-  ReactDOMClient,
-  rootComponent: withProviders(SocialApp),
-  errorBoundary: (error, errorInfo, props: IRootComponentProps) => {
-    if (props.logger) {
-      props.logger.error(`${JSON.stringify(error)}, ${errorInfo}`);
-    }
-    return <ErrorLoader type="script-error" title="Error in akasha app" details={error.message} />;
-  },
-});
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof router>;
+  }
+}
 
-export const bootstrap = reactLifecycles.bootstrap;
+const SocialApp: React.FC<unknown> = () => {
+  const { getTranslationPlugin, baseRouteName } = useRootComponentProps();
+  const apolloClient = useApolloClient();
 
-export const mount = reactLifecycles.mount;
+  return (
+    <I18nextProvider i18n={getTranslationPlugin().i18n}>
+      <RouterProvider
+        router={router({
+          baseRouteName,
+          apolloClient,
+        })}
+      />
+    </I18nextProvider>
+  );
+};
 
-export const unmount = reactLifecycles.unmount;
+export default withProviders(SocialApp);

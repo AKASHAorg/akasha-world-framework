@@ -52,7 +52,7 @@ const generateSubRoutes = () => {
  * All the plugins must export an object like this:
  */
 export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   mountsIn: opts.layoutSlots?.applicationSlotId,
   i18nNamespace: ['app-extensions'],
   routes: {

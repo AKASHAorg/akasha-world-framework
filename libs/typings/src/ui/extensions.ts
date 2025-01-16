@@ -1,5 +1,5 @@
 import singleSpa from 'single-spa';
-import { ExtensionActivity } from './app-loader';
+import { ExtensionActivity, SupportedUILibs } from './app-loader';
 import { IMenuItem } from './sidebar-menu-items';
 import { IRootComponentProps } from './root-component';
 import { ContentBlockConfig } from './editor-blocks';
@@ -68,7 +68,9 @@ export interface IAppConfig {
   routes?: {
     [key: string]: string;
   };
-  loadingFn: () => Promise<singleSpa.LifeCycles<IRootComponentProps>>;
+  rootComponent?: () => Promise<{ default: React.ElementType }>;
+  UILib?: SupportedUILibs;
+  loadingFn?: () => Promise<singleSpa.LifeCycles<IRootComponentProps>>;
   /**
    * The content of a Beam (aka. post) is a list of 1 or more contentBlocks.
    * These are provided by the apps and should have 2 versions:

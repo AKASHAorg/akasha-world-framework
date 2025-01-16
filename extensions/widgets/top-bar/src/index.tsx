@@ -5,7 +5,7 @@ import { extensionSlots } from './extension-points';
 export const register = (opts: IntegrationRegistrationOptions): WidgetInterface => {
   return {
     mountsIn: opts.layoutSlots?.topbarSlotId,
-    loadingFn: () => import('./components'),
+    rootComponent: () => import('./components'),
     extensionSlots,
   };
 };

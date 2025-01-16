@@ -20,7 +20,7 @@ export const register = (opts: IntegrationRegistrationOptions): IAppConfig => ({
     termsOfService: routes[TOS],
     termsOfUse: routes[TOU],
   },
-  loadingFn: () => import('./components'),
+  rootComponent: () => import('./components'),
   i18nNamespace: ['app-legal'],
   menuItems: {
     label: 'Legal',

@@ -115,6 +115,14 @@ export type WorldConfig = {
 };
 
 /**
+ * UI libraries supported by the app-loader.
+ * Only React is supported for now.
+ */
+export enum SupportedUILibs {
+  'react',
+}
+
+/**
  * Interface defining query string
  **/
 export interface IQueryString {

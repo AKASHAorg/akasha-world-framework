@@ -1,4 +1,6 @@
 import * as React from 'react';
+import singleSpaReact from 'single-spa-react';
+import ReactDOMClient from 'react-dom/client';
 import { useRootComponentProps } from '@akashaorg/ui-core-hooks';
 import { useRoutingEvents } from './use-routing-events';
 import { WidgetInterface, IWidgetStorePlugin } from '@akashaorg/typings/lib/ui';
@@ -45,8 +47,28 @@ export const Widget: React.FC<WidgetExtensionProps> = props => {
       for (const widget of widgets) {
         if (newWidgets.find(p => p.widget.appName === widget.appName)) return;
         try {
-          const config = await widget.loadingFn();
-          newWidgets.push({ config, widget });
+          const lifecycles = singleSpaReact({
+            React,
+            ReactDOMClient,
+            loadRootComponent: async () => {
+              try {
+                const importer = await widget.rootComponent();
+                if (!importer.default) {
+                  logger.error('widget: %s, does not have a default export', widget.appName);
+                }
+                return importer.default;
+              } catch (err) {
+                logger.error("error importing %s widget's root component", widget.appName);
+              }
+            },
+            errorBoundary: (err, info, props) => {
+              logger.error(err);
+              logger.error(info);
+              logger.error(props);
+              return null;
+            },
+          });
+          newWidgets.push({ config: lifecycles, widget });
         } catch (err) {
           logger.error(`error getting widget config, ${widget.appName}`);
           onError?.(widget);
