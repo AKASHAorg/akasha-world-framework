@@ -1,5 +1,5 @@
-import '@akashaorg/design-system-core/src/twind/main.css';
-import '@akashaorg/design-system-core/src/twind/globals.css';
+import '@akashaorg/ui/main.css';
+import '@akashaorg/ui/globals.css';
 
 import { WorldConfig } from '@akashaorg/typings/lib/ui';
 import { AkashaApp, AkashaAppApplicationType } from '@akashaorg/typings/lib/sdk/graphql-types-new';

@@ -1,0 +1,20 @@
+{
+  "name": "@akashaorg/ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/ui/src",
+  "projectType": "library",
+  "targets": {
+    "prepare": {
+      "dependsOn": ["@akashaorg/typings:prepare"],
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "libs/ui",
+        "command": "tsc --build && tsc-alias"
+      }
+    },
+    "test": {
+      "dependsOn": ["prepare"]
+    }
+  },
+  "tags": ["scope:extension", "type:lib"]
+}

@@ -7,6 +7,15 @@ function withOpacity(variable) {
   };
 }
 
+function withHslOpacity(variable) {
+  return ({ opacityValue }) => {
+    if (opacityValue === undefined) {
+      return `hsl(var(${variable}))`;
+    }
+    return `hsl(var(${variable}) / ${opacityValue})`;
+  };
+}
+
 export default {
   darkMode: 'class',
   hash: false,
@@ -16,7 +25,6 @@ export default {
         sans: 'Inter, sans-serif',
       },
       colors: {
-        primary: 'linear-gradient(90deg, var(--foundation-primary))',
         primaryStart: withOpacity('--gradient-primary-start'),
         primaryStop: withOpacity('--gradient-primary-stop'),
         secondaryLight: withOpacity('--foundation-secondary'),
@@ -42,9 +50,45 @@ export default {
         errorDark2: withOpacity('--feedback-error-dark2'),
         errorFade: withOpacity('--feedback-error-fade'),
         elevation: withOpacity('--elevation'),
+        border: withHslOpacity('--border'),
+        input: withHslOpacity('--input'),
+        ring: withHslOpacity('--ring'),
+        background: withHslOpacity('--background'),
+        foreground: withHslOpacity('--foreground'),
+        primary: {
+          DEFAULT: withHslOpacity('--primary'),
+          foreground: withHslOpacity('--primary-foreground'),
+        },
+        secondary: {
+          DEFAULT: withHslOpacity('--secondary'),
+          foreground: withHslOpacity('--secondary-foreground'),
+        },
+        destructive: {
+          DEFAULT: withHslOpacity('--destructive'),
+          foreground: withHslOpacity('--destructive-foreground'),
+        },
+        muted: {
+          DEFAULT: withHslOpacity('--muted'),
+          foreground: withHslOpacity('--muted-foreground'),
+        },
+        accent: {
+          DEFAULT: withHslOpacity('--accent'),
+          foreground: withHslOpacity('--accent-foreground'),
+        },
+        popover: {
+          DEFAULT: withHslOpacity('--popover'),
+          foreground: withHslOpacity('--popover-foreground'),
+        },
+        card: {
+          DEFAULT: withHslOpacity('--card'),
+          foreground: withHslOpacity('--card-foreground'),
+        },
       },
       borderRadius: {
         large: '20px',
+        lg: `var(--radius)`,
+        md: `calc(var(--radius) - 2px)`,
+        sm: 'calc(var(--radius) - 4px)',
       },
       scale: {
         flip: '-1',

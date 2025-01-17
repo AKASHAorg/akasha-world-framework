@@ -7,6 +7,7 @@
     "prepare": {
       "dependsOn": [
         "@akashaorg/ui-core-hooks:build",
+        "@akashaorg/ui:prepare",
         "@akashaorg/design-system-core:prepare",
         "@akashaorg/design-system-components:prepare",
         "@akashaorg/core-sdk:build",
