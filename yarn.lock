@@ -52,7 +52,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@akashaorg/core-sdk@workspace:libs/sdk":
+"@akashaorg/core-sdk@workspace:^, @akashaorg/core-sdk@workspace:libs/sdk":
   version: 0.0.0-use.local
   resolution: "@akashaorg/core-sdk@workspace:libs/sdk"
   languageName: unknown
@@ -70,7 +70,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@akashaorg/typings@workspace:libs/typings":
+"@akashaorg/typings@workspace:^, @akashaorg/typings@workspace:libs/typings":
   version: 0.0.0-use.local
   resolution: "@akashaorg/typings@workspace:libs/typings"
   languageName: unknown
@@ -35183,6 +35183,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@akashaorg/core-sdk": "workspace:^"
+    "@akashaorg/typings": "workspace:^"
     "@apollo/client": "npm:3.11.8"
     "@babel/core": "npm:^7.25.2"
     "@babel/helper-get-function-arity": "npm:7.16.7"

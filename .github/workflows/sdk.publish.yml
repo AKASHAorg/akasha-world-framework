@@ -43,23 +43,27 @@ jobs:
           yarn install --immutable
       - run: echo "${GITHUB_WORKSPACE}/node_modules/.bin" >> $GITHUB_PATH
       - run: nx run-many --target=prepare-publish --all --verbose
-      - name: Publish @akashaorg/core-sdk
-        working-directory: dist/npm/core-sdk
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
       - name: Publish @akashaorg/typings
         working-directory: dist/npm/typings
-        run: npm publish --provenance --access public
+        run: |
+          npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
       - name: Publish @akashaorg/composedb-models
         working-directory: dist/npm/composedb
-        run: npm publish --provenance --access public
+        run: |
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
+      - name: Publish @akashaorg/core-sdk
+        working-directory: dist/npm/core-sdk
+        run: |
+          npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
       - name: Publish @akashaorg/ui-core-hooks
         working-directory: dist/npm/hooks
-        run: npm publish --provenance --access public
+        run: |
+          npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
