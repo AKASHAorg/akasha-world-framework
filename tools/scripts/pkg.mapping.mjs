@@ -14,6 +14,7 @@ const pkgMapping = {
   '@akashaorg/app-legal': path.resolve(__dirname, '../../dist', 'apps/legal'),
   '@akashaorg/app-notifications': path.resolve(__dirname, '../../dist', 'apps/notifications'),
   '@akashaorg/app-settings-ewa': path.resolve(__dirname, '../../dist', 'apps/settings'),
+  '@akashaorg/app-world-builder': path.resolve(__dirname, '../../dist', 'apps/world-builder'),
 };
 
 export default pkgMapping;
