@@ -59,10 +59,10 @@
     --ring: 258.3 89.5% 66.3%;
     --radius: 1.5rem;
   }
+}
 
-  * {
-    border-color: hsl(var(--border));
-  }
+* {
+  border-color: hsl(var(--border));
 }
 
 .dark {
