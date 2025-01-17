@@ -8,5 +8,5 @@
 To use a component import it from the **ui** package:
 
 ```tsx
-import Stack from '@akashaorg/ui/lib/components/Input';
+import { Input } from '@akashaorg/ui/lib/components/Input';
 ```
