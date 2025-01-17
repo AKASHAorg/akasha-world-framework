@@ -34050,12 +34050,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:7.43.9":
-  version: 7.43.9
-  resolution: "react-hook-form@npm:7.43.9"
+"react-hook-form@npm:^7.54.2":
+  version: 7.54.2
+  resolution: "react-hook-form@npm:7.54.2"
   peerDependencies:
-    react: ^16.8.0 || ^17 || ^18
-  checksum: 10/a83696b7bcb58883b44e783071c6091f9dbac9f9c405bc3d59a47c9532fa075b2448b6def409e9d6e918ae2a2726fd0bd65163ef310ca9c21537bc6396ead382
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10/b156d15b6246c76d0275e5722d9056014693e014d0e3dec06e44bf2672ee549aaba4366de5144d18c4cab29e631f3b2b84269d4fd5727ca17aad9b970fde6960
   languageName: node
   linkType: hard
 
@@ -35385,7 +35385,7 @@ __metadata:
     react-easy-crop: "npm:5.0.5"
     react-helmet: "npm:6.1.0"
     react-helmet-async: "npm:2.0.4"
-    react-hook-form: "npm:7.43.9"
+    react-hook-form: "npm:^7.54.2"
     react-i18next: "npm:12.2.0"
     react-is: "npm:18.3.1"
     react-markdown: "npm:9.0.1"
