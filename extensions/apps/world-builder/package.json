@@ -1,0 +1,20 @@
+{
+  "name": "@akashaorg/app-world-builder",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "The AKASHA Foundation developed this app to facilitate the process of creating new world with AKASHA Core.",
+  "author": "AKASHA Foundation <hello@akasha.org> (https://akasha.org/)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AKASHAorg/akasha-core.git"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "akasha": {
+    "displayName": "World Builder"
+  }
+}

@@ -1,0 +1,1 @@
+The World Builder app is an installable app that allows users to create and save to Ceramic models a configuration for initialising a world built with AKASHA Core, and also to view a build preview set up with that configuration.
